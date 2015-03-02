@@ -75,7 +75,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
 
     private static final int COLUMN_TIME_WIDTH = 115;
 
-    private static final int COLUMN_DURATION_WIDTH = 77;
+    private static final int COLUMN_DURATION_WIDTH = 170;
 
     private VerticalLayout mainLayout;
 

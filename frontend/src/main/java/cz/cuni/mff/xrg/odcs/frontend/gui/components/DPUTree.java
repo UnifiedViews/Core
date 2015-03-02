@@ -176,7 +176,7 @@ public class DPUTree extends CustomComponent {
         buttonCreateDPU = new Button();
         buttonCreateDPU.setCaption(Messages.getString("DPUTree.create.dpu"));
         buttonCreateDPU.setHeight("25px");
-        buttonCreateDPU.setWidth("150px");
+        buttonCreateDPU.setWidth("170px");
         buttonCreateDPU
                 .addClickListener(new Button.ClickListener() {
                     private static final long serialVersionUID = 1L;
@@ -198,7 +198,7 @@ public class DPUTree extends CustomComponent {
 
         exportButton = new Button(Messages.getString("DPUTree.export.dpu"));
         exportButton.setHeight("25px");
-        exportButton.setWidth("150px");
+        exportButton.setWidth("170px");
 
         exportButton.addClickListener(new Button.ClickListener() {
             private static final long serialVersionUID = 6941128812967827740L;

@@ -58,11 +58,11 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
     /**
      * Column widths for execution table.
      */
-    private static final int COLUMN_SCHEDULE_WIDTH = 32;
+    private static final int COLUMN_SCHEDULE_WIDTH = 60;
 
     private static final int COLUMN_STATUS_WIDTH = 39;
 
-    private static final int COLUMN_DEBUG_WIDTH = 36;
+    private static final int COLUMN_DEBUG_WIDTH = 42;
 
     private static final int COLUMN_DURATION_WIDTH = 53;
 
@@ -198,7 +198,6 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                 presenter.refreshEventHandler();
             }
         });
-        btnRefresh.setWidth("120px");
         btnRefresh.addStyleName("v-button-primary");
         topLine.addComponent(btnRefresh);
 
@@ -206,7 +205,6 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         Button btnClearFilters = new Button();
         btnClearFilters.setCaption(Messages.getString("ExecutionListViewImpl.clear.filters"));
         btnClearFilters.setHeight("25px");
-        btnClearFilters.setWidth("120px");
         btnClearFilters.addStyleName("v-button-primary");
         btnClearFilters.addClickListener(new com.vaadin.ui.Button.ClickListener() {
             private static final long serialVersionUID = 1L;
@@ -222,7 +220,6 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         // clear table sorting
         Button btnClearSort = new Button(Messages.getString("ExecutionListViewImpl.clear.sort"));
         btnClearSort.setHeight("25px");
-        btnClearSort.setWidth("120px");
         btnClearSort.addStyleName("v-button-primary");
         btnClearSort.addClickListener(new ClickListener() {
             private static final long serialVersionUID = 1L;
@@ -629,6 +626,7 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
 
         // add generated columns to the executionTable
         executionTable.addGeneratedColumn("actions", 0, createColumnGenerator(presenter));
+        executionTable.setColumnHeader("actions", Messages.getString("ExecutionListViewImpl.actions"));
         executionTable.setVisibleColumns();
         executionTable.addListener(new PagedFilterTable.PageChangeListener() {
             @Override
