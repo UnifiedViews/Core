@@ -5,7 +5,7 @@
 	<parent>
 		<artifactId>odcs</artifactId>
 		<groupId>cz.cuni.mff.xrg.odcs</groupId>
-		<version>1.6.0</version>
+		<version>1.6.1-SNAPSHOT</version>
 	</parent>
 	<groupId>cz.cuni.mff.xrg.odcs</groupId>
 	<artifactId>dataunit-rdf-impl</artifactId>
