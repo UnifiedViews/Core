@@ -1,5 +1,7 @@
 package eu.unifiedviews.master.api;
 
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -8,6 +10,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -62,10 +65,14 @@ public class PipelineResource {
 
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
-    public List<PipelineDTO> getPipelines() {
+    public List<PipelineDTO> getPipelines(@QueryParam("organizationName") String organizationName) {
         List<Pipeline> pipelines = null;
         try {
-            pipelines = pipelineFacade.getAllPipelines();
+            if(isNotEmpty(organizationName)){
+                pipelines = pipelineFacade.getAllPipelines(organizationName);
+            } else {
+                pipelines = pipelineFacade.getAllPipelines();
+            }
             if (pipelines == null) {
                 throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, "PipelineFacade returned null!");
             }

@@ -45,6 +45,57 @@ public interface PipelineListPresenter extends Presenter {
     public boolean canDeletePipeline(long pipelineId);
 
     /**
+     * Tells whether user has permission to edit pipeline with given id, so
+     * we can decide whether to hide edit button.
+     * 
+     * @param pipelineId
+     *            id of pipeline to be edited
+     * @return true if user has permission to edit, false otherwise
+     */
+    public boolean canEditPipeline(long pipelineId);
+
+    /**
+     * Tells whether user has permission to run pipeline with given id, so
+     * we can decide whether to hide edit button.
+     * 
+     * @param pipelineId
+     *            id of pipeline to be run
+     * @return true if user has permission to run, false otherwise
+     */
+    public boolean canRunPipeline(long pipelineId);
+
+    /**
+     * Tells whether user has permission to debug pipeline with given id, so
+     * we can decide whether to hide debug button.
+     * 
+     * @param pipelineId
+     *            id of pipeline to be debug
+     * @return true if user has permission to debug, false otherwise
+     */
+    public boolean canDebugPipeline(long pipelineId);
+
+    /**
+     * Tells whether user has permission to schedule pipeline with given id, so
+     * we can decide whether to hide schedule button.
+     * 
+     * @param pipelineId
+     *            id of pipeline to be scheduled
+     * @return true if user has permission to schedule, false otherwise
+     */
+    public boolean canSchedulePipeline(long pipelineId);
+    
+    /**
+     * Tells whether user has permission to copy pipeline with given id, so
+     * we can decide whether to hide copy button.
+     * 
+     * @param pipelineId
+     *            id of pipeline to be copied
+     * @return true if user has permission to copy, false otherwise
+     */
+    public boolean canCopyPipeline(long pipelineId);
+    
+    
+    /**
      * Schedule pipeline with given id.
      * 
      * @param id

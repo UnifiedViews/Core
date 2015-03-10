@@ -22,9 +22,9 @@ import eu.unifiedviews.commons.dao.view.PipelineView;
  */
 public class PipelineViewAccessor implements ClassAccessor<PipelineView> {
 
-    private final List<String> all = Arrays.asList("id", "name", "duration", "lastExecTime", "lastExecStatus");
+    private final List<String> all = Arrays.asList("id", "name", "createdBy", "duration", "lastExecTime", "lastExecStatus");
 
-    private final List<String> visible = Arrays.asList("name", "duration", "lastExecTime", "lastExecStatus");
+    private final List<String> visible = Arrays.asList("name", "createdBy","duration", "lastExecTime", "lastExecStatus");
 
     private final List<String> sortable = Arrays.asList("name");
 
@@ -75,6 +75,8 @@ public class PipelineViewAccessor implements ClassAccessor<PipelineView> {
                 return Messages.getString("PipelineViewAccessor.lastExecution");
             case "lastExecStatus":
                 return Messages.getString("PipelineViewAccessor.lastStatus");
+            case "createdBy":
+                return Messages.getString("PipelineViewAccessor.createdBy");
             default:
                 return id;
         }
@@ -102,6 +104,8 @@ public class PipelineViewAccessor implements ClassAccessor<PipelineView> {
                 } else {
                     return null;
                 }
+            case "createdBy":
+                return object.getOrgName() + " (" + object.getUsrName() + ")";
             default:
                 return null;
         }
@@ -118,9 +122,10 @@ public class PipelineViewAccessor implements ClassAccessor<PipelineView> {
                 return String.class;
             case "lastExecStatus":
                 return Embedded.class;
+            case "createdBy":
+                return String.class;
             default:
                 return null;
         }
     }
-
 }

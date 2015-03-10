@@ -32,6 +32,14 @@ class DbPipelineImpl extends DbAccessBase<Pipeline> implements DbPipeline {
     }
 
     @Override
+    public List<Pipeline> getPipelinesForOrganization(String orgName) {
+        final String queryStr = "SELECT e FROM Pipeline e WHERE e.organization.name = :orgName";
+        TypedQuery<Pipeline> query = createTypedQuery(queryStr);
+        query.setParameter("orgName", orgName);
+        return executeList(query);
+    }
+
+    @Override
     public List<Pipeline> getPipelinesUsingDPU(DPUTemplateRecord dpu) {
         final String stringQuery = "SELECT e FROM Pipeline e"
                 + " LEFT JOIN e.graph g"
@@ -68,17 +76,17 @@ class DbPipelineImpl extends DbAccessBase<Pipeline> implements DbPipeline {
 
         return lastModified.after(since);
     }
-    
+
     @Override
     public boolean hasDeletedPipelines(List<Long> pipelinesIds) {
-    	if (pipelinesIds == null || pipelinesIds.isEmpty()) {
-			return false;
-		}
-    	final String stringQuery = "SELECT COUNT(e) FROM Pipeline e"
-    			+ " WHERE e.id IN :ids";
-    	TypedQuery<Long> query = createCountTypedQuery(stringQuery);
-    	query.setParameter("ids", pipelinesIds);
-    	Long number = (Long) query.getSingleResult();
-    	return !number.equals((long)pipelinesIds.size());
+        if (pipelinesIds == null || pipelinesIds.isEmpty()) {
+            return false;
+        }
+        final String stringQuery = "SELECT COUNT(e) FROM Pipeline e"
+                + " WHERE e.id IN :ids";
+        TypedQuery<Long> query = createCountTypedQuery(stringQuery);
+        query.setParameter("ids", pipelinesIds);
+        Long number = (Long) query.getSingleResult();
+        return !number.equals((long) pipelinesIds.size());
     }
 }

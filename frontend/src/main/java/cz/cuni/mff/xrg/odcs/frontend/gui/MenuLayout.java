@@ -9,9 +9,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.Embedded;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
@@ -136,7 +146,17 @@ public class MenuLayout extends CustomComponent {
                 authService.logout(RequestHolder.getRequest());
                 authCtx.clear();
                 refreshUserBar();
-                navigator.navigateTo(Login.class);
+                String logout_url = null;
+                try {
+                    logout_url = appConfig.getString(ConfigProperty.LOGOUT_URL);
+                } catch (MissingConfigPropertyException e) {
+                    //property not found, do nothing
+                    ;
+                }
+                if (logout_url != null)
+                    getUI().getPage().setLocation(logout_url);
+                else
+                    navigator.navigateTo(Login.class);
                 doAfterLogoutCleaning();
             }
         });

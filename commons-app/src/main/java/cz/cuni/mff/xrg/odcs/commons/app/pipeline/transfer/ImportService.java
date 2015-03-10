@@ -92,6 +92,8 @@ public class ImportService {
 
             pipe = loadPipeline(tempDirectory);
             pipe.setUser(user);
+            if (user.getOrganization() != null)
+                pipe.setOrganization(user.getOrganization());
             pipe.setShareType(ShareType.PRIVATE);
 
             // TODO skoda: Check for DPU versions here and warn in case of problems

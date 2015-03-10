@@ -3,6 +3,7 @@ package cz.cuni.mff.xrg.odcs.commons.app.dpu;
 import java.util.List;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccess;
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 /**
  * Interface providing access to {@link DPUTemplateRecord} data objects.
@@ -17,6 +18,13 @@ public interface DbDPUTemplateRecord extends DbAccess<DPUTemplateRecord> {
      */
     public List<DPUTemplateRecord> getAll();
 
+    /**
+     * @return DPURecord list of all DPUTemplateRecords currently persisted in
+     *         database.
+     */
+    public List<DPUTemplateRecord> getAllVisible(User user);
+
+    
     /**
      * Fetch DPU template using given DPU directory.
      * 

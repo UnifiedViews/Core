@@ -189,9 +189,9 @@ public class AppEntry {
     }
 
     private void initLocale() {
-        // retrieve runtime properties
-        RuntimePropertiesFacade runtimePropertiesFacade = (RuntimePropertiesFacade) context.getBean("runtimePropertiesFacade");
-        Locale locale = runtimePropertiesFacade.getLocale();
+        // retrieve app config
+        AppConfig appConfig = context.getBean(AppConfig.class);
+        Locale locale = Locale.forLanguageTag(appConfig.getString(ConfigProperty.LOCALE));
         // set retrieved locale to LocaleHolders
         LocaleHolder.setLocale(locale);
         DataunitLocaleHolder.setLocale(locale);

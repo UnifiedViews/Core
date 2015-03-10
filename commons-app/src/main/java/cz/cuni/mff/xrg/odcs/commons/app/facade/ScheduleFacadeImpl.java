@@ -49,11 +49,14 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      * 
      * @return initialized Schedule
      */
+    @PreAuthorize("hasRole('scheduleRule.create')")
     @Override
     public Schedule createSchedule() {
         Schedule sch = new Schedule();
         if (authCtx != null) {
             sch.setOwner(authCtx.getUser());
+            if(authCtx.getUser().getOrganization() != null)
+                sch.setOrganization(authCtx.getUser().getOrganization());
         }
         return sch;
     }
@@ -65,7 +68,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      * @deprecated use container with paging instead
      */
     @Deprecated
-    @PostFilter("hasPermission(filterObject,'view')")
+    @PostFilter("hasPermission(filterObject,'scheduleRule.read')")
     @Override
     public List<Schedule> getAllSchedules() {
         return scheduleDao.getAllSchedules();
@@ -77,6 +80,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      * @param pipeline
      * @return
      */
+    @PreAuthorize("hasRole('scheduleRule.read')")
     @Override
     public List<Schedule> getSchedulesFor(Pipeline pipeline) {
         return scheduleDao.getSchedulesFor(pipeline);
@@ -89,6 +93,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      * 
      * @return
      */
+    @PreAuthorize("hasRole('scheduleRule.read')")
     @Override
     public List<Schedule> getAllTimeBasedNotQueuedRunning() {
         return scheduleDao.getAllTimeBasedNotQueuedRunning();
@@ -100,6 +105,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      * @param id
      * @return
      */
+    @PreAuthorize("hasRole('scheduleRule.read')")
     @Override
     public Schedule getSchedule(long id) {
         return scheduleDao.getInstance(id);
@@ -111,7 +117,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      * @param schedule
      */
     @Transactional
-    @PreAuthorize("hasPermission(#schedule, 'save')")
+    @PreAuthorize("hasPermission(#schedule, 'scheduleRule.create')")
     @Override
     public void save(Schedule schedule) {
         scheduleDao.save(schedule);
@@ -123,6 +129,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      * @param schedule
      */
     @Transactional
+    @PreAuthorize("hasRole('scheduleRule.delete')")
     @Override
     public void delete(Schedule schedule) {
         scheduleDao.delete(schedule);
@@ -146,6 +153,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      * 
      * @param schedule
      */
+    @PreAuthorize("hasRole('scheduleRule.execute')")
     @Transactional
     @Override
     public void execute(Schedule schedule) {
@@ -224,6 +232,7 @@ class ScheduleFacadeImpl implements ScheduleFacade {
      * @return schedules that are of type {@link ScheduleType#AFTER_PIPELINE} and that should be executed (all their {@link Schedule#afterPipelines
      *         after-pipeline} executions finished).
      */
+    @PreAuthorize("hasRole('scheduleRule.read')")
     private List<Schedule> filterActiveRunAfter(List<Schedule> candidates) {
         List<Schedule> result = new LinkedList<>();
 

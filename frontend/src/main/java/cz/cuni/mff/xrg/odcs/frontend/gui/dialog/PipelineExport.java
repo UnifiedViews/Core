@@ -8,10 +8,21 @@ import java.util.TreeSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.GrantedAuthority;
 
 import com.vaadin.server.FileDownloader;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
+import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.DpuItem;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ExportException;
@@ -39,6 +50,8 @@ public class PipelineExport extends Window {
 
     private Label usedJarsText;
 
+    private AuthenticationContext authCtx;
+
     /**
      * Export service.
      */
@@ -49,9 +62,10 @@ public class PipelineExport extends Window {
      */
     private Pipeline pipeline;
 
-    public PipelineExport(ExportService exportService, Pipeline pipeline) {
+    public PipelineExport(ExportService exportService, Pipeline pipeline, AuthenticationContext authCtx) {
         this.exportService = exportService;
         this.pipeline = pipeline;
+        this.authCtx = authCtx;
         init();
     }
 
@@ -72,12 +86,17 @@ public class PipelineExport extends Window {
         chbExportDPUData = new CheckBox(Messages.getString("PipelineExport.dpu.export"));
         chbExportDPUData.setWidth("100%");
         chbExportDPUData.setValue(false);
-        detailLayout.addComponent(chbExportDPUData);
 
+        if (hasPermission("pipeline.exportDpuData")) {
+            detailLayout.addComponent(chbExportDPUData);
+        }
         chbExportJars = new CheckBox(Messages.getString("PipelineExport.jar.export"));
         chbExportJars.setWidth("100%");
         chbExportJars.setValue(false);
-        detailLayout.addComponent(chbExportJars);
+
+        if (hasPermission("pipeline.exportDpuJars")) {
+            detailLayout.addComponent(chbExportJars);
+        }
 
         chbExportSchedule = new CheckBox(Messages.getString("PipelineExport.schedule.export"));
         chbExportSchedule.setWidth("100%");
@@ -162,6 +181,21 @@ public class PipelineExport extends Window {
 
         });
         fileDownloader.extend(btnExport);
+    }
+
+    /**
+     * Check for permission.
+     * 
+     * @param type
+     *            Required permission.
+     * @return If the user has given permission
+     */
+    public boolean hasPermission(String type) {
+        for (GrantedAuthority ga : authCtx.getUser().getAuthorities()) {
+            if (type.equals(ga.getAuthority()))
+                return true;
+        }
+        return false;
     }
 
 }

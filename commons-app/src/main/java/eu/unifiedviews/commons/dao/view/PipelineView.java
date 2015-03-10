@@ -3,9 +3,17 @@ package eu.unifiedviews.commons.dao.view;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 
@@ -42,11 +50,24 @@ public class PipelineView implements Serializable, DataObject {
     @Column(name = "t_end")
     private Date end;
 
+    @Column(name = "usr_name")
+    private String usrName;
+
+    @Column(name = "org_name")
+    private String orgName;
+
     /**
      * Status of last pipeline execution.
      */
     @Enumerated(EnumType.ORDINAL)
     private PipelineExecutionStatus status;
+
+    /**
+     * Public vs private shareType.
+     */
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "visibility")
+    private ShareType shareType;
 
     @Override
     public Long getId() {
@@ -89,8 +110,23 @@ public class PipelineView implements Serializable, DataObject {
         this.status = status;
     }
 
+    public String getUsrName() {
+        return usrName;
+    }
+
+    public void setUsrName(String usrName) {
+        this.usrName = usrName;
+    }
+
+    public String getOrgName() {
+        return orgName;
+    }
+
+    public void setOrgName(String orgName) {
+        this.orgName = orgName;
+    }
+
     /**
-     *
      * @return Duration of last pipeline execution, -1 if no such execution exists.
      */
     public long getDuration() {

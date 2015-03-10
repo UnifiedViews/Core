@@ -3,6 +3,8 @@ package cz.cuni.mff.xrg.odcs.frontend;
 import java.util.Locale;
 import java.util.Map;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +64,7 @@ public class AppEntry extends com.vaadin.ui.UI {
     private ClassNavigatorHolder navigatorHolder;
 
     @Autowired
-    private RuntimePropertiesFacade runtimePropertiesFacade;
+    private AppConfig appConfig;
 
     private RefreshManager refreshManager;
 
@@ -84,7 +86,7 @@ public class AppEntry extends com.vaadin.ui.UI {
     @Override
     protected void init(com.vaadin.server.VaadinRequest request) {
         // Retrieve Locale from Runtime properties, and set it in LocaleHolders
-        Locale locale = runtimePropertiesFacade.getLocale();
+        Locale locale = Locale.forLanguageTag(appConfig.getString(ConfigProperty.LOCALE));
         LocaleHolder.setLocale(locale);
         DataunitLocaleHolder.setLocale(locale);
 

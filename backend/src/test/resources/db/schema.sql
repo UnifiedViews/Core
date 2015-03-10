@@ -105,6 +105,7 @@ CREATE TABLE `EXEC_PIPELINE`
   `id` INTEGER AUTO_INCREMENT,
   `status` INTEGER,
   `pipeline_id` INTEGER,
+  `organization_id` INTEGER,
   `debug_mode` SMALLINT,
   `t_start` DATETIME,
   `t_end` DATETIME,
@@ -130,6 +131,7 @@ CREATE SEQUENCE `seq_exec_schedule` START WITH 100;
 CREATE TABLE `EXEC_SCHEDULE`
 (
   `id` INTEGER AUTO_INCREMENT,
+  `organization_id` INTEGER,
   `description` TEXT,
   `pipeline_id` INTEGER NOT NULL,
   `user_id` INTEGER,
@@ -164,6 +166,7 @@ CREATE TABLE `PPL_MODEL`
   `name` VARCHAR(1024),
   `description` TEXT,
   `user_id` INTEGER,
+  `organization_id` INTEGER,
   `visibility` SMALLINT,
   `last_change` DATETIME,
   PRIMARY KEY (`id`)

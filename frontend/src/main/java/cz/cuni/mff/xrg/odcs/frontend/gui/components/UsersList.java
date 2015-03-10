@@ -23,7 +23,7 @@ import com.vaadin.ui.Window.CloseListener;
 
 import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
-import cz.cuni.mff.xrg.odcs.commons.app.user.Role;
+import cz.cuni.mff.xrg.odcs.commons.app.user.RoleEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibFilterDecorator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
@@ -43,7 +43,8 @@ public class UsersList {
 
     private VerticalLayout usersListLayout;
 
-    private static String[] visibleCols = new String[] { "id", "fullname", "user", "role", "actions" };
+    private static String[] visibleCols = new String[] { "id", "fullname",
+            "user", "role", "actions" };
 
     private static String[] headers = new String[] { Messages.getString("UsersList.id"), Messages.getString("UsersList.full.username"), Messages.getString("UsersList.username"), Messages.getString("UsersList.roles"),
             Messages.getString("UsersList.actions") };
@@ -73,7 +74,7 @@ public class UsersList {
 
         usersListLayout.setImmediate(true);
 
-        //Layout for buttons Add new user and Clear Filters on the top.
+        // Layout for buttons Add new user and Clear Filters on the top.
         HorizontalLayout topLine = new HorizontalLayout();
         topLine.setSpacing(true);
 
@@ -124,20 +125,20 @@ public class UsersList {
 
         tableData = getTableData(userFacade.getAllUsers());
 
-        //table with pipeline execution records
+        // table with pipeline execution records
         usersTable = new IntlibPagedTable();
         usersTable.setSelectable(true);
         usersTable.setContainerDataSource(tableData);
         usersTable.setWidth("100%");
         usersTable.setHeight("100%");
         usersTable.setImmediate(true);
-        usersTable.setVisibleColumns((Object[]) visibleCols); // Set visible columns
+        usersTable.setVisibleColumns((Object[]) visibleCols); // Set visible
+                                                              // columns
         usersTable.setColumnHeaders(headers);
         usersTable.setColumnCollapsingAllowed(true);
 
-        //Actions column. Contains actions buttons: Debug data, Show log, Stop.
-        usersTable.addGeneratedColumn("actions",
-                new actionColumnGenerator());
+        // Actions column. Contains actions buttons: Debug data, Show log, Stop.
+        usersTable.addGeneratedColumn("actions", new actionColumnGenerator());
 
         usersListLayout.addComponent(usersTable);
         usersListLayout.addComponent(usersTable.createControls());
@@ -145,19 +146,19 @@ public class UsersList {
         usersTable.setFilterDecorator(new filterDecorator());
         usersTable.setFilterBarVisible(true);
         usersTable.setFilterFieldVisible("actions", false);
-        usersTable.addItemClickListener(
-                new ItemClickEvent.ItemClickListener() {
-                    private static final long serialVersionUID = 1L;
+        usersTable.addItemClickListener(new ItemClickEvent.ItemClickListener() {
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    public void itemClick(ItemClickEvent event) {
+            @Override
+            public void itemClick(ItemClickEvent event) {
 
-                        if (!usersTable.isSelected(event.getItemId())) {
-                            userId = (Long) event.getItem().getItemProperty("id").getValue();
-                            showUserSettings(userId);
-                        }
-                    }
-                });
+                if (!usersTable.isSelected(event.getItemId())) {
+                    userId = (Long) event.getItem().getItemProperty("id")
+                            .getValue();
+                    showUserSettings(userId);
+                }
+            }
+        });
 
         return usersListLayout;
     }
@@ -189,10 +190,10 @@ public class UsersList {
         for (User item : data) {
             Object num = result.addItem();
 
-            Set<Role> roles = item.getRoles();
+            Set<RoleEntity> roles = item.getRoles();
             String roleStr = new String();
             int i = 0;
-            for (Role role : roles) {
+            for (RoleEntity role : roles) {
                 i++;
                 if (i < roles.size()) {
                     roleStr = roleStr + role.toString() + ", ";
@@ -202,8 +203,10 @@ public class UsersList {
             }
 
             result.getContainerProperty(num, "id").setValue(item.getId());
-            result.getContainerProperty(num, "fullname").setValue(item.getFullName());
-            result.getContainerProperty(num, "user").setValue(item.getUsername());
+            result.getContainerProperty(num, "fullname").setValue(
+                    item.getFullName());
+            result.getContainerProperty(num, "user").setValue(
+                    item.getUsername());
             result.getContainerProperty(num, "role").setValue(roleStr);
 
         }
@@ -264,25 +267,25 @@ public class UsersList {
         private static final long serialVersionUID = 1L;
 
         @Override
-        public Object generateCell(final CustomTable source, final Object itemId,
-                Object columnId) {
+        public Object generateCell(final CustomTable source,
+                final Object itemId, Object columnId) {
 
             HorizontalLayout layout = new HorizontalLayout();
 
-            //Edit button. Open dialog for edit user's details.
+            // Edit button. Open dialog for edit user's details.
             Button changeButton = new Button();
             changeButton.setDescription(Messages.getString("UsersList.edit"));
             changeButton.addStyleName("small_button");
             changeButton.setIcon(new ThemeResource("icons/gear.svg"));
-            //changeButton.setWidth("80px");
+            // changeButton.setWidth("80px");
             changeButton.addClickListener(new ClickListener() {
                 private static final long serialVersionUID = 1L;
 
                 @Override
                 public void buttonClick(ClickEvent event) {
 
-                    userId = (Long) tableData.getContainerProperty(itemId, "id")
-                            .getValue();
+                    userId = (Long) tableData
+                            .getContainerProperty(itemId, "id").getValue();
                     showUserSettings(userId);
 
                 }
@@ -290,19 +293,19 @@ public class UsersList {
 
             layout.addComponent(changeButton);
 
-            //Delete button. Delete user's record from Database.
+            // Delete button. Delete user's record from Database.
             Button deleteButton = new Button();
             deleteButton.setDescription(Messages.getString("UsersList.delete"));
             deleteButton.addStyleName("small_button");
             deleteButton.setIcon(new ThemeResource("icons/trash.svg"));
-            //deleteButton.setWidth("80px");
+            // deleteButton.setWidth("80px");
             deleteButton.addClickListener(new ClickListener() {
                 private static final long serialVersionUID = 1L;
 
                 @Override
                 public void buttonClick(ClickEvent event) {
-                    userId = (Long) tableData.getContainerProperty(itemId, "id")
-                            .getValue();
+                    userId = (Long) tableData
+                            .getContainerProperty(itemId, "id").getValue();
                     userDel = userFacade.getUser(userId);
                     //open confirmation dialog
                     ConfirmDialog.show(UI.getCurrent(), Messages.getString("UsersList.delete.confirmation"),

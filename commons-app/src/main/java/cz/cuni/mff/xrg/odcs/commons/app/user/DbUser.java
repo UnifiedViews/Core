@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.commons.app.user;
 
 import java.util.List;
+import java.util.Set;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccess;
 
@@ -23,5 +24,13 @@ public interface DbUser extends DbAccess<User> {
      * @return user
      */
     public User getByUsername(String username);
-
+    
+    /**
+     * Find User by his unique external identifier.
+     * 
+     * @param extid
+     * @return user
+     */
+    public User getByExtId(String extid);
+    
 }

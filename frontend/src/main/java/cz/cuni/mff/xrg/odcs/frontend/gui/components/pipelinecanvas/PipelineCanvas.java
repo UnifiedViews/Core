@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Stack;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,7 +81,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
     private DPUExplorer dpuExplorer;
 
     @Autowired
-    private RuntimePropertiesFacade runtimePropertiesFacade;
+    private AppConfig appConfig;
 
     @Autowired
     private PipelineValidator pipelineValidator;
@@ -184,7 +185,7 @@ public class PipelineCanvas extends AbstractJavaScriptComponent {
      * Method initializing client side RPC.
      */
     public void init() {
-        detailDialog = new DPUDetail(dpuFacade, runtimePropertiesFacade);
+        detailDialog = new DPUDetail(dpuFacade, appConfig);
         getRpcProxy(PipelineCanvasClientRpc.class).init(currentWidth, currentHeight);
     }
 

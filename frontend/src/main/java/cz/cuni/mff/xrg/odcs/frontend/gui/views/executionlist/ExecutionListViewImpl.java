@@ -279,7 +279,9 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                 PipelineExecutionStatus status = (PipelineExecutionStatus) propStatus.getValue();
                 boolean isDebug = (boolean) source.getItem(id).getItemProperty("isDebugging").getValue();
                 // ...
-                return !isDebug && status != PipelineExecutionStatus.QUEUED;
+                
+                boolean canReadLog = presenter.canReadLog(id);
+                return !isDebug && status != PipelineExecutionStatus.QUEUED && canReadLog;
             }
         }, new ThemeResource("icons/show_log.png"));
 
@@ -297,7 +299,8 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                 PipelineExecutionStatus status = (PipelineExecutionStatus) propStatus.getValue();
                 boolean isDebug = (boolean) source.getItem(id).getItemProperty("isDebugging").getValue();
                 // ...
-                return isDebug && status != PipelineExecutionStatus.QUEUED;
+                boolean canDebug = presenter.canDebugData(id);
+                return isDebug && status != PipelineExecutionStatus.QUEUED && canDebug;
             }
         }, new ThemeResource("icons/debug_data.png"));
 
@@ -332,8 +335,9 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                 Property propStatus = source.getItem(id).getItemProperty("status");
                 PipelineExecutionStatus status = (PipelineExecutionStatus) propStatus.getValue();
                 // ...
+                boolean canRunPipeline = presenter.canRunPipeline(id);
                 return status != PipelineExecutionStatus.RUNNING
-                        && status != PipelineExecutionStatus.CANCELLING;
+                        && status != PipelineExecutionStatus.CANCELLING && canRunPipeline;
             }
         }, new ThemeResource("icons/running.png"));
 
@@ -348,8 +352,9 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
                 Property propStatus = source.getItem(id).getItemProperty("status");
                 PipelineExecutionStatus status = (PipelineExecutionStatus) propStatus.getValue();
                 // ...
+                boolean canDebugPipeline = presenter.canDebugPipeline(id);
                 return status != PipelineExecutionStatus.RUNNING
-                        && status != PipelineExecutionStatus.CANCELLING;
+                        && status != PipelineExecutionStatus.CANCELLING && canDebugPipeline;
             }
         }, new ThemeResource("icons/debug.png"));
 

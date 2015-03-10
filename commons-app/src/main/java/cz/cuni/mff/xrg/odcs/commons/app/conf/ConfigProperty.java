@@ -69,8 +69,16 @@ public enum ConfigProperty {
     EMAIL_ADMIN("email.admin"),
 
     CKAN_LOCATION("ckan.location"),
-    CKAN_API_KEY("ckan.api.key");
+    CKAN_API_KEY("ckan.api.key"),
 
+    LOGOUT_URL("logout.url"),
+    CAS_SERVER_HOST("cas.server.host"),
+    CAS_SECURITY_CHECK_URL("cas.security.check.url"),
+    CAS_LOGIN_URL("cas.login.url"),
+    CAS_LOGOUT_URL("cas.logout.url"),
+    
+    OWNERSHIP_TYPE("ownership.type");
+    
     private final String property;
 
     public final String springValue;

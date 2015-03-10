@@ -41,11 +41,4 @@ public interface RuntimePropertiesFacade extends Facade {
      * @return
      */
     public RuntimeProperty getByName(String name);
-
-    /**
-     * Return locale setting
-     *
-     * @return locale
-     */
-    public Locale getLocale();
 }

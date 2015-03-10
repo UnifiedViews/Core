@@ -22,6 +22,13 @@ public interface DbPipeline extends DbAccess<Pipeline> {
     public List<Pipeline> getAll();
 
     /**
+     * @return List of all pipelines in DB.
+     * @deprecated performance intensive for many pipelines
+     */
+    @Deprecated
+    public List<Pipeline> getPipelinesForOrganization(String orgName);
+
+    /**
      * Fetches all pipelines using given DPU template.
      * 
      * @param dpu
@@ -47,13 +54,13 @@ public interface DbPipeline extends DbAccess<Pipeline> {
      * @return whether any pipeline was created / updated since given date
      */
     public boolean hasModified(Date since);
-    
+
     /**
      * Tells whether one of pipelines was deleted
      * <p>
      * 
      * @param pipelinesIds
-     * @return true if one or more pipelines with provided ids were deleted, otherwise false 
+     * @return true if one or more pipelines with provided ids were deleted, otherwise false
      */
     public boolean hasDeletedPipelines(List<Long> pipelinesIds);
 }

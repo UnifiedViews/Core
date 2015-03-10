@@ -7,6 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
  * 
  * @author Jiri Tomes
  */
+@Deprecated
 public enum Role implements GrantedAuthority {
 
     ROLE_USER("User"),

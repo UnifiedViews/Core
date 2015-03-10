@@ -10,7 +10,22 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SecondaryTable;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,7 +41,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
  */
 @Entity
 @Table(name = "usr_user")
-public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
+@SecondaryTable(name = "usr_extuser", pkJoinColumns = @PrimaryKeyJoinColumn(name = "id_usr", referencedColumnName = "id"))
+public class User implements UserDetails, OwnedEntity, DataObject {
 
     /**
      * Primary key for entity.
@@ -67,12 +83,9 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
     /**
      * User roles representing sets of privileges.
      */
-    @ElementCollection(fetch = FetchType.LAZY)
-    @Column(name = "role_id")
-    @Enumerated(EnumType.ORDINAL)
-    @CollectionTable(name = "usr_user_role", joinColumns =
-            @JoinColumn(name = "user_id"))
-    private Set<Role> roles = new HashSet<>();
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "usr_user_role", joinColumns = { @JoinColumn(name = "user_id", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(name = "role_id", referencedColumnName = "id") })
+    private Set<RoleEntity> roles = new HashSet<>();
 
     /**
      * User notification settings used as a default for execution schedules.
@@ -80,6 +93,12 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
      */
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private UserNotificationRecord notification;
+
+    @Column(table = "usr_extuser", name = "id_extuser")
+    private String externalIdentifier;
+
+    @Transient
+    private Organization organization;
 
     /**
      * Empty constructor required by JPA.
@@ -175,8 +194,7 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
      * @param role
      *            The value of {@link Role} will be added.
      */
-    @Override
-    public void addRole(Role role) {
+    public void addRole(RoleEntity role) {
         roles.add(role);
     }
 
@@ -185,8 +203,7 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
      *
      * @return the set of roles for the user.
      */
-    @Override
-    public Set<Role> getRoles() {
+    public Set<RoleEntity> getRoles() {
         return roles;
     }
 
@@ -196,8 +213,7 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
      * @param newRoles
      *            the set of roles will be set.
      */
-    @Override
-    public void setRoles(Set<Role> newRoles) {
+    public void setRoles(Set<RoleEntity> newRoles) {
         roles = newRoles;
     }
 
@@ -257,7 +273,17 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
      */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return new ArrayList<>(getRoles());
+        ArrayList<Permission> permissions = new ArrayList<>();
+        for (RoleEntity role : getRoles()) {
+            if (role.getPermissions() != null) {
+                for (Permission p : role.getPermissions()) {
+                    if (!permissions.contains(p)) {
+                        permissions.add(p);
+                    }
+                }
+            }
+        }
+        return permissions;
     }
 
     /**
@@ -308,6 +334,22 @@ public class User implements UserDetails, OwnedEntity, RoleHolder, DataObject {
     @Override
     public User getOwner() {
         return this;
+    }
+
+    public String getExternalIdentifier() {
+        return externalIdentifier;
+    }
+
+    public void setExternalIdentifier(String externalIdentifier) {
+        this.externalIdentifier = externalIdentifier;
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
     }
 
     /**

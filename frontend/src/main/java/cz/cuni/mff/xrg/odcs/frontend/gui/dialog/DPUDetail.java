@@ -1,7 +1,10 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.dialog;
 
 import java.io.FileNotFoundException;
+import java.util.Locale;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.dialogs.ConfirmDialog;
@@ -33,7 +36,7 @@ import eu.unifiedviews.dpu.config.DPUConfigException;
  * @author Bogo
  */
 public class DPUDetail extends Window {
-    private RuntimePropertiesFacade runtimePropertiesFacade;
+    private AppConfig appConfig;
 
     private final static Logger LOG = LoggerFactory.getLogger(DPUDetail.class);
 
@@ -64,8 +67,8 @@ public class DPUDetail extends Window {
      *
      * @param dpuFacade
      */
-    public DPUDetail(DPUFacade dpuFacade, RuntimePropertiesFacade runtimePropertiesFacade) {
-        this.runtimePropertiesFacade = runtimePropertiesFacade;
+    public DPUDetail(DPUFacade dpuFacade, AppConfig appConfig) {
+        this.appConfig = appConfig;
         this.dpuFacade = dpuFacade;
         // build the layout
         build();
@@ -201,7 +204,7 @@ public class DPUDetail extends Window {
      * @param readOnly
      */
     public void showDpuDetail(DPUInstanceRecord dpu, boolean readOnly) {
-        this.dpuInstance = new DPUInstanceWrap(dpu, dpuFacade, runtimePropertiesFacade.getLocale());
+        this.dpuInstance = new DPUInstanceWrap(dpu, dpuFacade, Locale.forLanguageTag(appConfig.getString(ConfigProperty.LOCALE)));
         this.setCaption(Messages.getString("DPUDetail.detail", dpu.getName().trim(),
                 readOnly ? Messages.getString("DPUDetail.read-only.mode") : ""));
 

@@ -1,6 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
@@ -50,4 +51,18 @@ public class Utils {
         return 100;
     }
 
+    public User getUser() {
+        return authCtx.getUser();
+    }
+
+    public boolean hasUserAuthority(String authString) {
+        if(authString == null)
+            return false;
+        for (GrantedAuthority ga : getUser().getAuthorities()) {
+            if(authString.equals(ga.getAuthority())){
+                return true;
+            }
+        }
+        return false;
+    }
 }

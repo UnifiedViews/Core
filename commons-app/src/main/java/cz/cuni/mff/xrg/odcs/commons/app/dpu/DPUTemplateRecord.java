@@ -15,6 +15,8 @@ import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.SharedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
+import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
+import cz.cuni.mff.xrg.odcs.commons.app.user.OrganizationSharedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 

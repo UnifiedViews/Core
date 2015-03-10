@@ -52,6 +52,16 @@ public interface PipelineFacade extends Facade {
     List<Pipeline> getAllPipelines();
 
     /**
+     * Returns list of all pipelines persisted in the database for given organization.
+     *
+     * @param organizationName of pipeline
+     * @return list of pipelines
+     * @deprecated performance intensive for many pipelines in DB, use lazy
+     *             container with paging instead
+     */
+    List<Pipeline> getAllPipelines(String organizationName);
+
+    /**
      * Find pipeline in database by ID and return it.
      * 
      * @param id
@@ -158,12 +168,14 @@ public interface PipelineFacade extends Facade {
 
     /**
      * Fetches all {@link PipelineExecution}s from database.
-     * 
+     *
      * @return list of executions
      * @deprecated performance intensive for many pipeline executions, use
      *             container with paging support instead
      */
     List<PipelineExecution> getAllExecutions();
+
+
 
     /**
      * Fetches all {@link PipelineExecution}s with given state from database.

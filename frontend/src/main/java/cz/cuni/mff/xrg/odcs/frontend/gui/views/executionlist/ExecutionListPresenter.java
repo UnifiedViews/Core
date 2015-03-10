@@ -65,6 +65,50 @@ public interface ExecutionListPresenter extends Presenter {
     public boolean canStopExecution(long executionId);
 
     /**
+     * Tells whether user has permission to read log.
+     * 
+     * @param executionId
+     *            id of pipeline execution
+     * @return true if user has permission to read log of given pipeline execution,
+     *         false otherwise
+     */
+    public boolean canReadLog(long executionId);
+
+    /**
+     * Tells whether user has permission to debug pipeline execution, so we know
+     * whether to render debug button.
+     * 
+     * @param executionId
+     *            id of pipeline execution
+     * @return true if user has permission to debug given pipeline execution,
+     *         false otherwise
+     */
+    public boolean canDebugData(long executionId);
+
+    /**
+     * Tells whether user has permission to run pipeline execution, so we know
+     * whether to render run button.
+     * 
+     * @param executionId
+     *            id of pipeline execution
+     * @return true if user has permission to run given pipeline execution,
+     *         false otherwise
+     */
+    public boolean canRunPipeline(long executionId);
+
+    /**
+     * Tells whether user has permission to debug pipeline execution, so we know
+     * whether to render debug button.
+     * 
+     * @param executionId
+     *            id of pipeline execution
+     * @return true if user has permission to debug given pipeline execution,
+     *         false otherwise
+     */
+    public boolean canDebugPipeline(long executionId);
+
+    
+    /**
      * Start refreshing of given {@link DebuggingView}.
      * 
      * @param debugView

@@ -2,12 +2,19 @@ package eu.unifiedviews.commons.dao.view;
 
 import java.util.Date;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 
 /**
- *
  * @author Škoda Petr
  */
 @Entity
@@ -69,6 +76,9 @@ public class ExecutionView implements DataObject {
      */
     @Column(name = "owner_name")
     private String ownerName;
+
+    @Column(name = "org_name")
+    private String orgName;
 
     /**
      * True if pipeline should or has been stopped on user request.
@@ -171,8 +181,15 @@ public class ExecutionView implements DataObject {
         this.lastChange = lastChange;
     }
 
+    public String getOrgName() {
+        return orgName;
+    }
+
+    public void setOrgName(String orgName) {
+        this.orgName = orgName;
+    }
+
     /**
-     *
      * @return Duration of last pipeline execution, -1 if no such execution exists.
      */
     public long getDuration() {

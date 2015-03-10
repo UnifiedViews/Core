@@ -28,6 +28,7 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 
+import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
@@ -113,6 +114,9 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
     @Autowired
     private Utils utils;
 
+    @Autowired
+    private AuthAwarePermissionEvaluator permissionEvaluator;
+    
     private static final Logger LOG = LoggerFactory.getLogger(Scheduler.class);
 
     private boolean isMainLayoutInitialized = false;
@@ -185,6 +189,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
         Button addRuleButton = new Button();
         addRuleButton.setCaption(Messages.getString("Scheduler.add.rule"));
         addRuleButton.addStyleName("v-button-primary");
+        addRuleButton.setVisible(utils.hasUserAuthority("scheduleRule.create"));
         addRuleButton
                 .addClickListener(new com.vaadin.ui.Button.ClickListener() {
                     @Override
@@ -450,6 +455,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
 
         @Override
         public Object generateCell(final CustomTable source, final Object itemId, Object columnId) {
+            Schedule schedule = scheduleFacade.getSchedule(((Integer) itemId).longValue());
             Property propStatus = source.getItem(itemId).getItemProperty("status");
             final Long schId = Long.parseLong(tableData.getContainerProperty(itemId, "schid").getValue().toString());
             HorizontalLayout layout = new HorizontalLayout();
@@ -470,7 +476,8 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
                             refreshData();
                         }
                     });
-                    layout.addComponent(enableButton);
+                    if (canEnable(schedule))
+                        layout.addComponent(enableButton);
 
                 } //If item in the scheduler table has Enabled status, then for that item will be shown
                   //Disable button
@@ -486,7 +493,8 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
                             refreshData();
                         }
                     });
-                    layout.addComponent(disableButton);
+                    if (canDisable(schedule))
+                        layout.addComponent(disableButton);
                 }
 
             }
@@ -501,7 +509,8 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
                     showSchedulePipeline(schId);
                 }
             });
-            layout.addComponent(editButton);
+            if (canEdit(schedule))
+                layout.addComponent(editButton);
 
             //Delete button. Delete scheduling rule from the table.
             Button deleteButton = new Button();
@@ -529,7 +538,8 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
                             });
                 }
             });
-            layout.addComponent(deleteButton);
+            if (canDelete(schedule))
+                layout.addComponent(deleteButton);
 
             return layout;
         }
@@ -539,6 +549,22 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
         Schedule schedule = scheduleFacade.getSchedule(schId);
         schedule.setEnabled(enabled);
         scheduleFacade.save(schedule);
+    }
+
+    boolean canDelete(Schedule schedule) {
+        return permissionEvaluator.hasPermission(schedule, "scheduleRule.delete");
+    }
+
+    boolean canEdit(Schedule schedule) {
+        return permissionEvaluator.hasPermission(schedule, "scheduleRule.edit");
+    }
+
+    boolean canDisable(Schedule schedule) {
+        return permissionEvaluator.hasPermission(schedule, "scheduleRule.disable");
+    }
+
+    boolean canEnable(Schedule schedule) {
+        return permissionEvaluator.hasPermission(schedule, "scheduleRule.enable");
     }
 
     private class filterDecorator extends IntlibFilterDecorator {

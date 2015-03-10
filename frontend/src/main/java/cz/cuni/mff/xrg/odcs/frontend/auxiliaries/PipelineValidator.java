@@ -1,7 +1,10 @@
 package cz.cuni.mff.xrg.odcs.frontend.auxiliaries;
 
 import java.io.FileNotFoundException;
+import java.util.Locale;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +27,7 @@ import eu.unifiedviews.helpers.dpu.config.AbstractConfigDialog;
  */
 public class PipelineValidator {
     @Autowired
-    private RuntimePropertiesFacade runtimeProperties;
+    private AppConfig appConfig;
 
     @Autowired
     private DPUExplorer dpuExplorer;
@@ -82,7 +85,7 @@ public class PipelineValidator {
      */
     public boolean checkDPUValidity(DPUInstanceRecord dpu) {
         LOG.debug("DPU mandatory fields check starting for DPU: " + dpu.getName());
-        DPUInstanceWrap dpuInstance = new DPUInstanceWrap(dpu, dpuFacade, runtimeProperties.getLocale());
+        DPUInstanceWrap dpuInstance = new DPUInstanceWrap(dpu, dpuFacade, Locale.forLanguageTag(appConfig.getString(ConfigProperty.LOCALE)));
 
         // load instance
         AbstractConfigDialog<?> confDialog;

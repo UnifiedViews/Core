@@ -10,9 +10,13 @@ import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
+import cz.cuni.mff.xrg.odcs.commons.app.user.DbOrganization;
+import cz.cuni.mff.xrg.odcs.commons.app.user.DbRoleEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.DbUser;
 import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
 import cz.cuni.mff.xrg.odcs.commons.app.user.NotificationRecordType;
+import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
+import cz.cuni.mff.xrg.odcs.commons.app.user.RoleEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord;
 
@@ -24,10 +28,17 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord;
 @Transactional(readOnly = true)
 class UserFacadeImpl implements UserFacade {
 
-    private static final Logger LOG = LoggerFactory.getLogger(UserFacadeImpl.class);
+    private static final Logger LOG = LoggerFactory
+            .getLogger(UserFacadeImpl.class);
 
     @Autowired
     private DbUser userDao;
+
+    @Autowired
+    private DbRoleEntity roleDao;
+
+    @Autowired
+    private DbOrganization organizationDao;
 
     /**
      * Factory for a new User.
@@ -38,7 +49,8 @@ class UserFacadeImpl implements UserFacade {
      * @return new user instance
      */
     @Override
-    public User createUser(String username, String plainPassword, EmailAddress email) {
+    public User createUser(String username, String plainPassword,
+            EmailAddress email) {
 
         User user = new User();
         user.setUsername(username);
@@ -59,7 +71,7 @@ class UserFacadeImpl implements UserFacade {
     /**
      * @return list of all users persisted in database
      */
-    @PostFilter("hasPermission(filterObject, 'view')")
+    @PostFilter("hasPermission(filterObject, 'user.read')")
     @Override
     public List<User> getAllUsers() {
         return userDao.getAll();
@@ -70,15 +82,15 @@ class UserFacadeImpl implements UserFacade {
      *            primary key
      * @return user with given id or <code>null<code>
      */
-    @PostAuthorize("hasPermission(returnObject, 'view')")
+    @PostAuthorize("hasPermission(returnObject, 'user.read')")
     @Override
     public User getUser(long id) {
         return userDao.getInstance(id);
     }
 
     /**
-     * Find User by his unique username. This method is not secured, so that
-     * yet unauthenticated users can login.
+     * Find User by his unique username. This method is not secured, so that yet
+     * unauthenticated users can login.
      * 
      * @param username
      * @return user
@@ -94,15 +106,79 @@ class UserFacadeImpl implements UserFacade {
     }
 
     /**
+     * Find User by his unique username. This method is not secured, so that yet
+     * unauthenticated users can login.
+     * 
+     * @param username
+     * @return user
+     */
+    @Override
+    public User getUserByExtId(String extid) {
+        User user = userDao.getByExtId(extid);
+        if (user == null) {
+            LOG.info("User with username {} was not found.", extid);
+        }
+
+        return user;
+    }
+
+    /**
      * Saves any modifications made to the User into the database.
      * 
      * @param user
      */
     @Transactional
-    @PreAuthorize("hasPermission(#user, 'save')")
+    @PreAuthorize("hasPermission(#user, 'user.create')")
     @Override
     public void save(User user) {
         userDao.save(user);
+    }
+
+    /**
+     * Saves any modifications made to the User into the database.No Authorization of call, used for creating of user during authorization
+     * 
+     * @param user
+     */
+    @Transactional
+    @Override
+    public void saveNoAuth(User user) {
+        userDao.save(user);
+    }
+
+    /**
+     * Deletes user from database.
+     * 
+     * @param user
+     */
+    @Transactional
+    @PreAuthorize("hasPermission(#user, 'user.delete')")
+    @Override
+    public void delete(User user) {
+        userDao.delete(user);
+    }
+
+    /**
+     * @return list of all roles persisted in database
+     */
+    @Override
+    public List<RoleEntity> getAllRoles() {
+        return roleDao.getAllRoles();
+    }
+
+    /**
+     * @param name
+     *            name
+     * @return RoleEntity or null
+     */
+    @Override
+    public RoleEntity getRoleByName(String name) {
+        return roleDao.getRoleByName(name);
+    }
+
+    @Transactional
+    @Override
+    public void save(RoleEntity role) {
+        roleDao.save(role);
     }
 
     /**
@@ -111,10 +187,19 @@ class UserFacadeImpl implements UserFacade {
      * @param user
      */
     @Transactional
-    @PreAuthorize("hasPermission(#user, 'delete')")
     @Override
-    public void delete(User user) {
-        userDao.delete(user);
+    public void delete(RoleEntity role) {
+        roleDao.delete(role);
     }
 
+    @Override
+    public Organization getOrganizationByName(String name) {
+        return organizationDao.getOrganizationByName(name);
+    }
+
+    @Transactional
+    @Override
+    public void save(Organization o) {
+        organizationDao.save(o);
+    }
 }

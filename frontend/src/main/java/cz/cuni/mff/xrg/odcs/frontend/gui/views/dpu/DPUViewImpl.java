@@ -1,7 +1,10 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.dpu;
 
 import java.io.FileNotFoundException;
+import java.util.Locale;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +67,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
     private VerticalLayout dpuDetailLayout; //Layout contains DPU Template details.
 
     @Autowired
-    private RuntimePropertiesFacade runtimePropertiesFacade;
+    private AppConfig appConfig;
 
     @Autowired
     private DPUTree dpuTree;// Tree contains available DPUs.
@@ -173,6 +176,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         buttonCreateDPU.setHeight("25px");
         buttonCreateDPU.setWidth("150px");
         buttonCreateDPU.addStyleName("v-button-primary");
+        buttonCreateDPU.setVisible(utils.hasUserAuthority("dpuTemplate.create"));
         buttonCreateDPU.addClickListener(new Button.ClickListener() {
 
             @Override
@@ -189,6 +193,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         buttonImportDPU.setWidth("150px");
         buttonImportDPU.addStyleName("v-button-primary");
         buttonImportDPU.setEnabled(false);
+        buttonImportDPU.setVisible(utils.hasUserAuthority("dpuTemplate.import"));
         buttonImportDPU.addClickListener(new Button.ClickListener() {
 
             @Override
@@ -205,6 +210,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         buttonExportAll.setWidth("150px");
         buttonExportAll.addStyleName("v-button-primary");
         buttonExportAll.setEnabled(false);
+        buttonExportAll.setVisible(utils.hasUserAuthority("dpuTemplate.export"));
         buttonExportAll
                 .addClickListener(new com.vaadin.ui.Button.ClickListener() {
                     private static final long serialVersionUID = 1L;
@@ -312,7 +318,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
                 if (buttonSaveDPU != null) {
                     tabname = event.getTabSheet().getSelectedTab().getCaption();
                     if (isChanged() || tabname.equals("configuration")) {
-                        buttonSaveDPU.setEnabled(presenter.hasPermission("save"));
+                        buttonSaveDPU.setEnabled(presenter.hasPermission("dpuTemplate.save"));
                     } else {
                         buttonSaveDPU.setEnabled(false);
                     }
@@ -400,6 +406,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         buttonCopyDPU.setCaption(Messages.getString("DPUViewImpl.copy"));
         buttonCopyDPU.setHeight("25px");
         buttonCopyDPU.setWidth("100px");
+        buttonCopyDPU.setEnabled(presenter.hasPermission("dpuTemplate.copy"));
         buttonCopyDPU.addClickListener(new Button.ClickListener() {
             private static final long serialVersionUID = 1L;
 
@@ -420,7 +427,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         buttonDeleteDPU.setCaption(Messages.getString("DPUViewImpl.delete"));
         buttonDeleteDPU.setHeight("25px");
         buttonDeleteDPU.setWidth("100px");
-        buttonDeleteDPU.setEnabled(presenter.hasPermission("delete"));
+        buttonDeleteDPU.setEnabled(presenter.hasPermission("dpuTemplate.delete"));
         buttonDeleteDPU.addClickListener(new Button.ClickListener() {
             private static final long serialVersionUID = 1L;
 
@@ -454,7 +461,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         buttonExportDPU.setCaption(Messages.getString("DPUViewImpl.export"));
         buttonExportDPU.setHeight("25px");
         buttonExportDPU.setWidth("100px");
-        buttonExportDPU.setEnabled(presenter.hasPermission("export"));
+        buttonExportDPU.setEnabled(presenter.hasPermission("dpuTemplate.export"));
         buttonExportDPU.addClickListener(new Button.ClickListener() {
             private static final long serialVersionUID = 1L;
 
@@ -507,9 +514,9 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
                         selectedDpuWrap.getDPUTemplateRecord().getDescription();
         ShareType selecteDpuVisibility = selectedDpuWrap.getDPUTemplateRecord().getShareType();
         dpuName.setValue(selectedDpuName);
-        dpuName.setReadOnly(!presenter.hasPermission("save"));
+        dpuName.setReadOnly(!presenter.hasPermission("dpuTemplate.save"));
         dpuDescription.setValue(selecteDpuDescription);
-        dpuDescription.setReadOnly(!presenter.hasPermission("save"));
+        dpuDescription.setReadOnly(!presenter.hasPermission("dpuTemplate.save"));
 
         groupVisibility.setValue(selecteDpuVisibility);
         if (selecteDpuVisibility == ShareType.PUBLIC_RO) {
@@ -523,7 +530,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
                 @Override
                 public void valueChange(Property.ValueChangeEvent event) {
-                    buttonSaveDPU.setEnabled(presenter.hasPermission("save"));
+                    buttonSaveDPU.setEnabled(presenter.hasPermission("dpuTemplate.save"));
                 }
             });
         }
@@ -601,7 +608,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
             @Override
             public void textChange(FieldEvents.TextChangeEvent event) {
-                buttonSaveDPU.setEnabled(presenter.hasPermission("save"));
+                buttonSaveDPU.setEnabled(presenter.hasPermission("dpuTemplate.save"));
             }
         });
         dpuSettingsLayout.addComponent(dpuDescription, 1, 1);
@@ -640,7 +647,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         reloadFile.setButtonCaption(Messages.getString("DPUViewImpl.replace"));
         reloadFile.addStyleName("horizontalgroup");
         reloadFile.setHeight("40px");
-        reloadFile.setEnabled(presenter.hasPermission("save"));
+        reloadFile.setEnabled(presenter.hasPermission("dpuTemplate.save"));
         reloadFile.addStartedListener(new Upload.StartedListener() {
             /**
              * Upload start presenter. If selected file has JAR extension then
@@ -803,7 +810,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         //If DPURecord that != null was selected then it's details will be shown.
         if (dpu != null && dpu.getId() != null) {
             // crate new wrap
-            selectedDpuWrap = new DPUTemplateWrap(dpu, runtimePropertiesFacade.getLocale());
+            selectedDpuWrap = new DPUTemplateWrap(dpu, Locale.forLanguageTag(appConfig.getString(ConfigProperty.LOCALE)));
 
             if (dpuDetailLayout != null) {
                 dpuLayout.removeComponent(dpuDetailLayout);

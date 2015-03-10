@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.security.core.GrantedAuthority;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -21,9 +22,21 @@ import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Layout;
+import com.vaadin.ui.NativeButton;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 
 import cz.cuni.mff.xrg.odcs.commons.app.ScheduledJobsPriority;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
@@ -34,7 +47,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.properties.RuntimeProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
 import cz.cuni.mff.xrg.odcs.commons.app.user.NotificationRecordType;
-import cz.cuni.mff.xrg.odcs.commons.app.user.Role;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.commons.app.user.UserNotificationRecord;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.MaxLengthValidator;
@@ -244,6 +256,9 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         notificationsButton.setHeight("40px");
         notificationsButton.setWidth("170px");
         notificationsButton.setStyleName("multiline");
+
+        notificationsButton.setVisible(hasPermission("userNotificationSettings.editNotificationFrequency"));
+
         notificationsButton.addClickListener(new ClickListener() {
             private static final long serialVersionUID = 1L;
 
@@ -268,7 +283,8 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         usersButton.setHeight("40px");
         usersButton.setWidth("170px");
         usersButton.setStyleName("multiline");
-        usersButton.setVisible(loggedUser.getRoles().contains(Role.ROLE_ADMIN));
+        usersButton.setVisible(hasPermission("user.management"));
+
         usersButton.addClickListener(new ClickListener() {
             private static final long serialVersionUID = 1L;
 
@@ -295,7 +311,8 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         pipelinesButton.setHeight("40px");
         pipelinesButton.setWidth("170px");
         pipelinesButton.setStyleName("multiline");
-        pipelinesButton.setVisible(loggedUser.getRoles().contains(Role.ROLE_ADMIN));
+        pipelinesButton.setVisible(hasPermission("deleteDebugResources"));
+
         pipelinesButton.addClickListener(new ClickListener() {
             private static final long serialVersionUID = 1L;
 
@@ -353,7 +370,8 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         runtimePropsButton.setHeight("40px");
         runtimePropsButton.setWidth("170px");
         runtimePropsButton.setStyleName("multiline");
-        runtimePropsButton.setVisible(loggedUser.getRoles().contains(Role.ROLE_ADMIN));
+        runtimePropsButton.setVisible(hasPermission("runtimeProperties.edit"));
+
         runtimePropsButton.addClickListener(new ClickListener() {
             private static final long serialVersionUID = 1L;
 
@@ -656,7 +674,9 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
         HorizontalLayout buttonBarMyAcc = buildButtonMyAccountBar();
 
-        accountLayout.addComponent(emailLayout);
+        if (hasPermission("userNotificationSettings.editEmailGlobal")) {
+            accountLayout.addComponent(emailLayout);
+        }
 
         Label rowsLabel = new Label(Messages.getString("Settings.table.row.count"));
         rows = new TextField();
@@ -684,8 +704,9 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         accountLayout.addComponent(rows);
 
         accountLayout.addComponent(buttonBarMyAcc);
-        accountLayout.addComponent(new Label(Messages.getString("Settings.email.notifications")), 0);
-
+        if (hasPermission("editEmailGlobal")) {
+            accountLayout.addComponent(new Label(Messages.getString("Settings.email.notifications")), 0);
+        }
         return accountLayout;
     }
 
@@ -1016,6 +1037,21 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
         return errorText;
 
+    }
+
+    /**
+     * Check for permission.
+     * 
+     * @param type
+     *            Required permission.
+     * @return If the user has given permission
+     */
+    public boolean hasPermission(String type) {
+        for (GrantedAuthority ga : loggedUser.getAuthorities()) {
+            if (type.equals(ga.getAuthority()))
+                return true;
+        }
+        return false;
     }
 
     @Override
