@@ -5,9 +5,7 @@
 	id="WebApp_ID" version="3.0">
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>
-            /WEB-INF/classes/master-context.xml
-        </param-value>
+		<param-value>classpath:master-context.xml</param-value>
 	</context-param>
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
@@ -16,16 +14,13 @@
 	<servlet>
 		<servlet-name>Master</servlet-name>
 		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
-		<!-- Register resources and providers under com.vogella.jersey.first package. -->
-		<init-param>
-			<param-name>jersey.config.server.provider.packages</param-name>
-			<param-value>eu.unifiedviews.master.api</param-value>
-		</init-param>
         <init-param>
-            <param-name>jersey.config.server.provider.classnames</param-name>
-            <param-value>org.glassfish.jersey.filter.LoggingFilter;org.glassfish.jersey.media.multipart.MultiPartFeature</param-value>
+            <param-name>javax.ws.rs.Application</param-name>
+            <param-value>eu.unifiedvierws.master.application.MasterApplication</param-value>
         </init-param>
+        <load-on-startup>1</load-on-startup>
 	</servlet>
+
 	<servlet-mapping>
 		<servlet-name>Master</servlet-name>
 		<url-pattern>/api/1/*</url-pattern>

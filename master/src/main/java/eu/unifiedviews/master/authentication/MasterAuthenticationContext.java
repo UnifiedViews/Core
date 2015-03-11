@@ -1,4 +1,4 @@
-package eu.unifiedviews.master.converter;
+package eu.unifiedviews.master.authentication;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;

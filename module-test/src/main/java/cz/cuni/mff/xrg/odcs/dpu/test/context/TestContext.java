@@ -278,4 +278,9 @@ public class TestContext implements DPUContext {
     public String getPipelineOwner() {
         return "test_user";
     }
+
+    @Override
+    public String getOrganization() {
+        return "test_organization";
+    }
 }

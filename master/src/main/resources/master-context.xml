@@ -19,8 +19,9 @@
 
 	<import resource="classpath:commons-app-context.xml" />
 
-	<context:component-scan base-package="eu.unifiedviews.master.api, eu.unifiedviews.master.converter"/>
-	    <bean id="moduleFacadeConfiguration" class="cz.cuni.mff.xrg.odcs.commons.app.module.osgi.OSGIModuleFacadeConfig">
+	<context:component-scan base-package="eu.unifiedviews.master.api, eu.unifiedviews.master.authentication"/>
+
+    <bean id="moduleFacadeConfiguration" class="cz.cuni.mff.xrg.odcs.commons.app.module.osgi.OSGIModuleFacadeConfig">
         <constructor-arg ref="configuration"/>
         <constructor-arg value="FRONTEND"/>
     </bean>

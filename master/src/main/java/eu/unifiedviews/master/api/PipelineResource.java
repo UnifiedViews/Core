@@ -23,6 +23,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportService;
 import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import eu.unifiedviews.master.converter.ConvertUtils;
+import eu.unifiedviews.master.authentication.AuthenticationRequired;
 import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
@@ -40,6 +41,7 @@ import eu.unifiedviews.master.model.PipelineDTO;
 
 @Component
 @Path("/pipelines")
+@AuthenticationRequired
 public class PipelineResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(PipelineResource.class);

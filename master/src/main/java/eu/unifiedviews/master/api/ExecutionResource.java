@@ -1,8 +1,24 @@
 package eu.unifiedviews.master.api;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
+import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import eu.unifiedviews.master.authentication.AuthenticationRequired;
+import eu.unifiedviews.master.converter.PipelineExecutionDTOConverter;
+import eu.unifiedviews.master.converter.PipelineExecutionEventDTOConverter;
+import eu.unifiedviews.master.model.ApiException;
+import eu.unifiedviews.master.model.PipelineExecutionDTO;
+import eu.unifiedviews.master.model.PipelineExecutionEventDTO;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -12,29 +28,13 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
-import cz.cuni.mff.xrg.odcs.commons.app.user.User;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
-import eu.unifiedviews.master.converter.PipelineExecutionDTOConverter;
-import eu.unifiedviews.master.converter.PipelineExecutionEventDTOConverter;
-import eu.unifiedviews.master.model.ApiException;
-import eu.unifiedviews.master.model.PipelineExecutionDTO;
-import eu.unifiedviews.master.model.PipelineExecutionEventDTO;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 @Component
 @Path("/pipelines")
+@AuthenticationRequired
 public class ExecutionResource {
     @Autowired
     private PipelineFacade pipelineFacade;

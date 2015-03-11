@@ -7,7 +7,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUCreateException;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUModuleManipulator;
 import cz.cuni.mff.xrg.odcs.commons.app.module.DPUReplaceException;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import eu.unifiedviews.master.authentication.AuthenticationRequired;
 import eu.unifiedviews.master.converter.ConvertUtils;
 import eu.unifiedviews.master.model.ApiException;
 import org.apache.commons.lang3.StringUtils;
@@ -28,12 +28,12 @@ import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
 @Path("/import")
+@AuthenticationRequired
 public class DPUResource {
 
     @Autowired

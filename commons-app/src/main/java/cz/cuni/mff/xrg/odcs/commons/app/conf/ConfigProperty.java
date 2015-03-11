@@ -77,8 +77,11 @@ public enum ConfigProperty {
     CAS_LOGIN_URL("cas.login.url"),
     CAS_LOGOUT_URL("cas.logout.url"),
     
-    OWNERSHIP_TYPE("ownership.type");
-    
+    OWNERSHIP_TYPE("ownership.type"),
+
+    MASTER_API_USER("master.api.user"),
+    MASTER_API_PASSWORD("master.api.password");
+
     private final String property;
 
     public final String springValue;

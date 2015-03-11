@@ -19,6 +19,7 @@ import javax.ws.rs.core.Response;
 
 import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import eu.unifiedviews.master.authentication.AuthenticationRequired;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -36,6 +37,7 @@ import eu.unifiedviews.master.model.ScheduledExecutionDTO;
 
 @Component
 @Path("/pipelines")
+@AuthenticationRequired
 public class ScheduleResource {
     @Autowired
     private PipelineFacade pipelineFacade;
