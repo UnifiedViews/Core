@@ -186,42 +186,6 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         });
         buttonBar.addComponent(buttonCreateDPU);
 
-        Button buttonImportDPU = new Button();
-        buttonImportDPU.setVisible(false);
-        buttonImportDPU.setCaption(Messages.getString("DPUViewImpl.import.template"));
-        buttonImportDPU.setHeight("25px");
-        buttonImportDPU.setWidth("150px");
-        buttonImportDPU.addStyleName("v-button-primary");
-        buttonImportDPU.setEnabled(false);
-        buttonImportDPU.setVisible(utils.hasUserAuthority("dpuTemplate.import"));
-        buttonImportDPU.addClickListener(new Button.ClickListener() {
-
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                presenter.importDPUTemplateEventHandler();
-            }
-        });
-        buttonBar.addComponent(buttonImportDPU);
-
-        Button buttonExportAll = new Button();
-        buttonExportAll.setVisible(false);
-        buttonExportAll.setCaption(Messages.getString("DPUViewImpl.export.all"));
-        buttonExportAll.setHeight("25px");
-        buttonExportAll.setWidth("150px");
-        buttonExportAll.addStyleName("v-button-primary");
-        buttonExportAll.setEnabled(false);
-        buttonExportAll.setVisible(utils.hasUserAuthority("dpuTemplate.export"));
-        buttonExportAll
-                .addClickListener(new com.vaadin.ui.Button.ClickListener() {
-                    private static final long serialVersionUID = 1L;
-
-                    @Override
-                    public void buttonClick(Button.ClickEvent event) {
-                        presenter.exportAllEventHandler();
-                    }
-                });
-        buttonBar.addComponent(buttonExportAll);
-
         mainLayout.addComponent(buttonBar);
         mainLayout.setExpandRatio(buttonBar, 0.0f);
 
