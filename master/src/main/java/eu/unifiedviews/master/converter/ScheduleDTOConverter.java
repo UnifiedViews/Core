@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import cz.cuni.mff.xrg.odcs.commons.app.ScheduledJobsPriority;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.PeriodUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
@@ -24,10 +25,21 @@ public class ScheduleDTOConverter {
             Date nextExecution = schedule.getNextExecutionTimeInfo();
             dto.setNextExecution(ConvertUtils.dateToString(nextExecution));
             dto.setPeriod(schedule.getPeriod());
+            dto.setScheduledJobsPriority(schedule.getPriority());
             if (schedule.getPeriodUnit() != null) {
                 dto.setPeriodUnit(schedule.getPeriodUnit().toString());
             } else {
                 dto.setPeriodUnit(null);
+            }
+            if(schedule.getOwner() != null) {
+                dto.setUserExternalId(schedule.getOwner().getExternalIdentifier());
+            } else {
+                dto.setUserExternalId(null);
+            }
+            if(schedule.getOrganization() != null) {
+                dto.setOrganizationExternalId(schedule.getOrganization().getName());
+            } else {
+                dto.setOrganizationExternalId(null);
             }
             dto.setScheduleType(schedule.getType());
             Set<Pipeline> pipelines = schedule.getAfterPipelines();

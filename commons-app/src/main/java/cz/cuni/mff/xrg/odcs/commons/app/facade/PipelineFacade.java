@@ -54,12 +54,12 @@ public interface PipelineFacade extends Facade {
     /**
      * Returns list of all pipelines persisted in the database for given organization.
      *
-     * @param organizationName of pipeline
+     * @param organizationExternalId of pipeline
      * @return list of pipelines
      * @deprecated performance intensive for many pipelines in DB, use lazy
      *             container with paging instead
      */
-    List<Pipeline> getAllPipelines(String organizationName);
+    List<Pipeline> getAllPipelines(Long organizationExternalId);
 
     /**
      * Find pipeline in database by ID and return it.

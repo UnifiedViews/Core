@@ -15,6 +15,16 @@ public class PipelineDTOConverter {
             dto.setId(pipeline.getId());
             dto.setName(pipeline.getName());
             dto.setDescription(pipeline.getDescription());
+            if(pipeline.getOwner() != null) {
+                dto.setUserExternalId(pipeline.getOwner().getExternalIdentifier());
+            } else {
+                dto.setUserExternalId(null);
+            }
+            if(pipeline.getOrganization() != null) {
+                dto.setOrganizationExternalId(pipeline.getOrganization().getName());
+            } else {
+                dto.setOrganizationExternalId(null);
+            }
         }
         return dto;
     }

@@ -13,6 +13,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -176,18 +178,27 @@ public class ExecutionResource {
             throw new ApiException(Response.Status.NOT_FOUND, String.format("ID=%s is not valid pipeline ID", pipelineId));
         }
         try {
+            // try to get pipeline
             Pipeline pipeline = pipelineFacade.getPipeline(Long.parseLong(pipelineId));
             if (pipeline == null) {
                 throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline with id=%s doesn't exist!", pipelineId));
             }
-
+            // try to get user
+            User user =  userFacade.getUserByExtId(newExecution.getUserExternalId());
+            if(user == null) {
+                throw new ApiException(Response.Status.NOT_FOUND, String.format("User '%s' could not be found! Schedule could not be created.", newExecution.getUserExternalId()));
+            }
+            // try to get organization
+            Organization organization = userFacade.getOrganizationByName(newExecution.getOrganizationExternalId());
+            if(organization == null) {
+                throw new ApiException(Response.Status.NOT_FOUND, String.format("Organization '%s' could not be found! Schedule could not be created.", newExecution.getOrganizationExternalId()));
+            }
             execution = pipelineFacade.createExecution(pipeline);
-            execution.setOwner(userFacade.getUser(1L));
-
+            execution.setOwner(user);
+            execution.setOrganization(organization);
             execution.setDebugging(newExecution.isDebugging());
             execution.setOrderNumber(1L);
 //            PipelineExecutionDTOConverter.createPipelineExecution(newExecution, pipeline);
-
             pipelineFacade.save(execution);
         } catch (ApiException ex) {
             throw ex;

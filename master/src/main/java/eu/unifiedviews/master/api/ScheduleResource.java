@@ -17,11 +17,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import cz.cuni.mff.xrg.odcs.commons.app.user.Organization;
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
@@ -41,9 +42,6 @@ public class ScheduleResource {
 
     @Autowired
     private ScheduleFacade scheduleFacade;
-
-    @Autowired
-    private DPUFacade dpuFacade;
 
     @Autowired
     private UserFacade userFacade;
@@ -236,16 +234,29 @@ public class ScheduleResource {
             throw new ApiException(Response.Status.NOT_FOUND, String.format("ID=%s is not valid pipeline ID", pipelineId));
         }
         try {
+            // try to get pipeline
             Pipeline pipeline = pipelineFacade.getPipeline(Long.parseLong(pipelineId));
             if (pipeline == null) {
                 throw new ApiException(Response.Status.NOT_FOUND, String.format("Pipeline with id=%s doesn't exist!", pipelineId));
+            }
+            // try to get user
+            User user =  userFacade.getUserByExtId(scheduleToUpdate.getUserExternalId());
+            if(user == null) {
+                throw new ApiException(Response.Status.NOT_FOUND, String.format("User '%s' could not be found! Schedule could not be created.", scheduleToUpdate.getUserExternalId()));
+            }
+            // try to get organization
+            Organization organization = userFacade.getOrganizationByName(scheduleToUpdate.getOrganizationExternalId());
+            if(organization == null) {
+                throw new ApiException(Response.Status.NOT_FOUND, String.format("Organization '%s' could not be found! Schedule could not be created.", scheduleToUpdate.getOrganizationExternalId()));
             }
             Schedule schedule = scheduleFacade.createSchedule();
             if (schedule == null) {
                 throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, "ScheduleFacade returned null!");
             }
-            schedule.setOwner(userFacade.getUser(1L));
             schedule.setPipeline(pipeline);
+            schedule.setType(scheduleToUpdate.getScheduleType());
+            schedule.setOwner(user);
+            schedule.setOrganization(organization);
             List<Pipeline> afterPipelines = null;
             if (scheduleToUpdate.getAfterPipelines() != null) {
                 afterPipelines = new ArrayList<Pipeline>();
@@ -258,6 +269,7 @@ public class ScheduleResource {
                     }
                 }
             }
+            schedule.setPriority(scheduleToUpdate.getScheduledJobsPriority());
             ScheduleDTOConverter.convertFromDTO(scheduleToUpdate, afterPipelines, schedule);
             scheduleFacade.save(schedule);
             return ScheduleDTOConverter.convertToDTO(schedule);

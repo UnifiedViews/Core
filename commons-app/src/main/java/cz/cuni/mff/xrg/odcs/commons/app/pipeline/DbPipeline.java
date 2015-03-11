@@ -26,7 +26,7 @@ public interface DbPipeline extends DbAccess<Pipeline> {
      * @deprecated performance intensive for many pipelines
      */
     @Deprecated
-    public List<Pipeline> getPipelinesForOrganization(String orgName);
+    public List<Pipeline> getPipelinesForOrganization(Long organizationExternalId);
 
     /**
      * Fetches all pipelines using given DPU template.
