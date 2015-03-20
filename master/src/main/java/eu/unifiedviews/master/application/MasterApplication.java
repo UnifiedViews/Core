@@ -1,4 +1,4 @@
-package eu.unifiedvierws.master.application;
+package eu.unifiedviews.master.application;
 
 import eu.unifiedviews.master.authentication.BasicAuthenticationFeature;
 import org.glassfish.jersey.filter.LoggingFilter;
