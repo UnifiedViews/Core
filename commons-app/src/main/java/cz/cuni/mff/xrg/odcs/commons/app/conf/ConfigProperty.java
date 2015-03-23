@@ -80,8 +80,10 @@ public enum ConfigProperty {
     OWNERSHIP_TYPE("ownership.type"),
 
     MASTER_API_USER("master.api.user"),
-    MASTER_API_PASSWORD("master.api.password");
+    MASTER_API_PASSWORD("master.api.password"),
 
+    ADMIN_PERMISSION("admin.permission");
+    
     private final String property;
 
     public final String springValue;

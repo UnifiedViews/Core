@@ -18,7 +18,7 @@ INSERT INTO `role` VALUES (NULL,'MOD-R-PO');
 INSERT INTO `role` VALUES (NULL,'MOD-R-TRANSA'); 
 
 -- INSERT INTO `permission` VALUES (nextval('seq_permission'), 'pipeline.definePipelineDependencies');
-INSERT INTO `permission` VALUES (NULL, 'spravca.transformacii', false);
+INSERT INTO `permission` VALUES (NULL, 'administrator', false);
 INSERT INTO `user_role_permission` values((select id from `role` where name='MOD-R-TRANSA'), (SELECT max(id) FROM  `permission`));
 INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (SELECT max(id) FROM  `permission`));
 INSERT INTO `permission` VALUES (NULL, 'pipeline.delete', true);

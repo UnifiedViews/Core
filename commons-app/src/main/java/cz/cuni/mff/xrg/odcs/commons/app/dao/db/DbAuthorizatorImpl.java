@@ -30,8 +30,6 @@ import eu.unifiedviews.commons.dao.view.PipelineView;
  */
 class DbAuthorizatorImpl implements DbAuthorizator {
 
-    private static final String CAN_SEE_ALL = "spravca.transformacii";
-
     @Autowired(required = false)
     private AuthenticationContext authCtx;
 
@@ -50,8 +48,10 @@ class DbAuthorizatorImpl implements DbAuthorizator {
             return null;
         }
 
+        String adminPermission = appConfig.getString(ConfigProperty.ADMIN_PERMISSION);
+        
         for (GrantedAuthority ga : authCtx.getUser().getAuthorities()) {
-            if (CAN_SEE_ALL.equals(ga.getAuthority()))
+            if (adminPermission.equals(ga.getAuthority()))
                 return null;
         }
 

@@ -30,8 +30,6 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
 
     private final static Logger LOG = LoggerFactory.getLogger(DefaultPermissionEvaluator.class);
 
-    private static final String CAN_SEE_ALL = "spravca.transformacii";
-
     /**
      * Application's configuration.
      */
@@ -61,7 +59,10 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
         Permission foundPermission = null;
 
         for (GrantedAuthority ga : auth.getAuthorities()) {
-            if (ga.getAuthority().equals(CAN_SEE_ALL)) {
+            
+            String adminPermission = appConfig.getString(ConfigProperty.ADMIN_PERMISSION);
+            
+            if (ga.getAuthority().equals(adminPermission)) {
                 return true;
             }
             if (ga.getAuthority().equals(perm.toString())) {

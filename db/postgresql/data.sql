@@ -11,7 +11,7 @@ INSERT INTO "sch_email" VALUES (nextval('seq_sch_email'),'admin@example.com'),(n
 INSERT INTO "role" VALUES (nextval('seq_role'), 'Administrator'),(nextval('seq_role'),'User'),(nextval('seq_role'),'MOD-R-PO'),(nextval('seq_role'),'MOD-R-TRANSA'); 
 
 --INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.definePipelineDependencies');
-INSERT INTO "permission" VALUES (nextval('seq_permission'), 'spravca.transformacii', false);
+INSERT INTO "permission" VALUES (nextval('seq_permission'), 'administrator', false);
 INSERT INTO "user_role_permission" values((select id from "role" where name='MOD-R-TRANSA'), currval('seq_permission'));
 INSERT INTO "user_role_permission" values((select id from "role" where name='Administrator'), currval('seq_permission'));
 INSERT INTO "permission" VALUES (nextval('seq_permission'), 'pipeline.delete', true);

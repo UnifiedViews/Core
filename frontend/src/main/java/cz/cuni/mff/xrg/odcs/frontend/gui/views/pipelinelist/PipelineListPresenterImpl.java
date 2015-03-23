@@ -22,6 +22,8 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbPipeline;
@@ -105,6 +107,12 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
 
     private Date lastLoad = new Date(0L);
 
+    /**
+     * Application's configuration.
+     */
+    @Autowired
+    protected AppConfig appConfig;
+    
     /**
      * Evaluates permissions of currently logged in user.
      */
@@ -251,7 +259,8 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
     @Override
     public boolean canDeletePipeline(long pipelineId) {
         Pipeline pipeline = getLightPipeline(pipelineId);
-        boolean isAdmin = permissions.hasPermission(pipeline, "spravca.transformacii");
+        String adminPermission = appConfig.getString(ConfigProperty.ADMIN_PERMISSION);
+        boolean isAdmin = permissions.hasPermission(pipeline, adminPermission);
         boolean canDelete = permissions.hasPermission(pipeline, "pipeline.delete");
         return isAdmin || canDelete;
     }

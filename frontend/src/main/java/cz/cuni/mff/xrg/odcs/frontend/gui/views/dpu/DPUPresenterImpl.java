@@ -21,6 +21,8 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthAwarePermissionEvaluator;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
@@ -65,6 +67,12 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
     @Autowired
     private DPUModuleManipulator dpuManipulator;
 
+    /**
+     * Application's configuration.
+     */
+    @Autowired
+    protected AppConfig appConfig;
+    
     /**
      * Evaluates permissions of currently logged in user.
      */
@@ -416,7 +424,10 @@ public class DPUPresenterImpl implements DPUPresenter, PostLogoutCleaner {
     @Override
     public boolean showPipelineDeleteButton(long pipelineId) {
         Pipeline pipe = getPipeline(pipelineId);
-        boolean isAdmin = permissions.hasPermission(pipe, "spravca.transformacii");
+        
+        String adminPermission = appConfig.getString(ConfigProperty.ADMIN_PERMISSION);
+        
+        boolean isAdmin = permissions.hasPermission(pipe, adminPermission);
         boolean canDelete = permissions.hasPermission(pipe, "pipeline.delete");
         return isAdmin || canDelete;
     }
