@@ -54,6 +54,7 @@ class UserFacadeImpl implements UserFacade {
 
         User user = new User();
         user.setUsername(username);
+        user.setExternalIdentifier(username);
         user.setPassword(plainPassword);
         user.setEmail(email);
 
