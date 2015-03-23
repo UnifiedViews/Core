@@ -17,7 +17,7 @@ INSERT INTO `role` VALUES (NULL,'User');
 INSERT INTO `role` VALUES (NULL,'MOD-R-PO');
 INSERT INTO `role` VALUES (NULL,'MOD-R-TRANSA'); 
 
---INSERT INTO `permission` VALUES (nextval('seq_permission'), 'pipeline.definePipelineDependencies');
+-- INSERT INTO `permission` VALUES (nextval('seq_permission'), 'pipeline.definePipelineDependencies');
 INSERT INTO `permission` VALUES (NULL, 'spravca.transformacii', false);
 INSERT INTO `user_role_permission` values((select id from `role` where name='MOD-R-TRANSA'), (SELECT max(id) FROM  `permission`));
 INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (SELECT max(id) FROM  `permission`));
@@ -146,13 +146,13 @@ INSERT INTO `user_role_permission` values((select id from `role` where name='MOD
 INSERT INTO `user_role_permission` values((select id from `role` where name='MOD-R-TRANSA'), (SELECT max(id) FROM  `permission`));
 INSERT INTO `permission` VALUES (NULL, 'dpuTemplate.create', false);
 INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (SELECT max(id) FROM  `permission`));
---INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM  `permission`));
---INSERT INTO `user_role_permission` values((select id from `role` where name='MOD-R-PO'), (SELECT max(id) FROM  `permission`));
+-- INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM  `permission`));
+-- INSERT INTO `user_role_permission` values((select id from `role` where name='MOD-R-PO'), (SELECT max(id) FROM  `permission`));
 INSERT INTO `user_role_permission` values((select id from `role` where name='MOD-R-TRANSA'), (SELECT max(id) FROM  `permission`));
 INSERT INTO `permission` VALUES (NULL, 'dpuTemplate.save', true);
 INSERT INTO `user_role_permission` values((select id from `role` where name='Administrator'), (SELECT max(id) FROM  `permission`));
---INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM  `permission`));
---INSERT INTO `user_role_permission` values((select id from `role` where name='MOD-R-PO'), (SELECT max(id) FROM  `permission`));
+-- INSERT INTO `user_role_permission` values((select id from `role` where name='User'), (SELECT max(id) FROM  `permission`));
+-- INSERT INTO `user_role_permission` values((select id from `role` where name='MOD-R-PO'), (SELECT max(id) FROM  `permission`));
 INSERT INTO `user_role_permission` values((select id from `role` where name='MOD-R-TRANSA'), (SELECT max(id) FROM  `permission`));
 INSERT INTO `permission` VALUES (NULL, 'dpuTemplate.setVisibilityAtCreate', false);
 INSERT INTO `permission` VALUES (NULL, 'dpuTemplate.delete', true);
