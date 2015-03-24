@@ -150,6 +150,17 @@ public class DefaultPermissionEvaluator implements AuthAwarePermissionEvaluator 
             }
         }
 
+        if (target instanceof Pipeline) {
+            Pipeline pipelineTarget = (Pipeline) target;
+            if (foundPermission != null) {
+                if (foundPermission.isRwOnly() && !ShareType.PUBLIC_RW.equals(pipelineTarget.getShareType())) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        }
+        
         if (target instanceof DPUTemplateRecord) {
             DPUTemplateRecord dpuTarget = (DPUTemplateRecord) target;
             if (foundPermission != null) {

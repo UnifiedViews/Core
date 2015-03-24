@@ -232,6 +232,9 @@ public class PipelineEdit extends ViewComponent {
     @Autowired
     private ExportService exportService;
 
+    @Autowired
+    private Utils utils;
+    
     /**
      * Empty constructor.
      */
@@ -942,7 +945,7 @@ public class PipelineEdit extends ViewComponent {
             }
         });
 
-        if (!"organization".equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE))) {
+        if ("user".equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE)) || utils.hasUserAuthority(appConfig.getString(ConfigProperty.ADMIN_PERMISSION))) {
             pipelineSettingsLayout.addComponent(pipelineVisibility, 1, 2);
         }
         pipelineSettingsLayout.addComponent(new Label(Messages.getString("PipelineEdit.created.by")), 0, 3);
@@ -1189,7 +1192,18 @@ public class PipelineEdit extends ViewComponent {
 
         final boolean doCleanup = pipelineCanvas.saveGraph(pipeline);
 
-        final ShareType visibility = (ShareType) pipelineVisibility.getValue();
+        final ShareType visibility;
+        
+        if ("organization".equals(appConfig.getString(ConfigProperty.OWNERSHIP_TYPE)) && !utils.hasUserAuthority(appConfig.getString(ConfigProperty.ADMIN_PERMISSION))) {
+            if(utils.hasUserAuthority(appConfig.getString(ConfigProperty.ADMIN_PERMISSION))){
+                    visibility = ShareType.PUBLIC_RO;
+            }else{
+                visibility = ShareType.PRIVATE;
+            }
+        }else{
+            visibility = (ShareType) pipelineVisibility.getValue();
+        }
+        
         if (!pipelineFacade.isUpToDate(pipeline)) {
             ConfirmDialog.show(UI.getCurrent(),
                     Messages.getString("PipelineEdit.pipeline.overwrite"), Messages.getString("PipelineEdit.pipeline.overwrite.description"), Messages.getString("PipelineEdit.pipeline.overwrite.saveAnyway"), Messages.getString("PipelineEdit.pipeline.overwrite.cancel"), new ConfirmDialog.Listener() {

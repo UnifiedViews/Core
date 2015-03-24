@@ -112,6 +112,8 @@ class DbAuthorizatorImpl implements DbAuthorizator {
                 predicate = or(cb, predicate, cb.equal(root.get("orgName"), org.getName()));
             else
                 predicate = or(cb, predicate, cb.equal(root.get("usrName"), authCtx.getUser().getUsername()));
+            
+            predicate = or(cb, predicate, cb.equal(root.get("shareType"), ShareType.PUBLIC_RO));
 
             return predicate;
         }
