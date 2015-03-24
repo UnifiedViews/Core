@@ -22,7 +22,8 @@ public class CasAuthenticationUserDetailsService extends
     private static final Logger LOG = LoggerFactory
             .getLogger(CasAuthenticationUserDetailsService.class);
 
-    private String orgAttributeName = "SubjectID";
+    private String orgAttributeName = "Subject.UPVSIdentityID";
+
 
     private String roleAttributeName = "SPR.Roles";
 
