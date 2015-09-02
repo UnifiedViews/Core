@@ -104,6 +104,7 @@ public class LogTable extends CustomComponent {
     public LogTable(DbCachedSource<Log> dataSouce, LogFacade logFacade, int pageLenght, int iconHeight) {
         this.dataSouce = dataSouce;
         this.container = new ReadOnlyContainer<>(dataSouce);
+        container.sort(new Object[] { "id" }, new boolean[] { false });
         this.logFacade = logFacade;
         this.iconHeight = iconHeight;
 
@@ -116,14 +117,12 @@ public class LogTable extends CustomComponent {
      */
     private void buildLayout(int pageLenght) {
         mainLayout = new VerticalLayout();
-
         table = new IntlibPagedTable();
         table.setSelectable(true);
         table.setImmediate(true);
         table.setSizeFull();
         table.setColumnCollapsingAllowed(true);
-        this.table.setNullSelectionAllowed(false);
-
+        table.setNullSelectionAllowed(false);
         table.addItemClickListener(new ItemClickEvent.ItemClickListener() {
             @Override
             public void itemClick(ItemClickEvent event) {
@@ -350,8 +349,8 @@ public class LogTable extends CustomComponent {
         // set container to the table -- we may possibly re-set this
         // but that does not do anything bad
         table.setContainerDataSource(this.container);
-        // move to the last page
-        table.setCurrentPage(table.getTotalAmountOfPages());
+        // move to the first page
+        table.setCurrentPage(1);
         // set DPU
         setDpu(dpuInstance);
     }
@@ -367,11 +366,10 @@ public class LogTable extends CustomComponent {
         if (!isRunning(execution)) {
             refreshDpuSelector();
         }
-        int lastPage = table.getTotalAmountOfPages();
-        if (table.getCurrentPage() == lastPage) {
+        if (table.getCurrentPage() == 1) {
             container.refresh();
         } else {
-            table.setCurrentPage(lastPage);
+            table.setCurrentPage(1);
         }
         return true;
     }
