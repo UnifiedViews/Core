@@ -80,6 +80,7 @@ public class RecordsTable extends CustomComponent {
     public RecordsTable(DbCachedSource<MessageRecord> dataSouce, int pageLenght, int iconHeight) {
         this.dataSouce = dataSouce;
         this.container = new ReadOnlyContainer<>(dataSouce);
+        this.container.sort(new Object[] { "id" }, new boolean[] { false });
         this.iconHeight = iconHeight;
         //build layout
         buildLayout(pageLenght);
@@ -138,13 +139,13 @@ public class RecordsTable extends CustomComponent {
 
         if (isInitialized) {
             // all has been done .. just set the page to the
-            // end and return
-            messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
+            // begin and return
+            messageTable.setCurrentPage(1);
         } else {
             // add generated columns
             buildGeneratedColumns();
             isInitialized = true;
-            messageTable.setCurrentPage(messageTable.getTotalAmountOfPages());
+            messageTable.setCurrentPage(1);
         }
     }
 
@@ -213,11 +214,10 @@ public class RecordsTable extends CustomComponent {
      * Reload data from source, do not refresh the source it self!!
      */
     public void refresh() {
-        int lastPage = messageTable.getTotalAmountOfPages();
-        if (messageTable.getCurrentPage() == lastPage) {
+        if (messageTable.getCurrentPage() == 1) {
             container.refresh();
         } else {
-            messageTable.setCurrentPage(lastPage);
+            messageTable.setCurrentPage(1);
         }
     }
 
