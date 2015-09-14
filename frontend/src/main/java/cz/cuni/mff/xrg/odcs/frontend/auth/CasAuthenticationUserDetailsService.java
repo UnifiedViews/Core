@@ -63,14 +63,15 @@ public class CasAuthenticationUserDetailsService extends
     @Override
     protected UserDetails loadUserDetails(final Assertion assertion) {
 
-        String username = assertion.getPrincipal().getName();
+        String userName = assertion.getPrincipal().getName();
         Map<String, Object> attributes = assertion.getPrincipal().getAttributes();
         // FIXME: this is temporal solution; In the future, subject Id should be sent by CAS in username
         // Currently Actor ID is sent in username CAS parameter
         String userNameFromAttributes = attributes.get(this.userNameAttributeName) != null ? attributes.get(this.userNameAttributeName).toString() : null;
         if (userNameFromAttributes != null) {
-            username = userNameFromAttributes;
+            userName = userNameFromAttributes;
         }
+        String userFullName = attributes.get(this.fullNameAttributeName) != null ? attributes.get(this.fullNameAttributeName).toString() : null;
 
         List<String> roles = new ArrayList<>();
         Object roleAttributes = attributes.get(roleAttributeName);
@@ -80,46 +81,10 @@ public class CasAuthenticationUserDetailsService extends
             else if (roleAttributes instanceof List)
                 roles.addAll((List) roleAttributes);
         }
-
-        User user = userFacade.getUserByExtId(username);
-
-        if (user == null) {
-            user = userFacade.createUser(username, "*****", new EmailAddress(username + "@nomail.com"));
-            String userFullName = attributes.get(this.fullNameAttributeName) != null ? attributes.get(this.fullNameAttributeName).toString() : null;
-            if (userFullName != null) {
-                user.setFullName(userFullName);
-            } else {
-                user.setFullName(username);
-            }
-            user.setExternalIdentifier(username);
-            user.setTableRows(20);
-            this.userFacade.saveNoAuth(user);
-        }
-
-        user.getRoles().clear();
-
-        for (String rolename : roles) {
-            if (rolename != null) {
-                RoleEntity role = this.userFacade.getRoleByName(rolename);
-                if (role != null) {
-                    user.addRole(role);
-                }
-            }
-        }
-
         String actorId = attributes.get(this.actorIdAttributeName) != null ? attributes.get(this.actorIdAttributeName).toString() : null;
-        if (actorId != null) {
-            UserActor actor = this.userFacade.getUserActorByExternalId(actorId);
-            if (actor == null) {
-                actor = new UserActor();
-                String actorName = attributes.get(this.actorNameAttributeName).toString();
-                actor.setName(actorName);
-                actor.setExternalId(actorId);
-                this.userFacade.save(actor);
-            }
-            user.setUserActor(actor);
-        }
+        String actorName = attributes.get(this.actorNameAttributeName) != null ? attributes.get(this.actorNameAttributeName).toString() : null;
 
+        User user = userFacade.createOrUpdateUser(userName, userFullName, actorId, actorName, roles);
         return user;
     }
 

@@ -16,21 +16,21 @@
  */
 package cz.cuni.mff.xrg.odcs.commons.app.module;
 
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUExplorer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUType;
@@ -39,8 +39,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.i18n.Messages;
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.dpu.config.DPUConfigurable;
-
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
  * Class provide one-place access to create/update/delete actions for DPUs. It
@@ -109,13 +107,20 @@ public class DPUModuleManipulator {
             throw new DPUCreateException(Messages.getString("DPUModuleManipulator.dpu.not.found") + sourceFile.getName());
         }
 
+        final String dpuDir = moduleFacade.getDPUDirectory();
         // get directory name and also validate the DPU's file name
         final String newDpuFileName = sourceFile.getName();
-        final String newDpuDirName = getDirectoryName(newDpuFileName);
+        String newDpuDirName = null;
+        try {
+            newDpuDirName = DPUJarUtils.parseNameFromJarName(newDpuFileName);
+        } catch (DPUJarNameFormatException e) {
+            throw new DPUCreateException(Messages.getString("DPUModuleManipulator.dpu.name.format.fail"), e);
+        }
+        
         // prepare directory secure that this method
         // will not continue for same jar-file twice .. use synchronisation
         // over file system.
-        File newDPUDir = new File(moduleFacade.getDPUDirectory(), newDpuDirName);
+        final File newDPUDir = new File(dpuDir, newDpuDirName);
         final File newDPUFile = new File(newDPUDir, newDpuFileName);
 
         DPUTemplateRecord parent = null;
@@ -178,15 +183,6 @@ public class DPUModuleManipulator {
         dpuName = dpuExplorer.getBundleName(newTemplate);
         dpuMenuName = dpuName;
         
-        if (dpuName == null || (parent != null && parent.getName().equals(dpuName))) { // the same jarFileName and name
-            throw new DPUCreateException(Messages.getString("DPUModuleManipulator.dpu.already.exists", dpuName, newDpuFileName));
-        }
-
-        DPUTemplateRecord dpuWithSameName = dpuFacade.getByName(dpuName);
-        if (dpuWithSameName != null && newDpuFileName.equals(dpuWithSameName.getJarName())) {
-            throw new DPUCreateException(Messages.getString("DPUModuleManipulator.dpu.name.already.exists", newDpuFileName, dpuName));
-        }
-
         if(isNotEmpty(name)) {
             dpuName  = name;
             dpuMenuName = name;
@@ -202,7 +198,14 @@ public class DPUModuleManipulator {
             }
         }
 
-
+        if (dpuName == null || (parent != null && parent.getName().equals(dpuName))) { // the same jarFileName and name
+            release(newDPUFile, newDPUDir, newTemplate, Messages.getString("DPUModuleManipulator.dpu.already.exists", dpuName, newDpuFileName), isChild);
+        }
+        
+        DPUTemplateRecord dpuWithSameName = dpuFacade.getByDirectoryAndName(newDpuDirName, dpuName);
+        if (dpuWithSameName != null && newDpuFileName.equals(dpuWithSameName.getJarName())) {
+            release(newDPUFile, newDPUDir, newTemplate, Messages.getString("DPUModuleManipulator.dpu.name.already.exists", newDpuFileName, dpuName), isChild);
+        }
 
         // check type ..
         final DPUType dpuType = dpuExplorer.getType(dpuObject, dpuRelativePath);
@@ -255,6 +258,10 @@ public class DPUModuleManipulator {
         // return new DPUTempateRecord
         return newTemplate;
     }
+    
+    public int compareVersions(String oldDpuJarName, String newDpuJarName) throws DPUJarNameFormatException {
+        return DPUJarUtils.compareJarVersionsFromJarName(oldDpuJarName, newDpuJarName);
+    }
 
     /**
      * Cleaning up after failed dpu creation
@@ -303,8 +310,8 @@ public class DPUModuleManipulator {
         final String directoryName = dpu.getJarDirectory();
         // validate input DPU's name
         try {
-            getDirectoryName(sourceDpuFile.getName());
-        } catch (DPUCreateException e) {
+            DPUJarUtils.parseNameFromJarName(sourceDpuFile.getName());
+        } catch (DPUJarNameFormatException e) {
             throw new DPUReplaceException(e.getMessage());
         }
         // prepare the paths for new DPU
@@ -497,30 +504,6 @@ public class DPUModuleManipulator {
         } else {
             // failed
             throw new DPUCreateException(Messages.getString("DPUModuleManipulator.dpu.dir.create.fail", newDpuDir.getName()));
-        }
-    }
-
-    /**
-     * Validate the sourcePath. If the sourcePath is in right format then return
-     * the name for DPU's directory otherwise throws exception.
-     * 
-     * @param sourceFileName
-     *            Name of DPU's jar file.
-     * @return directory for DPU
-     * @throws DPUCreateException
-     */
-    protected static String getDirectoryName(String sourceFileName)
-            throws DPUCreateException {
-        // the name must be in format: NAME-.*.jar
-        final Pattern pattern = Pattern
-                .compile("(.+)-(\\d(\\.\\d+)+).*\\.jar");
-        final Matcher matcher = pattern.matcher(sourceFileName);
-        if (matcher.matches()) {
-            // 0 - original, 1 - name, 2 - version
-            return matcher.group(1);
-        } else {
-            throw new DPUCreateException(
-                    Messages.getString("DPUModuleManipulator.dpu.name.format.fail"));
         }
     }
 

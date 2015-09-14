@@ -41,6 +41,18 @@ public interface UserFacade extends Facade {
     User createUser(String username, String password, EmailAddress email);
 
     /**
+     * Creates or updates user info, depending if user with 'username' already exists.
+     *
+     * @param userName
+     * @param fullUserName
+     * @param actorId
+     * @param actorName
+     * @param roles
+     * @return new or updated user instance
+     */
+    User createOrUpdateUser(String userName, String fullUserName, String actorId, String actorName, List<String> roles);
+
+    /**
      * @return list of all users persisted in database
      */
     List<User> getAllUsers();

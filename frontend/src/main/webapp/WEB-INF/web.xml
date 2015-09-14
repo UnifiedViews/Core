@@ -30,6 +30,17 @@
 		<!-- To allow session-scoped beans -->
 		<listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
 	</listener>
+    
+    <servlet>
+        <servlet-name>probe</servlet-name>
+        <servlet-class>cz.cuni.mff.xrg.odcs.frontend.monitor.ProbeServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>probe</servlet-name>
+        <url-pattern>/probe</url-pattern>
+    </servlet-mapping>
 
 	<servlet>
 		<servlet-name>Vaadin Application Servlet</servlet-name>

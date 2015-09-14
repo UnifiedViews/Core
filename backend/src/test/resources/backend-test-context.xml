@@ -8,7 +8,7 @@
        xmlns:jdbc="http://www.springframework.org/schema/jdbc"
 
        xmlns:context="http://www.springframework.org/schema/context">
-
+    
     <!-- listener for watching events -->
     <bean class="cz.cuni.mff.xrg.odcs.backend.spring.InMemoryEventListener"/>
     <!-- Facade for managing runtime properties -->
@@ -22,6 +22,12 @@
     <bean id="configuration"  class="cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig">
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
         <property name="ignoreResourceNotFound" value="true"/>
+        <property name ="fileEncoding" value="UTF-8"/>
+        <property name="locations">
+            <list>
+                <value>classpath:backend-test.properties</value>
+            </list>
+        </property>
     </bean>
     
     <!-- context, prototype -->

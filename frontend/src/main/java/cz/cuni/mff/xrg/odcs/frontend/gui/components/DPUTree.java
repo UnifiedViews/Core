@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 
@@ -100,8 +101,9 @@ public class DPUTree extends CustomComponent {
     private HorizontalLayout topLine;
 
     private Window.CloseListener createDPUCloseListener;
-    
+
     private boolean isValid = true;
+
     /**
      * Creates new DPUTree.
      */
@@ -304,7 +306,7 @@ public class DPUTree extends CustomComponent {
                     isValid = true;
                 }
             };
-            
+
             @Override
             protected void setValue(Object newValue, boolean repaintIsNotNeeded) throws com.vaadin.data.Property.ReadOnlyException {
                 if (isValid) {
@@ -351,7 +353,9 @@ public class DPUTree extends CustomComponent {
                 if (first.getId() == null || second.getId() == null) { // we dont compare first leaves under root of tree
                     return 0;
                 }
-                return collator.compare(first.getMenuName(), second.getMenuName());
+                String firstName = StringUtils.isEmpty(first.getMenuName()) ? first.getName() : first.getMenuName();
+                String secondName = StringUtils.isEmpty(second.getMenuName()) ? second.getName() : second.getMenuName();
+                return collator.compare(firstName, secondName);
             }
         });
 
@@ -393,7 +397,7 @@ public class DPUTree extends CustomComponent {
     public void setValue(Object newValue) {
         dpuTree.select(null);
         dpuTree.select(newValue);
-        isValid=false;
+        isValid = false;
     }
 
     public Object getValue() {

@@ -34,7 +34,6 @@ public enum ConfigProperty {
     BACKEND_LIMIT_OF_SCHEDULED_PIPELINES("backend.scheduledPipelines.limit"),
     BACKEND_ALIVE_LIMIT("backend.alive.limit"),
     BACKEND_ID("backend.id"),
-    BACKEND_CLUSTER_MODE("backend.cluster.mode"),
     BACKEND_STARTUP_RESTART_RUNNING("backend.startup.restart.running"),
     LOCALE("locale"),
 
@@ -119,7 +118,8 @@ public enum ConfigProperty {
 
     FRONTEND_INITIAL_PAGE("frontend.initial.page"),
     EXTERNAL_MENU_LINK_NAME("external.menu.link.name"),
-    EXTERNAL_MENU_LINK_URL("external.menu.link.url");
+    EXTERNAL_MENU_LINK_URL("external.menu.link.url"),
+    DPU_INSTANCE_USE_TEMPLATE_CONFIG("dpu.instance.template.config.enabled");
 
     private final String property;
 

@@ -23,9 +23,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.dialogs.ConfirmDialog;
 
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
@@ -101,8 +108,8 @@ public class DPUDetail extends Window {
         setModal(true);
         setResizable(true);
         // set initial size
-        setWidth("800px");
-        setHeight("600px");
+        setWidth("75%");
+        setHeight("75%");
     }
 
     /**
@@ -113,7 +120,7 @@ public class DPUDetail extends Window {
         configHolder = new DPUConfigHolder();
 
         // the DPU general info
-        generalDetail = new DPUGeneralDetail(configHolder);
+        generalDetail = new DPUGeneralDetail(this.configHolder, this.appConfig);
 
         HorizontalLayout buttonBar = buildFooter();
 
@@ -209,14 +216,14 @@ public class DPUDetail extends Window {
                 ConfirmDialog.show(UI.getCurrent(),
                         Messages.getString("DPUDetail.saveAs.dialog"),
                         new ConfirmDialog.Listener() {
-                            @Override
-                            public void onClose(ConfirmDialog cd) {
-                                if (cd.isConfirmed() && saveDpuAsNew()) {
-                                    result = true;
-                                    close();
-                                }
-                            }
-                        });
+                    @Override
+                    public void onClose(ConfirmDialog cd) {
+                        if (cd.isConfirmed() && saveDpuAsNew()) {
+                            result = true;
+                            close();
+                        }
+                    }
+                });
             }
         });
 

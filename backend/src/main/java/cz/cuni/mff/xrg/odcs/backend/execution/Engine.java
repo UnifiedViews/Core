@@ -41,7 +41,6 @@ import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFinished;
 import cz.cuni.mff.xrg.odcs.commons.app.ScheduledJobsPriority;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ExecutionFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
@@ -64,8 +63,6 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
     public Integer numberOfRunningJobs = 0;
 
     private final Object LockRunningJobs = new Object();
-
-    private boolean clusterMode = false;
 
     /**
      * Publisher instance.
@@ -134,15 +131,8 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
             workingDirectory.mkdirs();
         }
 
-        try {
-            this.clusterMode = this.appConfig.getBoolean(ConfigProperty.BACKEND_CLUSTER_MODE);
-        } catch (MissingConfigPropertyException e) {
-            LOG.info("Running in single mode because cluster mode property is missing in config.properties, {}", e.getLocalizedMessage());
-        }
-        if (this.clusterMode) {
-            this.backendID = this.appConfig.getString(ConfigProperty.BACKEND_ID);
-            LOG.info("Backend ID: {}", this.backendID);
-        }
+        this.backendID = this.appConfig.getString(ConfigProperty.BACKEND_ID);
+        LOG.info("Backend ID: {}", this.backendID);
     }
 
     /**
@@ -180,27 +170,24 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
             LOG.debug("Number of running jobs: {}", this.numberOfRunningJobs);
 
             List<PipelineExecution> jobs = null;
-            if (this.clusterMode) {
-                // Update backend activity timestamp in DB
-                this.executionFacade.updateBackendTimestamp(this.backendID);
-                int limit = limitOfScheduledPipelines - this.numberOfRunningJobs;
-                if (limit < 0) {
-                    limit = 0;
-                }
-                long countOfUnallocated = this.executionFacade.getCountOfUnallocatedQueuedExecutionsWithIgnorePriority();
-                if (limit < countOfUnallocated) {
-                    limit = (int) countOfUnallocated;
-                }
-
-                int allocated = this.executionFacade.allocateQueuedExecutionsForBackend(this.backendID, limit);
-                LOG.debug("Allocated {} executions by backend '{}'", allocated, this.backendID);
-
-                LOG.debug("Going to find all allocated QUEUED executions");
-                jobs = this.pipelineFacade.getAllExecutionsByPriorityLimited(PipelineExecutionStatus.QUEUED, this.backendID);
-                LOG.debug("Found {} executions planned for execution", jobs.size());
-            } else {
-                jobs = this.pipelineFacade.getAllExecutionsByPriorityLimited(PipelineExecutionStatus.QUEUED);
+            // Update backend activity timestamp in DB
+            this.executionFacade.updateBackendTimestamp(this.backendID);
+            int limit = limitOfScheduledPipelines - this.numberOfRunningJobs;
+            if (limit < 0) {
+                limit = 0;
             }
+            long countOfUnallocated = this.executionFacade.getCountOfUnallocatedQueuedExecutionsWithIgnorePriority();
+            if (limit < countOfUnallocated) {
+                limit = (int) countOfUnallocated;
+            }
+
+            int allocated = this.executionFacade.allocateQueuedExecutionsForBackend(this.backendID, limit);
+            LOG.debug("Allocated {} executions by backend '{}'", allocated, this.backendID);
+
+            LOG.debug("Going to find all allocated QUEUED executions");
+            jobs = this.pipelineFacade.getAllExecutionsByPriorityLimited(PipelineExecutionStatus.QUEUED, this.backendID);
+            LOG.debug("Found {} executions planned for execution", jobs.size());
+
             // run pipeline executions ..
             for (PipelineExecution job : jobs) {
                 if (this.numberOfRunningJobs < limitOfScheduledPipelines || ScheduledJobsPriority.IGNORE.getValue() == job.getOrderNumber()) {
@@ -250,11 +237,8 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
 
         // list executions
         List<PipelineExecution> running = null;
-        if (this.clusterMode) {
-            running = this.pipelineFacade.getAllExecutions(PipelineExecutionStatus.RUNNING, this.backendID);
-        } else {
-            running = this.pipelineFacade.getAllExecutions(PipelineExecutionStatus.RUNNING);
-        }
+        running = this.pipelineFacade.getAllExecutions(PipelineExecutionStatus.RUNNING, this.backendID);
+
         for (PipelineExecution execution : running) {
             MDC.put(Log.MDC_EXECUTION_KEY_NAME, execution.getId().toString());
             // hanging pipeline ..
@@ -269,12 +253,7 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
             MDC.remove(Log.MDC_EXECUTION_KEY_NAME);
         }
 
-        List<PipelineExecution> cancelling = null;
-        if (this.clusterMode) {
-            cancelling = this.pipelineFacade.getAllExecutions(PipelineExecutionStatus.CANCELLING, this.backendID);
-        } else {
-            cancelling = this.pipelineFacade.getAllExecutions(PipelineExecutionStatus.CANCELLING);
-        }
+        List<PipelineExecution> cancelling = this.pipelineFacade.getAllExecutions(PipelineExecutionStatus.CANCELLING, this.backendID);;
 
         for (PipelineExecution execution : cancelling) {
             MDC.put(Log.MDC_EXECUTION_KEY_NAME, execution.getId().toString());

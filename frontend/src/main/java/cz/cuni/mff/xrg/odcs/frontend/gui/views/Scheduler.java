@@ -18,7 +18,9 @@ package cz.cuni.mff.xrg.odcs.frontend.gui.views;
 
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.tepi.filtertable.paged.PagedFilterTable;
+import org.tepi.filtertable.paged.PagedTableChangeEvent;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import ru.xpoft.vaadin.VaadinView;
@@ -35,6 +39,7 @@ import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.Page;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*;
@@ -62,18 +67,19 @@ import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibFilterDecorator;
 import cz.cuni.mff.xrg.odcs.frontend.gui.tables.IntlibPagedTable;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
+import cz.cuni.mff.xrg.odcs.frontend.navigation.ParametersHandler;
 
 /**
  * GUI for Scheduler page which opens from the main menu. Contains table with
  * scheduler rules and button for scheduler rule creation.
- * 
+ *
  * @author Maria Kukhar
  */
 @org.springframework.stereotype.Component
 @Scope("session")
 @VaadinView(Scheduler.NAME)
 @Address(url = "Scheduler")
-public class Scheduler extends ViewComponent implements PostLogoutCleaner {
+public class Scheduler extends ViewComponent implements PostLogoutCleaner, Presenter {
 
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(
             Scheduler.class);
@@ -182,11 +188,12 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
             }
         });
         refreshManager.triggerRefresh();
+        setParameters(ParametersHandler.getConfiguration(event.getParameters()));
     }
 
     /**
      * Builds main layout contains table with created scheduling pipeline rules.
-     * 
+     *
      * @return mainLayout VerticalLayout with all components of Scheduler page.
      */
     private VerticalLayout buildMainLayout() {
@@ -215,7 +222,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
                     @Override
                     public void buttonClick(ClickEvent event) {
                         // open scheduler dialog
-                        showSchedulePipeline(null);
+                        showSchedulePipeline(null, null);
                     }
                 });
         topLine.addComponent(addRuleButton);
@@ -293,7 +300,8 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
                         if (!schedulerTable.isSelected(event.getItemId())) {
                             try {
                                 Long schId = Long.parseLong(event.getItem().getItemProperty("schid").getValue().toString());
-                                showSchedulePipeline(schId);
+                                showSchedulePipeline(schId, null);
+                                changeURI(schId);
                             } catch (NumberFormatException e) {
                                 log.error(e.getLocalizedMessage());
                                 // cannot cast String to Long probably
@@ -302,13 +310,20 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
                         }
                     }
                 });
+        schedulerTable.addListener(new PagedFilterTable.PageChangeListener() {
+            @Override
+            public void pageChanged(PagedTableChangeEvent event) {
+                int newPageNumber = event.getCurrentPage();
+                pageChangedHandler(newPageNumber);
+            }
+        });
 
         return mainLayout;
     }
 
     /**
      * Container with data for table {@link #schedulerTable}.
-     * 
+     *
      * @param data
      *            List of {@link Schedule}.
      * @return result IndexedContainer with data for {@link #schedulerTable}.
@@ -371,8 +386,8 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
                                         + Messages.getString("Scheduler.and.repeat")
                                         + " "
                                         + Messages.getString("Scheduler." + item.getPeriodUnit().toString()
-                                        .toLowerCase() + ".one"));
-                    } else if(item.getPeriod() <= 4) {
+                                                .toLowerCase() + ".one"));
+                    } else if (item.getPeriod() <= 4) {
                         result.getContainerProperty(id, "rule").setValue(
                                 Messages.getString("Scheduler.run.on", df.format(item.getFirstExecution()))
                                         + Messages.getString("Scheduler.and.repeat")
@@ -380,8 +395,8 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
                                         + item.getPeriod().toString()
                                         + " "
                                         + Messages.getString("Scheduler." + item.getPeriodUnit().toString()
-                                        .toLowerCase() + ".lte.four"));
-                    }else {
+                                                .toLowerCase() + ".lte.four"));
+                    } else {
                         result.getContainerProperty(id, "rule").setValue(
                                 Messages.getString("Scheduler.run.on", df.format(item.getFirstExecution()))
                                         + Messages.getString("Scheduler.and.repeat")
@@ -389,7 +404,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
                                         + item.getPeriod().toString()
                                         + " "
                                         + Messages.getString("Scheduler." + item.getPeriodUnit().toString()
-                                        .toLowerCase() + ".more"));
+                                                .toLowerCase() + ".more"));
                     }
                 }
             } else {
@@ -458,11 +473,11 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
 
     /**
      * Shows dialog for scheduling pipeline with given scheduling rule.
-     * 
+     *
      * @param id
      *            Id of schedule to show.
      */
-    private void showSchedulePipeline(Long id) {
+    private void showSchedulePipeline(Long id, Long pipelineId) {
 
         // open scheduler dialog
         if (!schedulePipeline.isInitialized()) {
@@ -480,15 +495,24 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
             schedule = scheduleFacade.getSchedule(id);
         }
         schedulePipeline.setSelectedSchedule(schedule);
+        schedulePipeline.enableComboPipeline();
+        if (pipelineId != null) {
+            schedulePipeline.setPipeline(pipelineId);
+        }
 
         if (!UI.getCurrent().getWindows().contains(schedulePipeline)) {
+            if (schedulePipeline.isAttached()) {
+                schedulePipeline.detach();
+                schedulePipeline.close();
+            }
+            refreshManager.removeListener(RefreshManager.SCHEDULER);
             UI.getCurrent().addWindow(schedulePipeline);
         }
     }
 
     /**
      * Generate column "commands" in the table {@link #schedulerTable}.
-     * 
+     *
      * @author Maria Kukhar
      */
     class actionColumnGenerator implements CustomTable.ColumnGenerator {
@@ -517,8 +541,9 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
                             refreshData();
                         }
                     });
-                    if (canEdit(schedule))
+                    if (canEdit(schedule)) {
                         layout.addComponent(enableButton);
+                    }
 
                 } //If item in the scheduler table has Enabled status, then for that item will be shown
                   //Disable button
@@ -534,8 +559,9 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
                             refreshData();
                         }
                     });
-                    if (canEdit(schedule))
+                    if (canEdit(schedule)) {
                         layout.addComponent(disableButton);
+                    }
                 }
 
             }
@@ -547,11 +573,13 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
             editButton.addClickListener(new com.vaadin.ui.Button.ClickListener() {
                 @Override
                 public void buttonClick(ClickEvent event) {
-                    showSchedulePipeline(schId);
+                    showSchedulePipeline(schId, null);
+                    changeURI(schId);
                 }
             });
-            if (canEdit(schedule))
+            if (canEdit(schedule)) {
                 layout.addComponent(editButton);
+            }
 
             //Delete button. Delete scheduling rule from the table.
             Button deleteButton = new Button();
@@ -579,8 +607,9 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
                             });
                 }
             });
-            if (canDelete(schedule))
+            if (canDelete(schedule)) {
                 layout.addComponent(deleteButton);
+            }
 
             return layout;
         }
@@ -626,4 +655,131 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner {
     public void doAfterLogout() {
         isMainLayoutInitialized = false;
     }
+
+    private void changeURI(Long scheduleId) {
+        String uriFragment = Page.getCurrent().getUriFragment();
+        ParametersHandler handler = new ParametersHandler(uriFragment);
+        handler.addParameter("schedule", "" + scheduleId);
+        ((AppEntry) UI.getCurrent()).setUriFragment(handler.getUriFragment(), false);
+    }
+
+    @Override
+    public Object enter() {
+        if (!isMainLayoutInitialized) {
+            buildMainLayout();
+            isMainLayoutInitialized = true;
+        }
+        setCompositionRoot(mainLayout);
+
+        refreshManager = ((AppEntry) UI.getCurrent()).getRefreshManager();
+        refreshManager.addListener(RefreshManager.SCHEDULER, new Refresher.RefreshListener() {
+            private long lastRefreshFinished = 0;
+
+            @Override
+            public void refresh(Refresher source) {
+                if (new Date().getTime() - lastRefreshFinished > RefreshManager.MIN_REFRESH_INTERVAL) {
+                    boolean hasModifiedExecutions = pipelineFacade.hasModifiedExecutions(lastLoad);
+                    if (hasModifiedExecutions) {
+                        lastLoad = new Date();
+                        refreshData();
+                    }
+                    LOG.debug("Scheduler refreshed.");
+                    lastRefreshFinished = new Date().getTime();
+                }
+            }
+        });
+        refreshManager.triggerRefresh();
+
+        return this;
+    }
+
+    @Override
+    public void setParameters(Object configuration) {
+        if (configuration != null && Map.class.isAssignableFrom(configuration.getClass())) {
+            schedulerTable.resetFilters();
+            int pageNumber = 0;
+            Long pipelineId = null;
+            Map<String, String> config = (Map<String, String>) configuration;
+            Long scheduleId = null;
+            boolean showNewScheduleForm = false;
+            for (Map.Entry<String, String> entry : config.entrySet()) {
+                if (entry.getKey().contains("New/")) {
+                    showNewScheduleForm = true;
+                }
+                switch (entry.getKey()) {
+                    case "schedule":
+                    case "New/schedule":
+                        scheduleId = Long.parseLong(entry.getValue());
+                        schedulerTable.select(scheduleId);
+                        changeURI(scheduleId);
+                        showDebugEventHandler(scheduleId);
+                        break;
+                    case "page":
+                    case "New/page":
+                        pageNumber = Integer.parseInt(entry.getValue());
+                        break;
+                    case "pipeline":
+                    case "New/pipeline":
+                        pipelineId = Long.parseLong(entry.getValue());
+                        Pipeline pipeline = pipelineFacade.getPipeline(pipelineId);
+                        List<Schedule> pipelineSchedules = scheduleFacade.getSchedulesFor(pipeline);
+                        schedulerTable.removeAllItems();
+                        tableData = getTableData(pipelineSchedules);
+                        schedulerTable.setContainerDataSource(tableData);
+                        schedulerTable.setCurrentPage(pageNumber);
+                        schedulerTable.setVisibleColumns((Object[]) visibleCols);
+                        schedulerTable.setFilterFieldVisible("commands", false);
+                        schedulerTable.setFilterFieldVisible("duration", false);
+                        LOG.debug("Scheduler refreshed.");
+                        refreshManager.triggerRefresh();
+                        break;
+                    default:
+                        schedulerTable.setFilterFieldValue(entry.getKey(), entry.getValue());
+                        break;
+                }
+            }
+            if (showNewScheduleForm) {
+                showSchedulePipeline(null, pipelineId);
+                showNewScheduleForm = false;
+            }
+            pageNumber = scheduleId == null ? pageNumber : getExecPage(scheduleId);
+            if (pageNumber != 0) {
+                //Page number is set as last, because filtering automatically moves table to first page.
+                schedulerTable.setCurrentPage(pageNumber);
+            }
+        }
+    }
+
+    public int getExecPage(Long scheduleId) {
+        Iterator<?> it = schedulerTable.getItemIds().iterator();
+        int index = 0;
+        while (it.hasNext()) {
+            Long id = ((Integer) it.next()).longValue();
+            if (id.equals(scheduleId)) {
+                return (index / schedulerTable.getPageLength()) + 1; // pages are from 1
+            }
+            index++;
+        }
+        return 0;
+    }
+
+    public void showDebugEventHandler(long scheduleId) {
+        if (!schedulerTable.getItemIds().contains((new Long(scheduleId)).intValue())) {
+            return;
+        }
+        Schedule schedule = scheduleFacade.getSchedule(scheduleId);
+        if (schedule == null) {
+            Notification.show(Messages.getString("Scheduler.0", scheduleId), Notification.Type.ERROR_MESSAGE);
+            return;
+        }
+        showSchedulePipeline(scheduleId, null);
+    }
+
+    public void pageChangedHandler(Integer newPageNumber) {
+        String uriFragment = Page.getCurrent().getUriFragment();
+        ParametersHandler handler = new ParametersHandler(uriFragment);
+        handler.addParameter("page", newPageNumber.toString());
+        ((AppEntry) UI.getCurrent()).setUriFragment(handler.getUriFragment(), false);
+    }
+
 }

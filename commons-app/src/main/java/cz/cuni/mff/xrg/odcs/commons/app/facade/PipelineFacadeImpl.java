@@ -657,4 +657,9 @@ class PipelineFacadeImpl implements PipelineFacade {
         return this.pipelineDao.getPipelinesForUser(externalUserId);
     }
 
+    @PostFilter("hasPermission(filterObject,'pipeline.read')")
+    @Override
+    public List<Pipeline> getAllVisiblePipelines(String externalUserId) {
+        return this.pipelineDao.getAllVisiblePipelines(externalUserId);
+    }
 }

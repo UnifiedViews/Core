@@ -33,4 +33,7 @@
 
     <!-- bean for importing of pipelines -->
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportService"/>
+
+	<!-- bean for parsing JSON -->
+	<bean class="com.fasterxml.jackson.databind.ObjectMapper"/>
 </beans>

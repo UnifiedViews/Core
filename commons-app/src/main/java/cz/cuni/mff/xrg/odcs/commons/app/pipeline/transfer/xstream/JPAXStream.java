@@ -87,6 +87,7 @@ public class JPAXStream extends XStream {
         AllowedFieldsFilter allowedfieldFilter = new AllowedFieldsFilter();
         allowedfieldFilter.add(DPUTemplateRecord.class, "jarName");
         allowedfieldFilter.add(DPUTemplateRecord.class, "name");
+        allowedfieldFilter.add(DPUTemplateRecord.class, "rawConf");
         stream.filters.add(allowedfieldFilter);
 
         // this will use getters and setters for ono plain objects

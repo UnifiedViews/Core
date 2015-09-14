@@ -118,5 +118,6 @@
 
     <bean class="cz.cuni.mff.xrg.odcs.frontend.monitor.BackendHeartbeat"/>
     <bean class="cz.cuni.mff.xrg.odcs.frontend.dataunit.FrontendDataUnitManager"/>
+    <bean class="cz.cuni.mff.xrg.odcs.frontend.auxiliaries.ConfigurationValidator"/>
 
 </beans>

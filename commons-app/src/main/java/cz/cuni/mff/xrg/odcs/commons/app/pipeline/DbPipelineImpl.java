@@ -24,6 +24,7 @@ import javax.persistence.TypedQuery;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessBase;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUTemplateRecord;
 
@@ -103,6 +104,17 @@ class DbPipelineImpl extends DbAccessBase<Pipeline>implements DbPipeline {
         final String queryStr = "SELECT e FROM Pipeline e WHERE e.owner.externalIdentifier = :userExternalId";
         TypedQuery<Pipeline> query = createTypedQuery(queryStr);
         query.setParameter("userExternalId", userExternalId);
+        return executeList(query);
+    }
+    
+    @Override
+    public List<Pipeline> getAllVisiblePipelines(String userExternalId) {
+        final String queryStr = "SELECT e FROM Pipeline e"
+                + " WHERE e.owner.externalIdentifier = :userExternalId"
+                + " OR e.shareType != :shareType";
+        TypedQuery<Pipeline> query = createTypedQuery(queryStr);
+        query.setParameter("userExternalId", userExternalId);
+        query.setParameter("shareType", ShareType.PRIVATE);
         return executeList(query);
     }
 }

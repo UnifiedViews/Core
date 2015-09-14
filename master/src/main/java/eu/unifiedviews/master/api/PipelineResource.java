@@ -16,7 +16,6 @@
  */
 package eu.unifiedviews.master.api;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 import java.io.File;
@@ -45,7 +44,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
@@ -122,7 +120,7 @@ public class PipelineResource {
             if (isNotEmpty(userExternalId)) {
                 pipelines = this.pipelineFacade.getAllPipelines(userExternalId);
             } else {
-                pipelines = this.pipelineFacade.getAllPipelines();
+                pipelines = new ArrayList<>();
             }
 
             if (pipelines == null) {
@@ -134,6 +132,25 @@ public class PipelineResource {
             throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, Messages.getString("pipeline.get.general.error"), e.getMessage());
         }
 
+        return PipelineDTOConverter.convert(pipelines);
+    }
+    
+    @GET
+    @Path("/visible")
+    @Produces({ MediaType.APPLICATION_JSON })
+    public List<PipelineDTO> getVisiblePipelines(@QueryParam("userExternalId") String userExternalId) {
+        List<Pipeline> pipelines = null;
+        try{
+            pipelines = this.pipelineFacade.getAllVisiblePipelines(userExternalId);
+            
+            if (pipelines == null) {
+                pipelines = new ArrayList<>();
+            }
+        } catch (ApiException e) {
+            throw e;
+        } catch (RuntimeException e) {
+            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, Messages.getString("pipeline.get.general.error"), e.getMessage());
+        }
         return PipelineDTOConverter.convert(pipelines);
     }
 

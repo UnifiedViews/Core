@@ -73,6 +73,14 @@ public interface PipelineFacade extends Facade {
      * @return List of pipelines
      */
     List<Pipeline> getAllPipelines(String externalUserId);
+    
+    /**
+     * Returns list of pipeline given user owns or that are not private
+     * 
+     * @param externalUserId
+     * @return
+     */
+    List<Pipeline> getAllVisiblePipelines(String externalUserId);
 
     /**
      * Find pipeline in database by ID and return it.

@@ -33,7 +33,6 @@ import org.springframework.transaction.annotation.Transactional;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFinished;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 
@@ -49,37 +48,26 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
     @Autowired
     private AppConfig appConfig;
 
-    private boolean clusterMode = false;
-
     /**
      * Schedule facade.
      */
     @Autowired
     private ScheduleFacade scheduleFacade;
 
+    /**
+     * Backend instance identifier
+     */
     private String backendID;
 
     @PostConstruct
     private void init() {
-        try {
-            this.clusterMode = this.appConfig.getBoolean(ConfigProperty.BACKEND_CLUSTER_MODE);
-        } catch (MissingConfigPropertyException e) {
-            LOG.info("Running in single mode because cluster mode property is missing in config.properties, {}", e.getLocalizedMessage());
-        }
-        if (this.clusterMode) {
-            this.backendID = this.appConfig.getString(ConfigProperty.BACKEND_ID);
-        }
+        this.backendID = this.appConfig.getString(ConfigProperty.BACKEND_ID);
         initialCheck();
-
     }
 
     private void initialCheck() {
         // do initial run-after check 
-        if (this.clusterMode) {
-            this.scheduleFacade.executeFollowers(this.backendID);
-        } else {
-            this.scheduleFacade.executeFollowers();
-        }
+        this.scheduleFacade.executeFollowers(this.backendID);
     }
 
     /**
@@ -116,12 +104,7 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
         Date now = new Date();
         // get all pipelines that are time based
         LOG.debug("Going to check all time based not queued schedules");
-        List<Schedule> candidates = null;
-        if (this.clusterMode) {
-            candidates = this.scheduleFacade.getAllTimeBasedNotQueuedRunningForCluster();
-        } else {
-            candidates = this.scheduleFacade.getAllTimeBasedNotQueuedRunning();
-        }
+        List<Schedule> candidates = this.scheduleFacade.getAllTimeBasedNotQueuedRunningForCluster();
         LOG.debug("Found {} schedule candidates, that could be executed", candidates.size());
         // check ..
         for (Schedule schedule : candidates) {

@@ -33,6 +33,9 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPURecord;
@@ -66,14 +69,26 @@ public class DPUGeneralDetail extends CustomComponent {
      */
     private boolean isReadOnly = false;
 
+    private AppConfig appConfig;
+
+    private boolean dpuTemplateConfigEnabled = true;
+
     /**
      * Used to report change of insight property.
      */
     private ValueChangeListener valueChangeListener = null;
 
-    public DPUGeneralDetail(final DPUConfigHolder instanceConfig) {
+    public DPUGeneralDetail(final DPUConfigHolder instanceConfig, AppConfig appConfig) {
         setWidth("100%");
         setHeight("-1px");
+
+        this.appConfig = appConfig;
+        try {
+            this.dpuTemplateConfigEnabled = this.appConfig.getBoolean(ConfigProperty.DPU_INSTANCE_USE_TEMPLATE_CONFIG);
+        } catch (MissingConfigPropertyException e) {
+            // ignore, optional configuration
+        }
+
         // create subcomponents
         final GridLayout textInputLayout = new GridLayout(2, 3);
         textInputLayout.setWidth("100%");
@@ -137,6 +152,7 @@ public class DPUGeneralDetail extends CustomComponent {
             }
         });
         optionsLayout.addComponent(useTemplateConfiguration);
+        this.useTemplateConfiguration.setVisible(this.dpuTemplateConfigEnabled);
 
         final VerticalLayout mainlayout = new VerticalLayout();
         mainlayout.setSizeFull();
@@ -194,7 +210,7 @@ public class DPUGeneralDetail extends CustomComponent {
 
             dpuTemplateName.setVisible(true);
             useTemplateConfiguration.setValue(instance.isUseTemplateConfig());
-            useTemplateConfiguration.setVisible(true);
+            useTemplateConfiguration.setVisible(this.dpuTemplateConfigEnabled);
 
         } else {
             dpuTemplateName.setVisible(false);

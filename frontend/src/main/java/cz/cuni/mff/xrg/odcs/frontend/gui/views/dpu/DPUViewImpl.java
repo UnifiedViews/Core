@@ -172,6 +172,9 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
         if (!presenter.isLayoutInitialized() && this.permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_SHOW_SCREEN)) {
             buildMainLayout();
         }
+        
+        // refresh tree so user doesn't have to relog, if another user changes/install new DPU
+        dpuTree.refresh();
 
         setCompositionRoot(mainLayout);
         return this;

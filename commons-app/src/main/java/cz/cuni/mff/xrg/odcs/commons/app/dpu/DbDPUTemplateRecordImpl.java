@@ -68,6 +68,20 @@ public class DbDPUTemplateRecordImpl extends DbAccessBase<DPUTemplateRecord>
 
         return execute(query);
     }
+    
+    @Override
+    public DPUTemplateRecord getByDirectoryAndName(String jarDirectory, String name) {
+        final String stringQuery = "SELECT e FROM DPUTemplateRecord e"
+                + " LEFT JOIN DPUTemplateRecord p ON e.parent = p"
+                + " WHERE ( e.jarDirectory = :directory OR p.jarDirectory = :directory)"
+                + " AND e.name = :name";
+        
+        TypedQuery<DPUTemplateRecord> query = em.createQuery(stringQuery, DPUTemplateRecord.class);
+        query.setParameter("directory", jarDirectory);
+        query.setParameter("name", name);
+
+        return execute(query);
+    }
 
     @Override
     public List<DPUTemplateRecord> getChilds(DPUTemplateRecord parentDpu) {

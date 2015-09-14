@@ -109,6 +109,15 @@ public interface DPUFacade extends Facade {
 
     DPUTemplateRecord getByName(String name);
 
+    /**
+     * Fetch DPU template using jarDirectory and DPU name.
+     * Good to use when searching for DPU of the same jar file without version restriction.
+     * 
+     * @param jarDirectory
+     * @param name
+     * @return
+     */
+    DPUTemplateRecord getByDirectoryAndName(String jarDirectory, String name);
 
 
     /* **************** Methods for DPUInstanceRecord Instance management ***************** */

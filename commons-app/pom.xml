@@ -13,6 +13,7 @@
 	<properties>
 		<logback.version>1.0.13</logback.version>
 		<aspectj.version>1.7.3</aspectj.version>
+		<maven.artifact.version>3.3.3</maven.artifact.version>
 	</properties>
 
 	<repositories>
@@ -304,6 +305,12 @@
 			<groupId>org.jasypt</groupId>
 			<artifactId>jasypt</artifactId>
 			<version>${jasypt.version}</version>
+		</dependency>
+		
+		<dependency> <!-- userd for comparing versions for import/export -->
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-artifact</artifactId>
+			<version>${maven.artifact.version}</version>
 		</dependency>
 	</dependencies>
 

@@ -86,6 +86,48 @@ class UserFacadeImpl implements UserFacade {
         return user;
     }
 
+    @Override
+    public User createOrUpdateUser(String userName, String fullUserName, String actorId, String actorName, List<String> roles) {
+        User user = this.getUserByExtId(userName);
+        // create user if does not exist
+        if (user == null) {
+            user = this.createUser(userName, "*****", new EmailAddress(userName + "@nomail.com"));
+            if (fullUserName != null) {
+                user.setFullName(fullUserName);
+            } else {
+                user.setFullName(userName);
+            }
+            user.setExternalIdentifier(userName);
+            user.setTableRows(20);
+            this.saveNoAuth(user);
+        }
+
+        // update user information
+        user.getRoles().clear();
+        for (String rolename : roles) {
+            if (rolename != null) {
+                RoleEntity role = this.getRoleByName(rolename);
+                if (role != null) {
+                    user.addRole(role);
+                }
+            }
+        }
+
+        if (actorId != null) {
+            UserActor actor = this.getUserActorByExternalId(actorId);
+            if (actor == null) {
+                actor = new UserActor();
+                actor.setName(actorName);
+                actor.setExternalId(actorId);
+                this.save(actor);
+            }
+            user.setUserActor(actor);
+        }
+
+        this.save(user);
+        return user;
+    }
+
     /**
      * @return list of all users persisted in database
      */

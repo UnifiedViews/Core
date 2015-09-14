@@ -186,6 +186,13 @@ class DPUFacadeImpl implements DPUFacade {
     public DPUTemplateRecord getByDirectory(String jarDirectory) {
         return templateDao.getByDirectory(jarDirectory);
     }
+    
+    @Transactional(readOnly = true)
+    @Override
+    @PreAuthorize("hasRole('dpuTemplate.read')")
+    public DPUTemplateRecord getByDirectoryAndName(String jarDirectory, String name) {
+        return templateDao.getByDirectoryAndName(jarDirectory, name);
+    }
 
     @Transactional(readOnly = true)
     @Override

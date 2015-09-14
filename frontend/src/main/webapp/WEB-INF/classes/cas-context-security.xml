@@ -100,6 +100,7 @@
 	</b:bean>
 
 	<http entry-point-ref="casEntryPoint" use-expressions="true">
+		<intercept-url pattern="/probe" access="permitAll" />
 		<intercept-url pattern="/**" access="hasRole('pipeline.create')" />
 		<custom-filter ref="requestSingleLogoutFilter" before="LOGOUT_FILTER" />
 		<custom-filter ref="singleLogoutFilter" before="CAS_FILTER" />

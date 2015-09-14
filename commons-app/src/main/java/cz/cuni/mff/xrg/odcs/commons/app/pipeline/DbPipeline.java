@@ -82,4 +82,16 @@ public interface DbPipeline extends DbAccess<Pipeline> {
      */
     public List<Pipeline> getPipelinesForUser(String externalUserId);
 
+    
+    /**
+     * Fetches all pipelines that are visible to user, so:
+     * <br/>
+     * - he is owner that pipeline
+     * - pipelines that are not private (owner is someone else) 
+     * 
+     * @param userExternalId
+     * @return
+     */
+    public List<Pipeline> getAllVisiblePipelines(String userExternalId);
+
 }
