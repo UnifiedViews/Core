@@ -1,2 +1,0 @@
-Failed to set value for 'outputDataUnit' exception: Class cz.cuni.xrg.intlib.backend.execution.dpu.impl.AnnotationProcessor can not access a member of class cz.opendata.linked.psp_cz.metadata.Extractor with modifiers ""
--> every DataUnit (input or output) must be public !
