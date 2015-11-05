@@ -17,6 +17,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +39,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.DbMessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
@@ -69,9 +69,6 @@ import eu.unifiedviews.commons.dao.view.ExecutionView;
 public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostLogoutCleaner {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExecutionListPresenterImpl.class);
-
-    @Autowired
-    private DbExecution dbExecution;
 
     @Autowired
     private DBExecutionView dbExecutionView;
@@ -105,6 +102,14 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
     private ClassNavigator navigator;
 
     private boolean isInitialized = false;
+
+    private Map<Long, PipelineExecution> lightExecutionCache = new HashMap<>();
+
+    private static final int LIGHT_CACHE_MAX_SIZE = 100;
+
+    private static final int LIGHT_CACHE_TIMEOUT = 300000;
+
+    private Date lightCacheLastReload = new Date();
 
     @Override
     public Object enter() {
@@ -198,10 +203,18 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
 
     @Override
     public void refreshEventHandler() {
-        boolean hasModifiedExecutions = pipelineFacade.hasModifiedExecutions(lastLoad)
+        boolean hasModifiedExecutions = this.pipelineFacade.hasModifiedExecutions(this.lastLoad)
                 || (cachedSource.size() > 0 &&
-                pipelineFacade.hasDeletedExecutions((List<Long>) cachedSource.getItemIds(0, cachedSource.size())));
-        view.refresh(hasModifiedExecutions);
+                        pipelineFacade.hasDeletedExecutions((List<Long>) cachedSource.getItemIds(0, cachedSource.size())));
+        boolean hasModifiedPipelines = this.pipelineFacade.hasModifiedPipelines(this.lastLoad);
+
+        // reload light cache only if some pipeline has changed as this can cause change of access rights for execution
+        // as they are based on pipeline access rights
+        if (hasModifiedPipelines) {
+            reloadLightExecutionCache();
+        }
+
+        this.view.refresh(hasModifiedExecutions);
         if (hasModifiedExecutions) {
             lastLoad = new Date();
             cachedSource.invalidate();
@@ -211,8 +224,7 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
 
     @Override
     public boolean canStopExecution(long executionId) {
-        PipelineExecution exec =
-                getLightExecution(executionId);
+        PipelineExecution exec = getLightExecution(executionId);
         return permissionUtils.hasPermission(exec, EntityPermissions.PIPELINE_EXECUTION_STOP);
     }
 
@@ -253,12 +265,35 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
 
     /**
      * Get light copy of execution.
+     * Light executions are cached as this method is called multiple times per one execution
      * 
      * @param executionId
      * @return light copy of execution
      */
     private PipelineExecution getLightExecution(long executionId) {
-        return pipelineFacade.getExecution(executionId);
+        if (this.lightExecutionCache.size() >= LIGHT_CACHE_MAX_SIZE) {
+            reloadLightExecutionCache();
+        }
+
+        if (this.lightCacheLastReload.before(new Date(new Date().getTime() - LIGHT_CACHE_TIMEOUT))) {
+            LOG.debug("Light execution cache timeout, reloading ...");
+            reloadLightExecutionCache();
+        }
+
+        PipelineExecution exec = null;
+        if (this.lightExecutionCache.containsKey(executionId)) {
+            exec = this.lightExecutionCache.get(executionId);
+        } else {
+            exec = this.pipelineFacade.getExecution(executionId);
+            this.lightExecutionCache.put(executionId, exec);
+        }
+
+        return exec;
+    }
+
+    private void reloadLightExecutionCache() {
+        this.lightExecutionCache.clear();
+        this.lightCacheLastReload = new Date();
     }
 
     private ReadOnlyContainer<MessageRecord> getMessageDataSource() {
@@ -332,29 +367,25 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
 
     @Override
     public boolean canReadLog(long executionId) {
-        PipelineExecution exec =
-                getLightExecution(executionId);
+        PipelineExecution exec = getLightExecution(executionId);
         return permissionUtils.hasPermission(exec, EntityPermissions.PIPELINE_EXECUTION_READ);
     }
 
     @Override
     public boolean canDebugData(long executionId) {
-        PipelineExecution exec =
-                getLightExecution(executionId);
+        PipelineExecution exec = getLightExecution(executionId);
         return permissionUtils.hasPermission(exec, EntityPermissions.PIPELINE_EXECUTION_READ);
     }
 
     @Override
     public boolean canRunPipeline(long executionId) {
-        PipelineExecution exec =
-                getLightExecution(executionId);
+        PipelineExecution exec = getLightExecution(executionId);
         return permissionUtils.hasPermission(exec, EntityPermissions.PIPELINE_RUN);
     }
 
     @Override
     public boolean canDebugPipeline(long executionId) {
-        PipelineExecution exec =
-                getLightExecution(executionId);
+        PipelineExecution exec = getLightExecution(executionId);
         return this.permissionUtils.hasUserAuthority(EntityPermissions.PIPELINE_RUN_DEBUG)
                 && this.permissionUtils.hasPermission(exec, EntityPermissions.PIPELINE_RUN_DEBUG);
     }

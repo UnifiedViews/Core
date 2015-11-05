@@ -17,6 +17,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -117,6 +118,17 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
     private Date lastLoad = new Date(0L);
 
     /**
+     * Pipeline cache for light pipelines loading
+     */
+    private Map<Long, Pipeline> lightPipelineCache = new HashMap<>();
+
+    private static final int LIGHT_CACHE_MAX_SIZE = 100;
+
+    private static final int LIGHT_CACHE_TIMEOUT = 300000;
+
+    private Date lightCacheLastReload = new Date();
+
+    /**
      * Application's configuration.
      */
     @Autowired
@@ -177,6 +189,11 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
                             || hasDeletedExecutions;
                     LOG.debug("Last load: {}, hasModifiedPipelines: {}, hasModifiedExecutions: {}, hasDeletedPipelines: {}", lastLoad, hasModifiedPipelines, hasModifiedExecutions,
                             hasDeletedExecutions);
+
+                    if (hasModifiedPipelines) {
+                        reloadLightPipelineCache();
+                    }
+
                     if (hasModifiedPipelinesOrExecutions) {
                         LOG.debug("Execution / pipeline modified, refreshing ...");
                         lastLoad = new Date();
@@ -186,6 +203,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
                     lastRefreshFinished = new Date().getTime();
                 }
             }
+
         });
         this.refreshManager.triggerRefresh();
     }
@@ -355,8 +373,39 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
         }
     }
 
+    /**
+     * Get light copy of pipeline.
+     * Light executions are cached as this method is called multiple times per one pipeline.
+     * 
+     * @param pipelineId
+     * @return light copy of pipeline
+     */
     private Pipeline getLightPipeline(long pipelineId) {
-        return pipelineFacade.getPipeline(pipelineId);
+        if (this.lightPipelineCache.size() >= LIGHT_CACHE_MAX_SIZE) {
+            LOG.debug("Light pipeline cache size exceeded, reloading ...");
+            reloadLightPipelineCache();
+        }
+
+        if (this.lightCacheLastReload.before(new Date(new Date().getTime() - LIGHT_CACHE_TIMEOUT))) {
+            LOG.debug("Light pipeline cache timeout, reloading ...");
+            reloadLightPipelineCache();
+        }
+
+        Pipeline pipeline = null;
+        if (this.lightPipelineCache.containsKey(pipelineId)) {
+            pipeline = this.lightPipelineCache.get(pipelineId);
+        } else {
+            pipeline = this.pipelineFacade.getPipeline(pipelineId);
+            this.lightPipelineCache.put(pipelineId, pipeline);
+        }
+
+        return pipeline;
+
+    }
+
+    private void reloadLightPipelineCache() {
+        this.lightPipelineCache.clear();
+        this.lightCacheLastReload = new Date();
     }
 
     @Override
