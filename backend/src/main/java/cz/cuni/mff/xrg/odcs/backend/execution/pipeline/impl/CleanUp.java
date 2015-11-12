@@ -17,10 +17,8 @@
 package cz.cuni.mff.xrg.odcs.backend.execution.pipeline.impl;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,7 +98,7 @@ class CleanUp implements PostExecutor {
         }
         if (execution.isDebugging()) {
 //            rdfDataUnitFactory.release(execution.getContext().generatePipelineId());
-            
+
             try {
                 repositoryManager.release(execution.getContext().getExecutionId());
             } catch (RDFException ex) {
@@ -126,77 +124,31 @@ class CleanUp implements PostExecutor {
         if (!execution.isDebugging()) {
             // delete working directory the sub directories should be already deleted by DPU's.
             try {
-                delete(resourceManager.getExecutionDir(execution));
-            } catch (MissingResourceException ex ){
+                CleanupUtils.deleteDirectory(this.resourceManager.getExecutionDir(execution));
+            } catch (MissingResourceException ex) {
                 LOG.warn("Can't delete directory.", ex);
             }
         }
 
         // delete result, storage if empty
         try {
-            deleteIfEmpty(resourceManager.getExecutionWorkingDir(execution));
-        } catch (MissingResourceException ex ){
+            CleanupUtils.deleteDirectoryIfEmpty(this.resourceManager.getExecutionWorkingDir(execution));
+        } catch (MissingResourceException ex) {
             LOG.warn("Can't delete directory.", ex);
         }
         try {
-            deleteIfEmpty(resourceManager.getExecutionStorageDir(execution));
-        } catch (MissingResourceException ex ){
+            CleanupUtils.deleteDirectoryIfEmpty(this.resourceManager.getExecutionStorageDir(execution));
+        } catch (MissingResourceException ex) {
             LOG.warn("Can't delete directory.", ex);
         }
         try {
-            deleteIfEmpty(resourceManager.getExecutionDir(execution));
-        } catch (MissingResourceException ex ){
+            CleanupUtils.deleteDirectoryIfEmpty(this.resourceManager.getExecutionDir(execution));
+        } catch (MissingResourceException ex) {
             LOG.warn("Can't delete directory.", ex);
         }
 
         LOG.debug("CleanUp has been finished .. ");
         return true;
-    }
-
-    /**
-     * Try to delete directory in execution directory. If error occur then is
-     * logged but otherwise ignored.
-     * 
-     * @param toDelete
-     */
-    private void delete(File toDelete) {
-        LOG.debug("Deleting: {}", toDelete.toString());
-
-        try {
-            FileUtils.deleteDirectory(toDelete);
-        } catch (IOException e) {
-            LOG.warn("Can't delete directory after execution", e);
-        }
-    }
-
-    /**
-     * Delete directory if it's empty.
-     * 
-     * @param toDelete
-     */
-    private void deleteIfEmpty(File toDelete) {
-        if (!toDelete.exists()) {
-            // file does not exist
-            return;
-        }
-
-        LOG.debug("Deleting: {}", toDelete.toString());
-
-        if (!toDelete.isDirectory()) {
-            LOG.warn("Directory to delete is file: {}", toDelete.toString());
-            return;
-        }
-
-        // check if empty
-        if (toDelete.list().length == 0) {
-            // empty
-            try {
-                FileUtils.deleteDirectory(toDelete);
-            } catch (IOException e) {
-                LOG.warn("Can't delete directory after execution", e);
-            }
-        }
-
     }
 
 }
