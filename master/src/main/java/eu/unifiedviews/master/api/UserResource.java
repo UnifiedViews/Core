@@ -81,7 +81,6 @@ public class UserResource {
     @Consumes("application/json")
     @Produces("application/json")
     public String createUser(String casResponseAsJSON) {
-        LOG.info("Received user create request: " + casResponseAsJSON);
         Multimap<String, String> multimap = parseJSONtoMultimap(casResponseAsJSON);
 
         // validate if request contains all required attributes
