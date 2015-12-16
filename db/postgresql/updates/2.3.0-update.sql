@@ -8,3 +8,7 @@ DROP TABLE properties;
 DROP VIEW pipeline_view;
 DROP VIEW exec_last_view;
 DROP VIEW exec_view;
+
+-- Update version.
+UPDATE "properties" SET "value" = '002.003.000' WHERE "key" = 'UV.Core.version';
+UPDATE "properties" SET "value" = '002.001.005' WHERE "key" = 'UV.Plugin-DevEnv.version';
