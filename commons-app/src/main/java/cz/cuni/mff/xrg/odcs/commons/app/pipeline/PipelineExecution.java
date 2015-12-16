@@ -141,7 +141,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "execution")
     private Set<MessageRecord> messages = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_actor_id")
     private UserActor actor;
 
