@@ -48,3 +48,6 @@ ADD FOREIGN KEY (`instance_id`)
 	ON UPDATE CASCADE ON DELETE CASCADE;
 
 CREATE UNIQUE INDEX `ix_PPL_NODE_position_id` ON `ppl_node` (`position_id`);
+
+UPDATE `properties` SET `value` = '002.003.000' WHERE `key` = 'UV.Core.version';
+UPDATE `properties` SET `value` = '002.001.005' WHERE `key` = 'UV.Plugin-DevEnv.version';
