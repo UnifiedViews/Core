@@ -10,5 +10,11 @@ DROP VIEW exec_last_view;
 DROP VIEW exec_view;
 
 -- Update version.
-UPDATE "properties" SET "value" = '002.003.000' WHERE "key" = 'UV.Core.version';
-UPDATE "properties" SET "value" = '002.001.005' WHERE "key" = 'UV.Plugin-DevEnv.version';
+DELETE FROM "properties" WHERE "key" = 'UV.Core.version'; 
+DELETE FROM "properties" WHERE "key" = 'UV.Plugin-DevEnv.version'; 
+
+INSERT INTO "properties" ("key", "value") VALUES ('UV.Core.version','002.003.000');
+INSERT INTO "properties" ("key", "value") VALUES ('UV.Plugin-DevEnv.version','002.001.005');
+
+--UPDATE "properties" SET "value" = '002.003.000' WHERE "key" = 'UV.Core.version';
+--UPDATE "properties" SET "value" = '002.001.005' WHERE "key" = 'UV.Plugin-DevEnv.version';
