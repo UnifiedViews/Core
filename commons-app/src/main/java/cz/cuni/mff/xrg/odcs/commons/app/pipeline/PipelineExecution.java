@@ -63,7 +63,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
     /**
      * Pipeline being executed.
      */
-    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pipeline_id")
     private Pipeline pipeline;
 
@@ -134,14 +134,14 @@ public class PipelineExecution implements OwnedEntity, DataObject {
     /**
      * Owner ie. author of the execution.
      */
-    @ManyToOne(cascade = CascadeType.PERSIST, optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = true)
     private User owner;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "execution")
     private Set<MessageRecord> messages = new HashSet<>();
 
-    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_actor_id")
     private UserActor actor;
 
@@ -399,9 +399,6 @@ public class PipelineExecution implements OwnedEntity, DataObject {
      */
     public void setOwner(User owner) {
         this.owner = owner;
-
-        if (owner != null)
-            owner.getExecutions().add(this);
     }
 
     /**
@@ -523,6 +520,26 @@ public class PipelineExecution implements OwnedEntity, DataObject {
 
     public void setMessages(Set<MessageRecord> messages) {
         this.messages = messages;
+    }
+
+    @Override
+    public String toString() {
+        return "PipelineExecution{" +
+                "id=" + id +
+                ", status=" + status +
+                ", isDebugging=" + isDebugging +
+                ", orderNumber=" + orderNumber +
+                ", start='" + start + '\'' +
+                ", end='" + end + '\'' +
+                ", schedule=" + schedule +
+                ", stop=" + stop +
+                ", lastChange='" + lastChange + '\'' +
+                ", backendId=" + backendId + '\'' +
+                ", actor=" + actor +
+                ", context=" + context +
+                ", pipeline=" + pipeline +
+                ", owner=" + owner +
+                '}';
     }
 
 }

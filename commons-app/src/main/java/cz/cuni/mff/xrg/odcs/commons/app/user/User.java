@@ -35,8 +35,6 @@ import java.util.logging.Logger;
 
 /**
  * Holds user data (his account).
- * 
- * @author Jiri Tomes
  */
 @Entity
 @Table(name = "usr_user")
@@ -79,9 +77,6 @@ public class User implements UserDetails, DataObject {
 
     @Column(name = "table_rows")
     private Integer tableRows;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner", orphanRemoval = true)
-    private Set<PipelineExecution> executions = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner", orphanRemoval = true)
     private Set<Schedule> schedules = new HashSet<>();
@@ -399,14 +394,6 @@ public class User implements UserDetails, DataObject {
         return hash;
     }
 
-    public Set<PipelineExecution> getExecutions() {
-        return executions;
-    }
-
-    public void setExecutions(Set<PipelineExecution> executions) {
-        this.executions = executions;
-    }
-
     public Set<Schedule> getSchedules() {
         return schedules;
     }
@@ -429,5 +416,17 @@ public class User implements UserDetails, DataObject {
 
     public void setOpenEvents(Set<OpenEvent> openEvents) {
         this.openEvents = openEvents;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username=" + username +
+                ", fullName=" + fullName +
+                ", externalIdentifier=" + externalIdentifier +
+                ", email='" + email + '\'' +
+                ", userActor='" + userActor + '\'' +
+                '}';
     }
 }
