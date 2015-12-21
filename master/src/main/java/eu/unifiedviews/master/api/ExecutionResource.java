@@ -182,7 +182,7 @@ public class ExecutionResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public PipelineExecutionDTO createPipelineExecution(@PathParam("pipelineid") String pipelineId, PipelineExecutionDTO newExecution) {
-        PipelineExecution execution = null;
+
         if (StringUtils.isBlank(pipelineId) || !StringUtils.isNumeric(pipelineId)) {
             throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("pipeline.id.invalid", pipelineId), String.format("ID=%s is not valid pipeline ID", pipelineId));
         }
@@ -205,7 +205,7 @@ public class ExecutionResource {
 
         UserActor actor = this.userFacade.getUserActorByExternalId(newExecution.getUserActorExternalId());
 
-        execution = pipelineFacade.createExecution(pipeline);
+        final PipelineExecution execution = pipelineFacade.createExecution(pipeline);
         execution.setOwner(user);
         if (actor != null) {
             log.info("Obtained actor ID: {}, external ID {}", actor.getId(), actor.getExternalId());
