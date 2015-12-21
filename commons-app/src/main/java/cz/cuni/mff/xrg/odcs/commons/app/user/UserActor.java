@@ -18,7 +18,6 @@ package cz.cuni.mff.xrg.odcs.commons.app.user;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 
 import javax.persistence.*;
@@ -48,9 +47,6 @@ public class UserActor implements DataObject {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "actor", orphanRemoval = true)
     private Set<Pipeline> pipelines = new HashSet<>();
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "actor", orphanRemoval = true)
-    private Set<PipelineExecution> pipelineExecutions = new HashSet<>();
 
     @Override
     public Long getId() {
@@ -93,11 +89,4 @@ public class UserActor implements DataObject {
         this.pipelines = pipelines;
     }
 
-    public Set<PipelineExecution> getPipelineExecutions() {
-        return pipelineExecutions;
-    }
-
-    public void setPipelineExecutions(Set<PipelineExecution> pipelineExecutions) {
-        this.pipelineExecutions = pipelineExecutions;
-    }
 }

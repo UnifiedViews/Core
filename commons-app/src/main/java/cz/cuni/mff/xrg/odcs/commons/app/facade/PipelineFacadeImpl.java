@@ -142,7 +142,7 @@ class PipelineFacadeImpl implements PipelineFacade {
 
     /**
      * Returns list of all pipelines persisted in the database.
-     *
+     * 
      * @return list of pipelines
      * @deprecated performance intensive for many pipelines in DB, use lazy
      *             container with paging instead
@@ -269,32 +269,32 @@ class PipelineFacadeImpl implements PipelineFacade {
     @Override
     public void createOpenEvent(Pipeline pipeline) {
         // TODO Petr: UPDATE on openEvent takes too long ..
-//        LOG.trace("createOpenEvent() ... ");
-//        if (pipeline.getId() == null) {
-//            // pipeline has not been persisted yet
-//            // -> it cannot be opened by anyone
-//            return;
-//        }
-//
-//        User user = authCtx.getUser();
-//        if (user == null) {
-//            // user logged out in the meantime -> ignore
-//            return;
-//        }
-//        LOG.trace("createOpenEvent() ... (getOpenEvent)");
-//        OpenEvent event = openEventDao.getOpenEvent(pipeline, user);
-//
-//        if (event == null) {
-//            event = new OpenEvent();
-//            event.setPipeline(pipeline);
-//            event.setUser(user);
-//        }
-//
-//        LOG.trace("createOpenEvent() ... (saving)");
-//        event.setTimestamp(new Date());
-//        openEventDao.save(event);
-//
-//        LOG.trace("createOpenEvent() ... done");
+        //        LOG.trace("createOpenEvent() ... ");
+        //        if (pipeline.getId() == null) {
+        //            // pipeline has not been persisted yet
+        //            // -> it cannot be opened by anyone
+        //            return;
+        //        }
+        //
+        //        User user = authCtx.getUser();
+        //        if (user == null) {
+        //            // user logged out in the meantime -> ignore
+        //            return;
+        //        }
+        //        LOG.trace("createOpenEvent() ... (getOpenEvent)");
+        //        OpenEvent event = openEventDao.getOpenEvent(pipeline, user);
+        //
+        //        if (event == null) {
+        //            event = new OpenEvent();
+        //            event.setPipeline(pipeline);
+        //            event.setUser(user);
+        //        }
+        //
+        //        LOG.trace("createOpenEvent() ... (saving)");
+        //        event.setTimestamp(new Date());
+        //        openEventDao.save(event);
+        //
+        //        LOG.trace("createOpenEvent() ... done");
     }
 
     /**
@@ -311,26 +311,26 @@ class PipelineFacadeImpl implements PipelineFacade {
         return Arrays.asList();
 
         // TODO Petr: UPDATE on openEvent takes too long ..
-//        LOG.trace("getOpenPipelineEvents({}) ... ", pipeline.getId());
-//        if (pipeline.getId() == null) {
-//            // pipeline has not been persisted yet
-//            // -> it cannot be opened by anyone else
-//            return new ArrayList<>();
-//        }
-//
-//        Date from = new Date((new Date()).getTime() - PPL_OPEN_TTL * 1000);
-//
-//        if (authCtx != null) {
-//            User loggedUser = authCtx.getUser();
-//            List<OpenEvent> res = openEventDao.getOpenEvents(pipeline, from, loggedUser);
-//            LOG.trace("getOpenPipelineEvents({}) ... done", pipeline.getId());
-//            return res;
-//        } else {
-//            // user is null
-//            List<OpenEvent> res = openEventDao.getOpenEvents(pipeline, from);
-//            LOG.trace("getOpenPipelineEvents({}) ... done", pipeline.getId());
-//            return res;
-//        }
+        //        LOG.trace("getOpenPipelineEvents({}) ... ", pipeline.getId());
+        //        if (pipeline.getId() == null) {
+        //            // pipeline has not been persisted yet
+        //            // -> it cannot be opened by anyone else
+        //            return new ArrayList<>();
+        //        }
+        //
+        //        Date from = new Date((new Date()).getTime() - PPL_OPEN_TTL * 1000);
+        //
+        //        if (authCtx != null) {
+        //            User loggedUser = authCtx.getUser();
+        //            List<OpenEvent> res = openEventDao.getOpenEvents(pipeline, from, loggedUser);
+        //            LOG.trace("getOpenPipelineEvents({}) ... done", pipeline.getId());
+        //            return res;
+        //        } else {
+        //            // user is null
+        //            List<OpenEvent> res = openEventDao.getOpenEvents(pipeline, from);
+        //            LOG.trace("getOpenPipelineEvents({}) ... done", pipeline.getId());
+        //            return res;
+        //        }
     }
 
     /**
