@@ -42,6 +42,8 @@ import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 @Path("/pipelines")
@@ -55,6 +57,9 @@ public class ExecutionResource {
 
     @Autowired
     private UserFacade userFacade;
+
+    private static final Logger log = LoggerFactory.getLogger(
+            ExecutionResource.class);
 
     @GET
     @Path("/{pipelineid}/executions")
@@ -168,7 +173,7 @@ public class ExecutionResource {
         if (execution.getPipeline().getId().equals(pipeline.getId())) {
             return PipelineExecutionDTOConverter.convert(execution);
         } else {
-            throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("pipeline.execution.mismatch", executionId, pipelineId),String.format("PipelineExecution with id=%s is not execution of pipeline with id=%s!", executionId, pipelineId));
+            throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("pipeline.execution.mismatch", executionId, pipelineId), String.format("PipelineExecution with id=%s is not execution of pipeline with id=%s!", executionId, pipelineId));
         }
     }
 
@@ -181,27 +186,35 @@ public class ExecutionResource {
         if (StringUtils.isBlank(pipelineId) || !StringUtils.isNumeric(pipelineId)) {
             throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("pipeline.id.invalid", pipelineId), String.format("ID=%s is not valid pipeline ID", pipelineId));
         }
+
+        // try to get pipeline
+        Pipeline pipeline = pipelineFacade.getPipeline(Long.parseLong(pipelineId));
+        if (pipeline == null) {
+            throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.id.not.found", pipelineId), String.format("Pipeline with ID=%s doesn't exist!", pipelineId));
+        }
+
+        log.info("Pipeline exec in the request: {}", newExecution.toString());
+
+        // try to get user
+        User user = userFacade.getUserByExtId(newExecution.getUserExternalId());
+        if (user == null) {
+            throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("execution.user.id.not.found"), String.format("User with ID=%s could not be found.", newExecution.getUserExternalId()));
+        }
+
+        log.info("Obtained user ID: {}", user.getId());
+
+        UserActor actor = this.userFacade.getUserActorByExternalId(newExecution.getUserActorExternalId());
+
+        execution = pipelineFacade.createExecution(pipeline);
+        execution.setOwner(user);
+        if (actor != null) {
+            log.info("Obtained actor ID: {}, external ID {}", actor.getId(), actor.getExternalId());
+            execution.setActor(actor);
+        }
+        execution.setDebugging(newExecution.isDebugging());
+        execution.setOrderNumber(1L);
+
         try {
-            // try to get pipeline
-            Pipeline pipeline = pipelineFacade.getPipeline(Long.parseLong(pipelineId));
-            if (pipeline == null) {
-                throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.id.not.found", pipelineId), String.format("Pipeline with ID=%s doesn't exist!", pipelineId));
-            }
-            // try to get user
-            User user = userFacade.getUserByExtId(newExecution.getUserExternalId());
-            if (user == null) {
-                throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("execution.user.id.not.found"), String.format("User with ID=%s could not be found.", newExecution.getUserExternalId()));
-            }
-
-            UserActor actor = this.userFacade.getUserActorByExternalId(newExecution.getUserActorExternalId());
-
-            execution = pipelineFacade.createExecution(pipeline);
-            execution.setOwner(user);
-            if (actor != null) {
-                execution.setActor(actor);
-            }
-            execution.setDebugging(newExecution.isDebugging());
-            execution.setOrderNumber(1L);
             pipelineFacade.save(execution);
         } catch (ApiException e) {
             throw e;
@@ -242,7 +255,7 @@ public class ExecutionResource {
             List<MessageRecord> events = dpuFacade.getAllDPURecords(execution);
             return PipelineExecutionEventDTOConverter.convert(events);
         } else {
-            throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("pipeline.execution.mismatch", executionId, pipelineId),String.format("PipelineExecution with id=%s is not execution of pipeline with id=%s!", executionId, pipelineId));
+            throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("pipeline.execution.mismatch", executionId, pipelineId), String.format("PipelineExecution with id=%s is not execution of pipeline with id=%s!", executionId, pipelineId));
         }
     }
 }

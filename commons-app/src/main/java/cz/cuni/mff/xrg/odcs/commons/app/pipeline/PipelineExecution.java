@@ -134,7 +134,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
     /**
      * Owner ie. author of the execution.
      */
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.PERSIST, optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = true)
     private User owner;
 
