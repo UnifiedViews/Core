@@ -56,8 +56,10 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.JDBC_URL;
 public class DatabaseConstraintsTest {
 
     private static EntityManagerFactory factory;
+
     private static Server dbServer;
-    private static final String DB_URL= "jdbc:h2:mem:test_mem";
+
+    private static final String DB_URL = "jdbc:h2:mem:test_mem";
 
     @BeforeClass
     public static void init() throws SQLException {
@@ -68,7 +70,7 @@ public class DatabaseConstraintsTest {
         properties.put(JDBC_URL, DB_URL);
         factory = Persistence.createEntityManagerFactory("odcs", properties);
 
-        String disableCryptography = ConfigProperty.CRYPTOGRAPHY_ENABLED.toString() +"="+ Boolean.FALSE.toString();
+        String disableCryptography = ConfigProperty.CRYPTOGRAPHY_ENABLED.toString() + "=" + Boolean.FALSE.toString();
         AppConfig.loadFrom(new CharSequenceInputStream(disableCryptography, Charset.defaultCharset()));
     }
 
@@ -217,30 +219,30 @@ public class DatabaseConstraintsTest {
         Assert.assertTrue(user.getRoles().isEmpty());
     }
 
-    @Test
-    public void ON_DELETE_usr_user_DELETE_exec_pipeline() {
-        new DeleteConstraintTest() {
-
-            @Override
-            Object createReferencedInstance(EntityManager em) {
-                em.getTransaction().begin();
-                User user = new User();
-                user.setPassword("pwd");
-                user.setUsername("user_2");
-                user.setExternalIdentifier("dummy");
-                PipelineExecution pipelineExecution = new PipelineExecution();
-                pipelineExecution.setOwner(user);
-                pipelineExecution.setOrderNumber(1l);
-
-                em.persist(user);
-                em.persist(pipelineExecution);
-                em.getTransaction().commit();
-
-                return user;
-            }
-
-        }.ensureReferencingInstanceDelete(PipelineExecution.class, User.class);
-    }
+    //    @Test
+    //    public void ON_DELETE_usr_user_DELETE_exec_pipeline() {
+    //        new DeleteConstraintTest() {
+    //
+    //            @Override
+    //            Object createReferencedInstance(EntityManager em) {
+    //                em.getTransaction().begin();
+    //                User user = new User();
+    //                user.setPassword("pwd");
+    //                user.setUsername("user_2");
+    //                user.setExternalIdentifier("dummy");
+    //                PipelineExecution pipelineExecution = new PipelineExecution();
+    //                pipelineExecution.setOwner(user);
+    //                pipelineExecution.setOrderNumber(1l);
+    //
+    //                em.persist(user);
+    //                em.persist(pipelineExecution);
+    //                em.getTransaction().commit();
+    //
+    //                return user;
+    //            }
+    //
+    //        }.ensureReferencingInstanceDelete(PipelineExecution.class, User.class);
+    //    }
 
     @Test
     public void ON_DELETE_user_actor_DELETE_exec_pipeline() {
