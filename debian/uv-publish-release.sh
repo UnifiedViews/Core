@@ -1,5 +1,6 @@
 #!/bin/bash
 #called e.g. with argument uv-release-2.3.0
+#includes paths being specific for tomas-knap's machine
 
 TIME=$(date +%Y%m%d_%H%M%S_%N)
 LOG_FILE=/Users/tomasknap/.aptly/uv-release.log
@@ -30,12 +31,12 @@ aptly snapshot create $snapshot_name from repo uv-release  #create snapshot
 aptly publish snapshot -distribution=wheezy -architectures=i386,amd64 $snapshot_name   #publish snapshot
 
 #send to the server, available at http://odcs.xrg.cz/unifiedviews/
-scp -r -P 42222 /Users/tomasknap/.aptly/public/* knap@odcs.xrg.cz:/data/intlib/unifiedviews/
+scp -r -P 42222 /Users/tomasknap/.aptly/public/* knap@odcs.xrg.cz:/data/intlib/debian/
 echo "end publishing"
 
 
 #Please setup your webserver to serve directory '/Users/tomasknap/.aptly/public' with autoindexing.
-#echo "deb http://packages.unifiedviews.eu/unifiedviews/ wheezy main" > /etc/apt/sources.list.d/unifiedviews.list
+#echo "deb http://packages.unifiedviews.eu/debian/ wheezy main" > /etc/apt/sources.list.d/unifiedviews.list
 #Don't forget to add your GPG key to apt with apt-key.
 #wget -O - http://packages.unifiedviews.eu/key/unifiedviews.gpg.key | apt-key add -
 
