@@ -72,7 +72,7 @@ import cz.cuni.mff.xrg.odcs.frontend.navigation.ParametersHandler;
 /**
  * GUI for Scheduler page which opens from the main menu. Contains table with
  * scheduler rules and button for scheduler rule creation.
- *
+ * 
  * @author Maria Kukhar
  */
 @org.springframework.stereotype.Component
@@ -170,30 +170,56 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner, Prese
         }
         setCompositionRoot(mainLayout);
 
-        refreshManager = ((AppEntry) UI.getCurrent()).getRefreshManager();
-        refreshManager.addListener(RefreshManager.SCHEDULER, new Refresher.RefreshListener() {
+        addRefreshListener();
+
+        setParameters(ParametersHandler.getConfiguration(event.getParameters()));
+    }
+
+    @Override
+    public Object enter() {
+        if (!isMainLayoutInitialized) {
+            buildMainLayout();
+            isMainLayoutInitialized = true;
+        }
+        setCompositionRoot(mainLayout);
+
+        addRefreshListener();
+
+        return this;
+    }
+
+    private void addRefreshListener() {
+        this.refreshManager = ((AppEntry) UI.getCurrent()).getRefreshManager();
+        this.refreshManager.addListener(RefreshManager.SCHEDULER, new Refresher.RefreshListener() {
             private long lastRefreshFinished = 0;
 
             @Override
             public void refresh(Refresher source) {
                 if (new Date().getTime() - lastRefreshFinished > RefreshManager.MIN_REFRESH_INTERVAL) {
-                    boolean hasModifiedExecutions = pipelineFacade.hasModifiedExecutions(lastLoad);
-                    if (hasModifiedExecutions) {
-                        lastLoad = new Date();
-                        refreshData();
-                    }
+                    // TODO In the following lines "hasModifiedExecutions" is 
+                    // based on checking pipeline executions instead of checking changes in the scheduled events
+                    // Thus, it is disabled. If needed, it has to be adjusted before. 
+                    //
+                    //                    boolean hasModifiedExecutions = pipelineFacade.hasModifiedExecutions(lastLoad);
+                    //                    if (hasModifiedExecutions) {
+                    //                        LOG.debug("Modified executions found, refreshing ...");
+                    //                        lastLoad = new Date();
+                    //                        refreshData();
+                    //                        LOG.debug("Scheduler refreshed.");
+                    //                    }
+                    refreshData();
                     LOG.debug("Scheduler refreshed.");
+
                     lastRefreshFinished = new Date().getTime();
                 }
             }
         });
-        refreshManager.triggerRefresh();
-        setParameters(ParametersHandler.getConfiguration(event.getParameters()));
+        this.refreshManager.triggerRefresh();
     }
 
     /**
      * Builds main layout contains table with created scheduling pipeline rules.
-     *
+     * 
      * @return mainLayout VerticalLayout with all components of Scheduler page.
      */
     private VerticalLayout buildMainLayout() {
@@ -245,9 +271,9 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner, Prese
         topLine.addComponent(buttonDeleteFilters);
         //topLine.setComponentAlignment(buttonDeleteFilters, Alignment.MIDDLE_RIGHT);
 
-//		Label topLineFiller = new Label();
-//		topLine.addComponentAsFirst(topLineFiller);
-//		topLine.setExpandRatio(topLineFiller, 1.0f);
+        //		Label topLineFiller = new Label();
+        //		topLine.addComponentAsFirst(topLineFiller);
+        //		topLine.setExpandRatio(topLineFiller, 1.0f);
         mainLayout.addComponent(topLine);
 
         tableData = getTableData(scheduleFacade.getAllSchedules());
@@ -323,7 +349,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner, Prese
 
     /**
      * Container with data for table {@link #schedulerTable}.
-     *
+     * 
      * @param data
      *            List of {@link Schedule}.
      * @return result IndexedContainer with data for {@link #schedulerTable}.
@@ -429,16 +455,16 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner, Prese
             }
 
             result.getContainerProperty(id, "schid").setValue(item.getId());
-//			if (item.getOwner() == null) {
-//				result.getContainerProperty(id, "user").setValue(" ");
-//			} else {
-//				result.getContainerProperty(id, "user").setValue(item.getOwner().getUsername());
-//			}
+            //			if (item.getOwner() == null) {
+            //				result.getContainerProperty(id, "user").setValue(" ");
+            //			} else {
+            //				result.getContainerProperty(id, "user").setValue(item.getOwner().getUsername());
+            //			}
             String pipeline = item.getPipeline().getName();
             pipeline = pipeline.length() > 158 ? pipeline.substring(0, 156) + "..." : pipeline;
             result.getContainerProperty(id, "pipeline").setValue(pipeline);
             String description = StringUtils.abbreviate(item.getDescription(), Utils.getColumnMaxLenght());
-//			result.getContainerProperty(id, "description").setValue(description);
+            //			result.getContainerProperty(id, "description").setValue(description);
 
             PipelineExecution exec = pipelineFacade.getLastExec(item, PipelineExecutionStatus.FINISHED);
             result.getContainerProperty(id, "duration").setValue(DecorationHelper.getDuration(exec));
@@ -472,8 +498,8 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner, Prese
     }
 
     /**
-     * Shows dialog for scheduling pipeline with given scheduling rule.
-     *
+     * Shows dialog for scheduling pipeline (@SchedulePipeline) with given scheduling rule.
+     * 
      * @param id
      *            Id of schedule to show.
      */
@@ -486,6 +512,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner, Prese
                 @Override
                 public void windowClose(CloseEvent e) {
                     refreshData();
+                    addRefreshListener();
                 }
             });
         }
@@ -512,7 +539,7 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner, Prese
 
     /**
      * Generate column "commands" in the table {@link #schedulerTable}.
-     *
+     * 
      * @author Maria Kukhar
      */
     class actionColumnGenerator implements CustomTable.ColumnGenerator {
@@ -661,36 +688,6 @@ public class Scheduler extends ViewComponent implements PostLogoutCleaner, Prese
         ParametersHandler handler = new ParametersHandler(uriFragment);
         handler.addParameter("schedule", "" + scheduleId);
         ((AppEntry) UI.getCurrent()).setUriFragment(handler.getUriFragment(), false);
-    }
-
-    @Override
-    public Object enter() {
-        if (!isMainLayoutInitialized) {
-            buildMainLayout();
-            isMainLayoutInitialized = true;
-        }
-        setCompositionRoot(mainLayout);
-
-        refreshManager = ((AppEntry) UI.getCurrent()).getRefreshManager();
-        refreshManager.addListener(RefreshManager.SCHEDULER, new Refresher.RefreshListener() {
-            private long lastRefreshFinished = 0;
-
-            @Override
-            public void refresh(Refresher source) {
-                if (new Date().getTime() - lastRefreshFinished > RefreshManager.MIN_REFRESH_INTERVAL) {
-                    boolean hasModifiedExecutions = pipelineFacade.hasModifiedExecutions(lastLoad);
-                    if (hasModifiedExecutions) {
-                        lastLoad = new Date();
-                        refreshData();
-                    }
-                    LOG.debug("Scheduler refreshed.");
-                    lastRefreshFinished = new Date().getTime();
-                }
-            }
-        });
-        refreshManager.triggerRefresh();
-
-        return this;
     }
 
     @Override
