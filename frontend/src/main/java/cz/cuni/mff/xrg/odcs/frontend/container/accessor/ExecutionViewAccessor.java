@@ -16,17 +16,17 @@
  */
 package cz.cuni.mff.xrg.odcs.frontend.container.accessor;
 
-import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.ClassAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import eu.unifiedviews.commons.dao.view.ExecutionView;
+
+import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Accessor for {@link Pipeline}s.
@@ -149,7 +149,7 @@ public class ExecutionViewAccessor implements ClassAccessor<ExecutionView> {
             case "lastChange":
                 return execution.getLastChange();
             case COLUMN_SCHEDULE:
-                return execution.getSchedule() != null;
+                return execution.getScheduleId() != null;
             default:
                 return null;
         }

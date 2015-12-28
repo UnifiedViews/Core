@@ -33,7 +33,7 @@ import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 
 /**
  * Holds information about single {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit} context.
- *
+ * 
  * @author Petyr
  */
 @Entity
@@ -46,6 +46,7 @@ public class DataUnitInfo implements DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_dataunit_info")
     @SequenceGenerator(name = "seq_exec_dataunit_info", allocationSize = 1)
+    @Column(name = "id")
     private Long id;
 
     /**
@@ -58,14 +59,14 @@ public class DataUnitInfo implements DataObject {
      * Name of DataUnit given to the DataUnit by DPU or changed by user (on the
      * edge).
      */
-    @Column(name = "name")
+    @Column(name = "name", length = 2048)
     private String name;
 
     /**
      * DataUnit type.
      */
     @Enumerated(EnumType.ORDINAL)
-    @Column(name = "type")
+    @Column(name = "type", columnDefinition = "SMALLINT")
     private ManagableDataUnit.Type type;
 
     /**
@@ -138,7 +139,7 @@ public class DataUnitInfo implements DataObject {
     /**
      * Returns true if two objects represent the same pipeline. This holds if
      * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
-     *
+     * 
      * @param obj
      * @return true if both objects represent the same pipeline
      */
@@ -162,7 +163,7 @@ public class DataUnitInfo implements DataObject {
 
     /**
      * Hashcode is compatible with {@link #equals(java.lang.Object)}.
-     *
+     * 
      * @return The value of hashcode.
      */
     @Override

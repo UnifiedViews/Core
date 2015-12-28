@@ -108,6 +108,9 @@ public enum ConfigProperty {
     CRYPTOGRAPHY_ENABLED("cryptography.enabled"),
     CRYPTOGRAPHY_KEY_FILE("cryptography.key.file"),
 
+    RENEW_IFRAME_ENABLED("frontend.renew.iframe.enabled"),
+    RENEW_IFRAME_SRC("frontend.renew.iframe.src"),
+
     DPU_UV_T_FILES_METADATA_POOL_PARTY_PASSWORD("dpu.uv-t-filesMetadata.pool.party.password"),
     DPU_UV_L_RELATIONAL_TO_CKAN_SECRET_TOKEN("dpu.uv-l-relationalToCkan.secret.token"),
     DPU_UV_L_RELATIONAL_DIFF_TO_CKAN_SECRET_TOKEN("dpu.uv-l-relationalDiffToCkan.secret.token"),

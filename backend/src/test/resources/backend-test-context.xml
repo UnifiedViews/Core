@@ -50,10 +50,7 @@
         <property name="entityManagerFactory" ref="emf"/>
     </bean>
 
-    <jdbc:embedded-database id="dataSource" type="H2">
-        <jdbc:script location="classpath:db/schema.sql"/>
-        <jdbc:script location="classpath:db/data.sql"/>
-    </jdbc:embedded-database>
+    <jdbc:embedded-database id="dataSource" type="H2"/>
 
     <!-- engine itself, take care about executing of PipelineExecution -->
     <!--<bean id="engine" class="cz.cuni.mff.xrg.odcs.backend.execution.Engine"/>-->

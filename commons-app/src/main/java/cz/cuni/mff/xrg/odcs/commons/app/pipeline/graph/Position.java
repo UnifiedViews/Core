@@ -20,18 +20,11 @@
  */
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph;
 
-import java.awt.Point;
-import java.util.Objects;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+
+import javax.persistence.*;
+import java.awt.*;
+import java.util.Objects;
 
 /**
  * Represent coordinates of object in system (on canvas).
@@ -48,6 +41,7 @@ public class Position implements DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_position")
     @SequenceGenerator(name = "seq_ppl_position", allocationSize = 1)
+    @Column(name = "id")
     private Long id;
 
     /**
@@ -61,6 +55,9 @@ public class Position implements DataObject {
      */
     @Column(name = "pos_y")
     private int y;
+
+    @OneToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private Node node;
 
     /**
      * No-arg constructor for JPA
@@ -203,4 +200,11 @@ public class Position implements DataObject {
         return hash;
     }
 
+    public Node getNode() {
+        return node;
+    }
+
+    public void setNode(Node node) {
+        this.node = node;
+    }
 }

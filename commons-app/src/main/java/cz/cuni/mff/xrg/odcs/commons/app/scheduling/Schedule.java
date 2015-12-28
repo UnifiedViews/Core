@@ -16,28 +16,29 @@
  */
 package cz.cuni.mff.xrg.odcs.commons.app.scheduling;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.persistence.annotations.Index;
+
+import javax.persistence.*;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.persistence.*;
-
-import org.apache.commons.lang3.StringUtils;
-
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
-import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
-import cz.cuni.mff.xrg.odcs.commons.app.user.User;
-import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
-
 /**
  * Represent a scheduler plan. A single plan execute just one pipeline.
- *
+ * 
  * @author Petyr
  */
 @Entity
 @Table(name = "exec_schedule")
+@Index(name = "ix_EXEC_SCHEDULE", columnNames = "pipeline_id, type, user_id, enabled")
 public class Schedule implements OwnedEntity, DataObject {
 
     /**
@@ -46,12 +47,14 @@ public class Schedule implements OwnedEntity, DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_schedule")
     @SequenceGenerator(name = "seq_exec_schedule", allocationSize = 1)
+    @Column(name = "id")
     private Long id;
 
     /**
      * Plan's description.
      */
-    @Column
+    @Lob
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     /**
@@ -78,7 +81,7 @@ public class Schedule implements OwnedEntity, DataObject {
      * Schedule rule type.
      */
     @Enumerated(EnumType.ORDINAL)
-    @Column(name = "type")
+    @Column(name = "type", columnDefinition = "SMALLINT")
     private ScheduleType type;
 
     /**
@@ -150,8 +153,18 @@ public class Schedule implements OwnedEntity, DataObject {
     @Column(name = "strict_tolerance")
     private Integer strictToleranceMinutes;
 
-    @Column(name = "priority")
+    @Column(name = "priority", nullable = false)
     private Long priority;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "schedule")
+    private Set<PipelineExecution> pipelineExecutions = new HashSet<>();
+
+    @PreRemove
+    public void preRemove() {
+        for (PipelineExecution pipelineExecution : pipelineExecutions) {
+            pipelineExecution.setSchedule(null);
+        }
+    }
 
     /**
      * Empty constructor. Used by JPA. Do not use otherwise.
@@ -187,6 +200,9 @@ public class Schedule implements OwnedEntity, DataObject {
      */
     public void setPipeline(Pipeline pipeline) {
         this.pipeline = pipeline;
+
+        if (pipeline != null)
+            pipeline.getSchedules().add(this);
     }
 
     /**
@@ -268,7 +284,7 @@ public class Schedule implements OwnedEntity, DataObject {
 
     /**
      * This value is used only if the schedule type is {@link ScheduleType#PERIODICALLY}.
-     *
+     * 
      * @return Period in which create the execution.
      */
     public Integer getPeriod() {
@@ -277,7 +293,7 @@ public class Schedule implements OwnedEntity, DataObject {
 
     /**
      * * This value is used only if the schedule type is {@link ScheduleType#PERIODICALLY}.
-     *
+     * 
      * @param period
      *            Period in which create the execution.
      */
@@ -287,7 +303,7 @@ public class Schedule implements OwnedEntity, DataObject {
 
     /**
      * * This value is used only if the schedule type is {@link ScheduleType#PERIODICALLY}.
-     *
+     * 
      * @return Period unit.
      */
     public PeriodUnit getPeriodUnit() {
@@ -296,7 +312,7 @@ public class Schedule implements OwnedEntity, DataObject {
 
     /**
      * * This value is used only if the schedule type is {@link ScheduleType#PERIODICALLY}.
-     *
+     * 
      * @param periodUnit
      *            Period unit.
      */
@@ -308,7 +324,7 @@ public class Schedule implements OwnedEntity, DataObject {
      * Schedules this job after every run of given pipelines. All the pipelines
      * must be executed in order to fire this schedule. This value is used only
      * if the schedule type is {@link ScheduleType#AFTER_PIPELINE}.
-     *
+     * 
      * @param pipeline
      *            That has to be executed in order to enable this schedule
      *            to fire.
@@ -321,7 +337,7 @@ public class Schedule implements OwnedEntity, DataObject {
 
     /**
      * This value is used only if the schedule type is {@link ScheduleType#AFTER_PIPELINE}.
-     *
+     * 
      * @return List of pipelines that has to be executed in order to fire this
      *         schedule.
      */
@@ -345,7 +361,7 @@ public class Schedule implements OwnedEntity, DataObject {
 
     /**
      * Can be null, in such case the owner notification settings are used.
-     *
+     * 
      * @return Notification rule for the schedule or null.
      */
     public ScheduleNotificationRecord getNotification() {
@@ -354,7 +370,7 @@ public class Schedule implements OwnedEntity, DataObject {
 
     /**
      * If set then overwrite the owner notification setting.
-     *
+     * 
      * @param notification
      *            Notification rule for the schedule.
      */
@@ -373,11 +389,14 @@ public class Schedule implements OwnedEntity, DataObject {
      */
     public void setOwner(User owner) {
         this.owner = owner;
+
+        if (owner != null)
+            owner.getSchedules().add(this);
     }
 
     /**
      * This value is used only if the schedule type is {@link ScheduleType#PERIODICALLY}.
-     *
+     * 
      * @return True if the pipeline is strictly timed.
      */
     public boolean isStrictlyTimed() {
@@ -386,7 +405,7 @@ public class Schedule implements OwnedEntity, DataObject {
 
     /**
      * This options is used only if the schedule type is {@link ScheduleType#PERIODICALLY}.
-     *
+     * 
      * @param strictTiming
      *            True to use strict timing.
      */
@@ -398,7 +417,7 @@ public class Schedule implements OwnedEntity, DataObject {
      * Tolerance for schedule. If negative then enable pipeline to run sooner
      * but any delay will be ignored. If positive then enable delay, but prevent
      * from running earlier. * @return tolerance for execution jitter
-     *
+     * 
      * @return Tolerance for strict timing in minutes.
      */
     public Integer getStrictToleranceMinutes() {
@@ -409,7 +428,7 @@ public class Schedule implements OwnedEntity, DataObject {
      * Set tolerance. If negative then enable pipeline to run sooner but any
      * delay will be ignored. If positive then enable delay, but prevent from
      * running earlier.
-     *
+     * 
      * @param strictToleranceMinutes
      *            Tolerance for strict timing in minutes.
      */
@@ -420,7 +439,7 @@ public class Schedule implements OwnedEntity, DataObject {
     /**
      * Return time of the next execution. It the schedule is not time dependent
      * return null.
-     *
+     * 
      * @return Estimate of time for next execution or null.
      */
     public Date getNextExecutionTimeInfo() {
@@ -435,18 +454,10 @@ public class Schedule implements OwnedEntity, DataObject {
         this.priority = priority;
     }
 
-    public UserActor getActor() {
-        return this.actor;
-    }
-
-    public void setActor(UserActor actor) {
-        this.actor = actor;
-    }
-
     /**
      * Returns true if two objects represent the same pipeline. This holds if
      * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
-     *
+     * 
      * @param obj
      * @return true if both objects represent the same pipeline
      */
@@ -470,7 +481,7 @@ public class Schedule implements OwnedEntity, DataObject {
 
     /**
      * Hashcode is compatible with {@link #equals(java.lang.Object)}.
-     *
+     * 
      * @return The value of hashcode.
      */
     @Override
@@ -483,4 +494,22 @@ public class Schedule implements OwnedEntity, DataObject {
         return hash;
     }
 
+    public Set<PipelineExecution> getPipelineExecutions() {
+        return pipelineExecutions;
+    }
+
+    public void setPipelineExecutions(Set<PipelineExecution> pipelineExecutions) {
+        this.pipelineExecutions = pipelineExecutions;
+    }
+
+    public UserActor getActor() {
+        return actor;
+    }
+
+    public void setActor(UserActor actor) {
+        this.actor = actor;
+
+        if (actor != null)
+            actor.getSchedules().add(this);
+    }
 }

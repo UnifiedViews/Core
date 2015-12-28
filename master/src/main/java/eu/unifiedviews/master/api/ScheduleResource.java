@@ -16,28 +16,6 @@
  */
 package eu.unifiedviews.master.api;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
@@ -52,8 +30,14 @@ import eu.unifiedviews.master.i18n.Messages;
 import eu.unifiedviews.master.model.ApiException;
 import eu.unifiedviews.master.model.PipelineScheduleDTO;
 import eu.unifiedviews.master.model.ScheduledExecutionDTO;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.util.*;
 
 @Component
 @Path("/pipelines")
@@ -84,7 +68,7 @@ public class ScheduleResource {
                 throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.id.not.found", id), String.format("Pipeline with id=%s doesn't exist!", id));
             }
             schedules = scheduleFacade.getSchedulesFor(pipeline);
-            if (isEmpty(schedules)) {
+            if (schedules == null || schedules.isEmpty()) {
                 throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.get.schedule.general.error"), String.format("null pipeline schedule returned. There is probably a problem with database."));
             }
         } catch (ApiException e) {

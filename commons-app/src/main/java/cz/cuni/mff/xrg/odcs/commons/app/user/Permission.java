@@ -16,15 +16,11 @@
  */
 package cz.cuni.mff.xrg.odcs.commons.app.user;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-
 import org.springframework.security.core.GrantedAuthority;
+
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "permission")
@@ -38,12 +34,16 @@ public class Permission implements GrantedAuthority {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_permission")
     @SequenceGenerator(name = "seq_permission", allocationSize = 1)
+    @Column(name = "id")
     private Long id;
 
-    @Column
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "permissions")
+    private Set<RoleEntity> roles = new HashSet<>();
+
+    @Column(name = "name", nullable = false, unique = true, length = 142)
     private String name;
 
-    @Column
+    @Column(name = "sharedentityinstancewriterequired")
     private boolean sharedEntityInstanceWriteRequired;
 
     public Long getId() {
@@ -73,5 +73,13 @@ public class Permission implements GrantedAuthority {
     @Override
     public String getAuthority() {
         return name;
+    }
+
+    public Set<RoleEntity> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<RoleEntity> roles) {
+        this.roles = roles;
     }
 }

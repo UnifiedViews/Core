@@ -16,11 +16,11 @@
  */
 package cz.cuni.mff.xrg.odcs.backend.scheduling;
 
-import java.util.Date;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-
+import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFinished;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,11 +30,9 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
-import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineFinished;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
+import javax.annotation.PostConstruct;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Take care about execution of scheduled plans.
@@ -45,9 +43,9 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
 
     private static final Logger LOG = LoggerFactory.getLogger(Schedule.class);
 
+
     @Autowired
     private AppConfig appConfig;
-
     /**
      * Schedule facade.
      */
@@ -104,7 +102,7 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
         Date now = new Date();
         // get all pipelines that are time based
         LOG.debug("Going to check all time based not queued schedules");
-        List<Schedule> candidates = this.scheduleFacade.getAllTimeBasedNotQueuedRunningForCluster();
+        List<Schedule> candidates = scheduleFacade.getAllTimeBasedNotQueuedRunningForCluster();
         LOG.debug("Found {} schedule candidates, that could be executed", candidates.size());
         // check ..
         for (Schedule schedule : candidates) {

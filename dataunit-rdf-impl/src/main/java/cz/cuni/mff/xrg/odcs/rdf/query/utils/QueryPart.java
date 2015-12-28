@@ -16,15 +16,15 @@
  */
 package cz.cuni.mff.xrg.odcs.rdf.query.utils;
 
+import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 
 /**
  * For given SELECT/CONTRUCT/DESCRIBE query you can split it for 2 parts -
  * prefixes and rest of query.
- * Support for {@link SPARQLQueryValidator}.
+ * Support for {@link cz.cuni.mff.xrg.odcs.rdf.validators.SPARQLQueryValidator}.
  * 
  * @author Jiri Tomes
  */

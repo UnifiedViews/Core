@@ -16,27 +16,23 @@
  */
 package cz.cuni.mff.xrg.odcs.commons.app.execution.log;
 
-import java.util.Objects;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Table;
-
-import org.apache.commons.lang3.StringUtils;
-
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.persistence.annotations.Index;
+
+import javax.persistence.*;
+import java.util.Objects;
 
 /**
  * Represents log message loaded from database.
- *
+ * 
  * @author Petyr
  */
 @Entity
 @Table(name = "logging")
+@Index(name = "ix_LOGGING", columnNames = "dpu, execution, relative_id")
 public class Log implements DataObject {
 
     /**
@@ -51,51 +47,57 @@ public class Log implements DataObject {
 
     /**
      * Primary key of message stored in database.
+     * The naming of the sequence generator "tablename_columname_seq" is the PostgreSQL default
+     * sequence naming for SERIAL
      */
     @Id
-    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "logging_id_seq")
+    @SequenceGenerator(name = "logging_id_seq", sequenceName = "logging_id_seq", allocationSize = 1)
+    @Column(name = "id", nullable = false)
     private Long id;
 
     /**
      * Level as string, so it can be persisted in DB.
      */
-    @Column(name = "log_level")
+    @Column(name = "log_level", nullable = false)
     private Integer logLevel;
 
     /**
      * Timestamp of log message.
      */
-    @Column(name = "timestmp")
+    @Column(name = "timestmp", nullable = false)
     private Long timestamp;
 
     /**
      * Source class of log message.
      */
-    @Column(name = "logger")
+    @Column(name = "logger", nullable = false)
     private String source;
 
     /**
      * Text of formatted log massage.
      */
-    @Column(name = "message")
+    @Lob
+    @Column(name = "message", columnDefinition = "TEXT")
     private String message;
 
     /**
      * Id of given DPU.
      */
-    @JoinColumn(name = "dpu")
+    @Column(name = "dpu")
     private Long dpu;
 
     /**
      * Id of execution.
      */
-    @JoinColumn(name = "execution")
+    @Column(name = "execution", nullable = false)
     private Long execution;
 
     /**
      * Mapping to stack trace.
      */
-    @Column(name = "stack_trace")
+    @Lob
+    @Column(name = "stack_trace", columnDefinition = "TEXT")
     private String stackTrace;
 
     /**
@@ -162,7 +164,7 @@ public class Log implements DataObject {
 
     /**
      * Stack trace for given log if exist.
-     *
+     * 
      * @return Empty string or stack trace. Never return null!
      */
     public String getStackTrace() {
@@ -179,7 +181,7 @@ public class Log implements DataObject {
     /**
      * Returns true if two objects represent the same pipeline. This holds if
      * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
-     *
+     * 
      * @param obj
      * @return true if both objects represent the same pipeline
      */
@@ -203,7 +205,7 @@ public class Log implements DataObject {
 
     /**
      * Hashcode is compatible with {@link #equals(java.lang.Object)}.
-     *
+     * 
      * @return The value of hashcode.
      */
     @Override

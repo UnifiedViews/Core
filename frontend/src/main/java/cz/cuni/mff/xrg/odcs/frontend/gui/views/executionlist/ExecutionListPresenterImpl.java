@@ -16,29 +16,15 @@
  */
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-import org.tepi.filtertable.datefilter.DateInterval;
-import org.tepi.filtertable.numberfilter.NumberInterval;
-
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
-
 import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.DbMessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
@@ -47,6 +33,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionViewAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor;
+import cz.cuni.mff.xrg.odcs.frontend.doa.container.ContainerSourceBase;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbCachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.DebuggingView;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PostLogoutCleaner;
@@ -55,8 +42,17 @@ import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ParametersHandler;
-import eu.unifiedviews.commons.dao.DBExecutionView;
 import eu.unifiedviews.commons.dao.view.ExecutionView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.tepi.filtertable.datefilter.DateInterval;
+import org.tepi.filtertable.numberfilter.NumberInterval;
+
+import java.util.Date;
+import java.util.Map;
 
 /**
  * Presenter for {@link ExecutionListPresenter}.
@@ -69,12 +65,6 @@ import eu.unifiedviews.commons.dao.view.ExecutionView;
 public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostLogoutCleaner {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExecutionListPresenterImpl.class);
-
-    @Autowired
-    private DbExecution dbExecution;
-
-    @Autowired
-    private DBExecutionView dbExecutionView;
 
     @Autowired
     private DbMessageRecord dbMessageRecord;
@@ -95,16 +85,11 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
     private PermissionUtils permissionUtils;
 
     private ExecutionListData dataObject;
-
-    private DbCachedSource<ExecutionView> cachedSource;
-
     private RefreshManager refreshManager;
-
     private Date lastLoad = new Date(0L);
-
     private ClassNavigator navigator;
-
     private boolean isInitialized = false;
+    private ContainerSourceBase<ExecutionView> executionViewSource;
 
     @Override
     public Object enter() {
@@ -115,14 +100,14 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
         }
 
         navigator = ((AppEntry) UI.getCurrent()).getNavigation();
-        // prepare data object
-//        cachedSource = new DbCachedSource<>(dbExecution, new ExecutionAccessor(), utils.getPageLength());
+        executionViewSource = new ContainerSourceBase<>(
+            pipelineHelper.getExecutionViews(),
+            new ExecutionViewAccessor());
 
-        cachedSource = new DbCachedSource<>(dbExecutionView, new ExecutionViewAccessor(), utils.getPageLength());
-
-        ReadOnlyContainer c = new ReadOnlyContainer<>(cachedSource);
+        ReadOnlyContainer c = new ReadOnlyContainer<>(executionViewSource);
         c.sort(new Object[] { "id" }, new boolean[] { false });
         dataObject = new ExecutionListData(c);
+
         // prepare view
         Object viewObject = view.enter(this);
         addRefreshManager();
@@ -199,12 +184,12 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
     @Override
     public void refreshEventHandler() {
         boolean hasModifiedExecutions = pipelineFacade.hasModifiedExecutions(lastLoad)
-                || (cachedSource.size() > 0 &&
-                pipelineFacade.hasDeletedExecutions((List<Long>) cachedSource.getItemIds(0, cachedSource.size())));
+                || (executionViewSource.size() > 0 &&
+                pipelineFacade.hasDeletedExecutions(executionViewSource.getItemIds(0, executionViewSource.size())));
         view.refresh(hasModifiedExecutions);
         if (hasModifiedExecutions) {
             lastLoad = new Date();
-            cachedSource.invalidate();
+            executionViewSource.setDataItems(pipelineHelper.getExecutionViews());
             dataObject.getContainer().refresh();
         }
     }

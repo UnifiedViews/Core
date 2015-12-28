@@ -16,17 +16,15 @@
  */
 package cz.cuni.mff.xrg.odcs.commons.app.dpu;
 
-import java.io.UnsupportedEncodingException;
-import java.util.Objects;
-
-import javax.persistence.*;
-
-import org.apache.commons.lang3.StringUtils;
-
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.persistence.*;
+import java.io.UnsupportedEncodingException;
+import java.util.Objects;
 
 /**
  * Represent imported DPU in database.
@@ -46,12 +44,13 @@ public abstract class DPURecord implements DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_dpu_record")
     @SequenceGenerator(name = "seq_dpu_record", allocationSize = 1)
+    @Column(name = "id")
     private Long id;
 
     /**
      * DPURecord name, provided by DPU, changeable by user.
      */
-    @Column(name = "name")
+    @Column(name = "name", length = 1024)
     private String name;
 
     /**
@@ -71,7 +70,8 @@ public abstract class DPURecord implements DataObject {
     /**
      * DPURecord description, can be provided by user or by the DPU's dialog.
      */
-    @Column(name = "description")
+    @Lob
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     /**
@@ -79,14 +79,6 @@ public abstract class DPURecord implements DataObject {
      */
     @Column(name = "configuration")
     private byte[] serializedConfiguration = NULL_CONFIG.getBytes();
-
-    /**
-     * If true configuration is in valid state.
-     * TODO: Remove as it's not used
-     */
-    @Deprecated
-    @Column(name = "config_valid", nullable = false)
-    private boolean configValid;
 
     /**
      * DPU instance. Created in {{@link #loadInstance(ModuleFacade)}.
@@ -129,7 +121,6 @@ public abstract class DPURecord implements DataObject {
             this.serializedConfiguration = dpuRecord.serializedConfiguration
                     .clone();
         }
-        this.configValid = dpuRecord.configValid;
     }
 
     /**

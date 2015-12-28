@@ -17,8 +17,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist;
 
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -36,7 +35,6 @@ import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
-
 import cz.cuni.mff.xrg.odcs.commons.app.auth.EntityPermissions;
 import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
@@ -48,12 +46,13 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportService;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineViewAccessor;
-import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbCachedSource;
+import cz.cuni.mff.xrg.odcs.frontend.doa.container.ContainerSourceBase;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
 import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.PipelineImport;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
@@ -64,8 +63,17 @@ import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ParametersHandler;
-import eu.unifiedviews.commons.dao.DBPipelineView;
 import eu.unifiedviews.commons.dao.view.PipelineView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.tepi.filtertable.numberfilter.NumberInterval;
+import org.vaadin.dialogs.ConfirmDialog;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Implementation of {@link PipelineListPresenter}.
@@ -81,9 +89,6 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
 
     @Autowired
     private PipelineFacade pipelineFacade;
-
-    @Autowired
-    private DBPipelineView dbPipelineView;
 
     @Autowired
     private PipelineViewAccessor pipelineViewAccessor;
@@ -110,9 +115,9 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
 
     private PipelineListData dataObject;
 
-    private DbCachedSource<PipelineView> cachedSource;
-
     private RefreshManager refreshManager;
+
+    private ContainerSourceBase<PipelineView> pipelineViewSource;
 
     private Date lastLoad = new Date(0L);
 
@@ -139,10 +144,11 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
         }
 
         navigator = ((AppEntry) UI.getCurrent()).getNavigation();
-        // prepare data object
-        cachedSource = new DbCachedSource<>(dbPipelineView, pipelineViewAccessor, utils.getPageLength());
-
-        dataObject = new PipelineListPresenter.PipelineListData(new ReadOnlyContainer<>(cachedSource));
+        pipelineViewSource = new ContainerSourceBase<>(
+                pipelineHelper.getPipelineViews(),
+                pipelineViewAccessor
+                );
+        dataObject = new PipelineListPresenter.PipelineListData(new ReadOnlyContainer<>(pipelineViewSource));
 
         // prepare view
         Object viewObject = view.enter(this);
@@ -170,8 +176,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
                 if (new Date().getTime() - lastRefreshFinished > RefreshManager.MIN_REFRESH_INTERVAL) {
                     boolean hasModifiedPipelinesOrExecutions = pipelineFacade.hasModifiedPipelines(lastLoad)
                             || pipelineFacade.hasModifiedExecutions(lastLoad)
-                            || (cachedSource.size() > 0 &&
-                            pipelineFacade.hasDeletedPipelines((List<Long>) cachedSource.getItemIds(0, cachedSource.size())));
+                            || pipelineFacade.hasDeletedPipelines(pipelineViewSource.getItemIds(0, pipelineViewSource.size()));
                     if (hasModifiedPipelinesOrExecutions) {
                         lastLoad = new Date();
                         refreshEventHandler();
@@ -211,7 +216,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
 
     @Override
     public void refreshEventHandler() {
-        cachedSource.invalidate();
+        pipelineViewSource.setDataItems(pipelineHelper.getPipelineViews());
         dataObject.getContainer().refresh();
         view.refreshTableControls();
     }
@@ -239,17 +244,15 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
         String message = Messages.getString("PipelineListPresenterImpl.delete.dialog", pipeline.getName());
         List<Schedule> schedules = scheduleFacade.getSchedulesFor(pipeline);
         if (!schedules.isEmpty()) {
-            HashSet<String> usersWithSchedules = new HashSet<>();
+            List<User> usersWithSchedules = new LinkedList<>();
             for (Schedule schedule : schedules) {
-                usersWithSchedules.add(schedule.getOwner().getUsername());
+                usersWithSchedules.add(schedule.getOwner());
             }
-            Iterator<String> it = usersWithSchedules.iterator();
-            String users = it.next();
-            while (it.hasNext()) {
-                users = users + ", " + it.next();
-            }
+
+            String users = getUserListAsString(usersWithSchedules);
+
             String scheduleMessage = Messages.getString("PipelineListPresenterImpl.pipeline.scheduled", users);
-            message = message + scheduleMessage;
+            message = message + " " + scheduleMessage;
         }
         ConfirmDialog.show(UI.getCurrent(),
                 Messages.getString("PipelineListPresenterImpl.delete.confirmation"), message, Messages.getString("PipelineListPresenterImpl.delete.confirmation.deleteButton"), Messages.getString("PipelineListPresenterImpl.delete.confirmation.cancelButton"), new ConfirmDialog.Listener() {
@@ -261,6 +264,26 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
                         }
                     }
                 });
+    }
+
+    private static String getUserListAsString(List<User> userList) {
+        StringBuilder usersString = new StringBuilder();
+        for (User user : userList) {
+            String userName = user.getUsername();
+            if (user.getFullName() != null && !user.getFullName().equals("")) {
+                userName = user.getFullName();
+            }
+            if (user.getUserActor() != null) {
+                userName += " (" + user.getUserActor().getName() + ")";
+            }
+            usersString.append(userName);
+            usersString.append(",");
+        }
+        if (usersString.length() > 1) {
+            usersString.setLength(usersString.length() - 1);
+        }
+
+        return usersString.toString();
     }
 
     @Override

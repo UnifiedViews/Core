@@ -16,24 +16,6 @@
  */
 package eu.unifiedviews.master.api;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.DPUFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
@@ -50,8 +32,18 @@ import eu.unifiedviews.master.i18n.Messages;
 import eu.unifiedviews.master.model.ApiException;
 import eu.unifiedviews.master.model.PipelineExecutionDTO;
 import eu.unifiedviews.master.model.PipelineExecutionEventDTO;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 @Path("/pipelines")
@@ -66,6 +58,9 @@ public class ExecutionResource {
     @Autowired
     private UserFacade userFacade;
 
+    private static final Logger log = LoggerFactory.getLogger(
+            ExecutionResource.class);
+
     @GET
     @Path("/{pipelineid}/executions")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -79,7 +74,7 @@ public class ExecutionResource {
                 throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.id.not.found", id), String.format("Pipeline with id=%s doesn't exist!", id));
             }
             List<PipelineExecution> executions = pipelineFacade.getExecutions(pipeline);
-            if (isEmpty(executions)) {
+            if (executions == null || executions.isEmpty()) {
                 throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, Messages.getString("pipeline.execution.not.found"), String.format("null pipeline executions for pipeline with ID=%s!", id));
             }
             return PipelineExecutionDTOConverter.convert(executions);
@@ -178,7 +173,7 @@ public class ExecutionResource {
         if (execution.getPipeline().getId().equals(pipeline.getId())) {
             return PipelineExecutionDTOConverter.convert(execution);
         } else {
-            throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("pipeline.execution.mismatch", executionId, pipelineId),String.format("PipelineExecution with id=%s is not execution of pipeline with id=%s!", executionId, pipelineId));
+            throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("pipeline.execution.mismatch", executionId, pipelineId), String.format("PipelineExecution with id=%s is not execution of pipeline with id=%s!", executionId, pipelineId));
         }
     }
 
@@ -187,31 +182,39 @@ public class ExecutionResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public PipelineExecutionDTO createPipelineExecution(@PathParam("pipelineid") String pipelineId, PipelineExecutionDTO newExecution) {
-        PipelineExecution execution = null;
+
         if (StringUtils.isBlank(pipelineId) || !StringUtils.isNumeric(pipelineId)) {
             throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("pipeline.id.invalid", pipelineId), String.format("ID=%s is not valid pipeline ID", pipelineId));
         }
+
+        // try to get pipeline
+        Pipeline pipeline = pipelineFacade.getPipeline(Long.parseLong(pipelineId));
+        if (pipeline == null) {
+            throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.id.not.found", pipelineId), String.format("Pipeline with ID=%s doesn't exist!", pipelineId));
+        }
+
+        log.info("Pipeline exec in the request: {}", newExecution.toString());
+
+        // try to get user
+        User user = userFacade.getUserByExtId(newExecution.getUserExternalId());
+        if (user == null) {
+            throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("execution.user.id.not.found"), String.format("User with ID=%s could not be found.", newExecution.getUserExternalId()));
+        }
+
+        log.info("Obtained user ID: {}", user.getId());
+
+        UserActor actor = this.userFacade.getUserActorByExternalId(newExecution.getUserActorExternalId());
+
+        final PipelineExecution execution = pipelineFacade.createExecution(pipeline);
+        execution.setOwner(user);
+        if (actor != null) {
+            log.info("Obtained actor ID: {}, external ID {}", actor.getId(), actor.getExternalId());
+            execution.setActor(actor);
+        }
+        execution.setDebugging(newExecution.isDebugging());
+        execution.setOrderNumber(1L);
+
         try {
-            // try to get pipeline
-            Pipeline pipeline = pipelineFacade.getPipeline(Long.parseLong(pipelineId));
-            if (pipeline == null) {
-                throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.id.not.found", pipelineId), String.format("Pipeline with ID=%s doesn't exist!", pipelineId));
-            }
-            // try to get user
-            User user = userFacade.getUserByExtId(newExecution.getUserExternalId());
-            if (user == null) {
-                throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("execution.user.id.not.found"), String.format("User with ID=%s could not be found.", newExecution.getUserExternalId()));
-            }
-
-            UserActor actor = this.userFacade.getUserActorByExternalId(newExecution.getUserActorExternalId());
-
-            execution = pipelineFacade.createExecution(pipeline);
-            execution.setOwner(user);
-            if (actor != null) {
-                execution.setActor(actor);
-            }
-            execution.setDebugging(newExecution.isDebugging());
-            execution.setOrderNumber(1L);
             pipelineFacade.save(execution);
         } catch (ApiException e) {
             throw e;
@@ -252,7 +255,7 @@ public class ExecutionResource {
             List<MessageRecord> events = dpuFacade.getAllDPURecords(execution);
             return PipelineExecutionEventDTOConverter.convert(events);
         } else {
-            throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("pipeline.execution.mismatch", executionId, pipelineId),String.format("PipelineExecution with id=%s is not execution of pipeline with id=%s!", executionId, pipelineId));
+            throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("pipeline.execution.mismatch", executionId, pipelineId), String.format("PipelineExecution with id=%s is not execution of pipeline with id=%s!", executionId, pipelineId));
         }
     }
 }

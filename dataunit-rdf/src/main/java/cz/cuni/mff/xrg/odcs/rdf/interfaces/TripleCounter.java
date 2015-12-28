@@ -21,6 +21,7 @@ package cz.cuni.mff.xrg.odcs.rdf.interfaces;
  * 
  * @author Jiri Tomes
  */
+@Deprecated
 public interface TripleCounter {
 
     /**

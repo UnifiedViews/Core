@@ -50,7 +50,7 @@
     </appender>
 
     <logger name="org.springframework" level="WARN"/>
-    <logger name="org.eclipse.persistence" level="DEBUG"/>
+    <logger name="org.eclipse.persistence" level="WARN"/>
     <logger name="org.eclipse.persistence.logging.metadata" level="WARN"/>
 
     <root level="INFO">

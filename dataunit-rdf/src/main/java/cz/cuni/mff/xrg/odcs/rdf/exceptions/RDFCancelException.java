@@ -25,6 +25,7 @@ import org.openrdf.rio.RDFParser;
  * 
  * @author Jiri Tomes
  */
+@Deprecated
 public class RDFCancelException extends RDFHandlerException {
 
     /**

@@ -6,6 +6,6 @@ Priority: extra
 Architecture: all
 Maintainer: jmc@eea.sk
 Homepage: https://github.com/UnifiedViews/Core
-Depends: unifiedviews-webapp-shared (>> 2.2), unifiedviews-webapp-shared (<< 2.3), mysql-server,  debconf (>= 0.5)
+Depends: unifiedviews-webapp-shared (>> 2.3), unifiedviews-webapp-shared (<< 2.4), mysql-server,  debconf (>= 0.5)
 Conflicts: unifiedviews-backend-pgsql, unifiedviews-webapp-pgsql
 Description: The mysql database and settings for unifiedviews's frontend.

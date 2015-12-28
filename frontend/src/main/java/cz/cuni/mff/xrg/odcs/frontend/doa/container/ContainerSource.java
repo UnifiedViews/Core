@@ -16,11 +16,11 @@
  */
 package cz.cuni.mff.xrg.odcs.frontend.doa.container;
 
-import java.util.Collection;
-import java.util.List;
-
 import com.vaadin.data.Container;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Interface for data source that is meant to be used by containers.
@@ -124,7 +124,7 @@ public interface ContainerSource<T extends DataObject> {
      * @param numberOfItems
      * @return id's of items on given positions
      */
-    List<?> getItemIds(int startIndex, int numberOfItems);
+    List<Long> getItemIds(int startIndex, int numberOfItems);
 
     /**
      * Return instance of used class accessor.

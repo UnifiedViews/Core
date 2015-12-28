@@ -51,7 +51,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 /**
  * Implementation of log appender. The code is inspired by {@link ch.qos.logback.core.db.DBAppenderBase}.
  * The appender is designed to append into single table in Virtuoso.
- *
+ * 
  * @author Petr Škoda
  */
 public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
@@ -110,7 +110,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 
     /**
      * Return string that is used as insert query into logging table.
-     *
+     * 
      * @return SQL command used to the insert data to the database.
      */
     private String getInsertSQL() {
@@ -122,7 +122,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
     /**
      * Return not null {@link Connection}. If failed to get connection then
      * continue to try until success.
-     *
+     * 
      * @return Connection to the database.
      */
     private Connection getConnection() {
@@ -146,7 +146,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 
     /**
      * Store given logs into database.
-     *
+     * 
      * @param connection
      * @param logs
      * @return True only if all logs has been saved into database.
@@ -166,6 +166,28 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
             stmt.close();
             connection.commit();
         } catch (BatchUpdateException sqle) {
+
+            LOG.info("Failed to save logs into database, which may be caused by missing default sequence value. Trying to correct this...");
+
+            try {
+                connection.rollback();
+
+                String alterQuery = "ALTER TABLE logging ALTER COLUMN id SET DEFAULT nextval(\'logging_id_seq\')";
+
+                PreparedStatement stmtAlter = connection.prepareStatement(alterQuery);
+                stmtAlter.execute();
+                stmtAlter.close();
+                connection.commit();
+                return false; //give another try
+            } catch (SQLException ex) {
+                LOG.error("Can't alter table {}", ex.getLocalizedMessage());
+                try {
+                    connection.rollback();
+                } catch (SQLException ex1) {
+                    LOG.error("Cannot rollback transaction {}", ex1.getLocalizedMessage());
+                }
+            }
+
             LOG.error("Failed to save logs into database. Given logs will not be saved.", sqle);
             // also reset the counter, as it may count logs that are not in
             // database .. this will force some queris into database
@@ -292,7 +314,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
     /**
      * Do immediate write of given log into database. If the database is down
      * then the log is not saved.
-     *
+     * 
      * @param eventObject
      */
     private void appendImmediate(ILoggingEvent eventObject) {
@@ -374,7 +396,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 
     /**
      * Bind the parameters to he insert statement.
-     *
+     * 
      * @param event
      * @param stmt
      * @throws Throwable
@@ -448,7 +470,7 @@ public class SqlAppenderImpl extends UnsynchronizedAppenderBase<ILoggingEvent>
 
     /**
      * Convert information about stack trace into text form.
-     *
+     * 
      * @param proxy
      * @param sb
      */

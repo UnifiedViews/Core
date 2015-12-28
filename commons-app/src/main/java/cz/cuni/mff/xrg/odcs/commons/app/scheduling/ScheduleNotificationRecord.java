@@ -16,20 +16,12 @@
  */
 package cz.cuni.mff.xrg.odcs.commons.app.scheduling;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-
 import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
 import cz.cuni.mff.xrg.odcs.commons.app.user.NotificationRecord;
+
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Notification settings for a single pipeline execution schedule.
@@ -46,7 +38,7 @@ public class ScheduleNotificationRecord extends NotificationRecord {
      * Scheduler dialog.
      */
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "schedule_id", nullable = false)
+    @JoinColumn(name = "schedule_id", nullable = false, unique = true)
     private Schedule schedule;
 
     /**

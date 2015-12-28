@@ -26,7 +26,6 @@ import org.vaadin.dialogs.ConfirmDialog;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
-
 import cz.cuni.mff.xrg.odcs.commons.app.ScheduledJobsPriority;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ExecutionFacade;
@@ -37,11 +36,25 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.commons.app.properties.RuntimeProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
+import eu.unifiedviews.commons.dao.view.ExecutionView;
+import eu.unifiedviews.commons.dao.view.PipelineView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.remoting.RemoteAccessException;
+import org.springframework.stereotype.Component;
+import org.vaadin.dialogs.ConfirmDialog;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Bogo
  */
+@Component
 public class PipelineHelper {
 
     private static final Logger LOG = LoggerFactory.getLogger(PipelineHelper.class);
@@ -56,6 +69,51 @@ public class PipelineHelper {
 
     @Autowired
     private ExecutionFacade executionFacade;
+
+    public List<ExecutionView> getExecutionViews() {
+        List<ExecutionView> executionViews = new ArrayList<>();
+
+        for (PipelineExecution execution : pipelineFacade.getAllExecutions()) {
+            executionViews.add(new ExecutionView(
+                    execution.getId(),
+                    execution.getStatus(),
+                    execution.getPipeline().getId(),
+                    execution.getPipeline().getName(),
+                    execution.isDebugging(),
+                    execution.getStart(),
+                    execution.getEnd(),
+                    execution.getSchedule() != null ? execution.getSchedule().getId() : null,
+                    execution.getOwner().getUsername(),
+                    execution.getOwner().getFullName(),
+                    execution.getActor() != null ? execution.getActor().getName() : null,
+                    execution.getStop(),
+                    execution.getLastChange()));
+        }
+
+        return executionViews;
+    }
+
+    public List<PipelineView> getPipelineViews() {
+        List<PipelineView> pipelineViews = new ArrayList<>();
+
+        for (Pipeline pipeline : pipelineFacade.getAllPipelines()) {
+            PipelineExecution lastExec = pipelineFacade.getLastExec(pipeline);
+            User user = pipeline.getOwner();
+
+            PipelineView pipelineView = new PipelineView(
+                pipeline.getId(),
+                pipeline.getName(),
+                lastExec != null ? lastExec.getStart() : null,
+                lastExec != null ? lastExec.getEnd() : null,
+                user.getUsername(),
+                user.getFullName(),
+                lastExec != null ? lastExec.getStatus() : null,
+                user.getUserActor() != null ? user.getUserActor().getName() : "");
+            pipelineViews.add(pipelineView);
+        }
+
+        return pipelineViews;
+    }
 
     /**
      * Sets up parameters of pipeline execution and runs the pipeline.
@@ -133,12 +191,9 @@ public class PipelineHelper {
 
     /**
      * Computes order position using runtime property
-     * 
-     * @param epoch
-     * @return
      */
     private Long getOrderPosition() {
-        Long epoch = (long) System.currentTimeMillis();
+        Long epoch = System.currentTimeMillis();
         Long priority = DEFAULT_ORDER_POSITION;
 
         // checking format of value

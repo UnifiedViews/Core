@@ -16,14 +16,14 @@
  */
 package cz.cuni.mff.xrg.odcs.backend.scheduling;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import cz.cuni.mff.xrg.odcs.backend.execution.EngineMock;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.ExecutionFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -34,15 +34,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import cz.cuni.mff.xrg.odcs.backend.execution.EngineMock;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.ExecutionFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleType;
+import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = { "classpath:backend-test-context.xml" })
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -76,7 +73,7 @@ public class SchedulerTest {
     @Transactional
     public void test() {
         Pipeline ppl = pipelineFacade.createPipeline();
-        ppl.getGraph().addDpuInstance(null);
+        ppl.getGraph().addDpuInstance(new DPUInstanceRecord());
         pipelineFacade.save(ppl);
         Schedule schedule = scheduleFacade.createSchedule();
         schedule.setType(ScheduleType.PERIODICALLY);
@@ -99,11 +96,9 @@ public class SchedulerTest {
     @Transactional
     public void test2() {
         Pipeline ppl = pipelineFacade.createPipeline();
-        ppl.getGraph().addDpuInstance(null);
+        ppl.getGraph().addDpuInstance(new DPUInstanceRecord());
         pipelineFacade.save(ppl);
 
-        Schedule schedule = createSchedule(2, ppl);
-        Schedule schedule2 = createSchedule(3, ppl);
         Schedule schedule3 = createSchedule(4, ppl);
         Schedule schedule4 = createSchedule(5, ppl);
 
@@ -144,7 +139,7 @@ public class SchedulerTest {
     @Transactional
     public void test3() {
         Pipeline ppl = pipelineFacade.createPipeline();
-        ppl.getGraph().addDpuInstance(null);
+        ppl.getGraph().addDpuInstance(new DPUInstanceRecord());
         pipelineFacade.save(ppl);
         Schedule schedule = createSchedule(0, ppl);
         Schedule schedule2 = createSchedule(0, ppl);
@@ -206,7 +201,7 @@ public class SchedulerTest {
     @Transactional
     public void test4() {
         Pipeline ppl = pipelineFacade.createPipeline();
-        ppl.getGraph().addDpuInstance(null);
+        ppl.getGraph().addDpuInstance(new DPUInstanceRecord());
         pipelineFacade.save(ppl);
 
         Schedule schedule = createSchedule(2, ppl);

@@ -16,29 +16,25 @@
  */
 package cz.cuni.mff.xrg.odcs.commons.app.user;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.persistence.*;
-
+import cz.cuni.mff.xrg.odcs.commons.app.auth.PasswordHash;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.OpenEvent;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import cz.cuni.mff.xrg.odcs.commons.app.auth.PasswordHash;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
-import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
+import javax.persistence.*;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Holds user data (his account).
- *
- * @author Jiri Tomes
  */
 @Entity
 @Table(name = "usr_user")
@@ -51,12 +47,13 @@ public class User implements UserDetails, DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_usr_user")
     @SequenceGenerator(name = "seq_usr_user", allocationSize = 1)
+    @Column(name = "id")
     private Long id;
 
     /**
      * User name used for login and as a unique identification of User.
      */
-    @Column
+    @Column(name = "username", length = 25, unique = true, nullable = false)
     private String username;
 
     /**
@@ -69,33 +66,44 @@ public class User implements UserDetails, DataObject {
     /**
      * Full name.
      */
-    @Column(name = "full_name")
+    @Column(name = "full_name", length = 55)
     private String fullName;
 
     /**
      * Hashed password.
      */
-    @Column(name = "u_password")
+    @Column(name = "u_password", length = 142, nullable = false)
     private String password;
 
     @Column(name = "table_rows")
     private Integer tableRows;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner", orphanRemoval = true)
+    private Set<Schedule> schedules = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner", orphanRemoval = true)
+    private Set<Pipeline> pipelines = new HashSet<>();
+
     /**
      * User roles representing sets of privileges.
      */
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "usr_user_role", joinColumns = { @JoinColumn(name = "user_id", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(name = "role_id", referencedColumnName = "id") })
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "usr_user_role",
+            joinColumns = { @JoinColumn(name = "user_id", referencedColumnName = "id") },
+            inverseJoinColumns = { @JoinColumn(name = "role_id", referencedColumnName = "id") })
     private Set<RoleEntity> roles = new HashSet<>();
 
     /**
      * User notification settings used as a default for execution schedules.
      * Overridden by specific settings in {@link ScheduleNotificationRecord}.
      */
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private UserNotificationRecord notification;
 
-    @Column(table = "usr_extuser", name = "id_extuser")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "owner")
+    private Set<OpenEvent> openEvents = new HashSet<>();
+
+    @Column(table = "usr_extuser", name = "id_extuser", nullable = false)
     private String externalIdentifier;
 
     @Transient
@@ -109,7 +117,7 @@ public class User implements UserDetails, DataObject {
 
     /**
      * Returns user name as unique identifier.
-     *
+     * 
      * @return user name as unique identifier.
      */
     @Override
@@ -119,7 +127,7 @@ public class User implements UserDetails, DataObject {
 
     /**
      * Set user name to defined value.
-     *
+     * 
      * @param username
      *            String value of user name.
      */
@@ -129,7 +137,7 @@ public class User implements UserDetails, DataObject {
 
     /**
      * Returns user email as instance of {@link EmailAddress}.
-     *
+     * 
      * @return user email as instance of {@link EmailAddress}.
      */
     public EmailAddress getEmail() {
@@ -138,17 +146,19 @@ public class User implements UserDetails, DataObject {
 
     /**
      * Set new user email value as instance of {@link EmailAddress}.
-     *
+     * 
      * @param newEmail
      *            new user email as instance of {@link EmailAddress}.
      */
     public void setEmail(EmailAddress newEmail) {
         email = newEmail;
+        if (email != null)
+            email.setUser(this);
     }
 
     /**
      * Returns the full user name.
-     *
+     * 
      * @return the full user name.
      */
     public String getFullName() {
@@ -157,7 +167,7 @@ public class User implements UserDetails, DataObject {
 
     /**
      * Set the new value of full user name.
-     *
+     * 
      * @param fullName
      *            the new value of full user name.
      */
@@ -167,7 +177,7 @@ public class User implements UserDetails, DataObject {
 
     /**
      * Returns the user password value as {@link String}.
-     *
+     * 
      * @return the user password value as {@link String}.
      */
     @Override
@@ -177,7 +187,7 @@ public class User implements UserDetails, DataObject {
 
     /**
      * Set the user password as value of {@link String}.
-     *
+     * 
      * @param password
      *            String value of password
      */
@@ -191,17 +201,20 @@ public class User implements UserDetails, DataObject {
 
     /**
      * Add the role to the role set.
-     *
+     * 
      * @param role
      *            The value of {@link Role} will be added.
      */
     public void addRole(RoleEntity role) {
         roles.add(role);
+
+        if (role != null)
+            role.getUsers().add(this);
     }
 
     /**
      * Returns the set of roles for the user.
-     *
+     * 
      * @return the set of roles for the user.
      */
     public Set<RoleEntity> getRoles() {
@@ -210,7 +223,7 @@ public class User implements UserDetails, DataObject {
 
     /**
      * Set the set of roles.
-     *
+     * 
      * @param newRoles
      *            the set of roles will be set.
      */
@@ -220,7 +233,7 @@ public class User implements UserDetails, DataObject {
 
     /**
      * Returns the set ID of this user as {@link Long} value.
-     *
+     * 
      * @return the set ID of this user as {@link Long} value.
      */
     @Override
@@ -230,7 +243,7 @@ public class User implements UserDetails, DataObject {
 
     /**
      * Returns the user notification settings.
-     *
+     * 
      * @return the user notification settings.
      */
     public UserNotificationRecord getNotification() {
@@ -239,7 +252,7 @@ public class User implements UserDetails, DataObject {
 
     /**
      * Set new value of user notification settings.
-     *
+     * 
      * @param notification
      *            value of user notification settings.
      */
@@ -250,7 +263,7 @@ public class User implements UserDetails, DataObject {
 
     /**
      * Returns the number of table rows.
-     *
+     * 
      * @return the number of table rows.
      */
     public Integer getTableRows() {
@@ -259,7 +272,7 @@ public class User implements UserDetails, DataObject {
 
     /**
      * Set the number of table rows.
-     *
+     * 
      * @param value
      *            number of table rows.
      */
@@ -269,18 +282,16 @@ public class User implements UserDetails, DataObject {
 
     /**
      * Returns the collection of set authorities.
-     *
+     * 
      * @return the collection of set authorities.
      */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        ArrayList<Permission> permissions = new ArrayList<>();
+        Collection<Permission> permissions = new HashSet<>();
         for (RoleEntity role : getRoles()) {
             if (role.getPermissions() != null) {
                 for (Permission p : role.getPermissions()) {
-                    if (!permissions.contains(p)) {
-                        permissions.add(p);
-                    }
+                    permissions.add(p);
                 }
             }
         }
@@ -289,7 +300,7 @@ public class User implements UserDetails, DataObject {
 
     /**
      * Returns true if account is not expired, false otherwise.
-     *
+     * 
      * @return true if account is not expired, false otherwise.
      */
     @Override
@@ -299,7 +310,7 @@ public class User implements UserDetails, DataObject {
 
     /**
      * Returns true if account is not locked, false otherwise.
-     *
+     * 
      * @return true if account is not locked, false otherwise.
      */
     @Override
@@ -309,7 +320,7 @@ public class User implements UserDetails, DataObject {
 
     /**
      * Returns true if the credentials are not expired, false otherwise.
-     *
+     * 
      * @return true if the credentials are not expired,, false otherwise.
      */
     @Override
@@ -319,7 +330,7 @@ public class User implements UserDetails, DataObject {
 
     /**
      * Returns true if user details are enabled, false otherwise.
-     *
+     * 
      * @return true if user details are enabled, false otherwise.
      */
     @Override
@@ -346,7 +357,7 @@ public class User implements UserDetails, DataObject {
     /**
      * Returns true if two objects represent the same pipeline. This holds if
      * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
-     *
+     * 
      * @param obj
      * @return true if both objects represent the same pipeline
      */
@@ -370,7 +381,7 @@ public class User implements UserDetails, DataObject {
 
     /**
      * Hashcode is compatible with {@link #equals(java.lang.Object)}.
-     *
+     * 
      * @return The value of hashcode.
      */
     @Override
@@ -383,4 +394,39 @@ public class User implements UserDetails, DataObject {
         return hash;
     }
 
+    public Set<Schedule> getSchedules() {
+        return schedules;
+    }
+
+    public void setSchedules(Set<Schedule> schedules) {
+        this.schedules = schedules;
+    }
+
+    public Set<Pipeline> getPipelines() {
+        return pipelines;
+    }
+
+    public void setPipelines(Set<Pipeline> pipelines) {
+        this.pipelines = pipelines;
+    }
+
+    public Set<OpenEvent> getOpenEvents() {
+        return openEvents;
+    }
+
+    public void setOpenEvents(Set<OpenEvent> openEvents) {
+        this.openEvents = openEvents;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username=" + username +
+                ", fullName=" + fullName +
+                ", externalIdentifier=" + externalIdentifier +
+                ", email='" + email + '\'' +
+                ", userActor='" + userActor + '\'' +
+                '}';
+    }
 }

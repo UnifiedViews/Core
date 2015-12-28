@@ -16,77 +16,57 @@
  */
 package eu.unifiedviews.commons.dao.view;
 
-import java.io.Serializable;
-import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
+
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * View for pipelines.
  *
  * @author Škoda Petr
  */
-@XmlRootElement
-@Entity()
-@Table(name = "pipeline_view")
 public class PipelineView implements Serializable, DataObject {
 
-    @Id
     private Long id;
-
-    /**
-     * Human-readable pipeline name
-     */
-    @Column
     private String name;
 
-    /**
-     * Start of last pipeline execution.
-     */
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "t_start")
+    //t_start
     private Date start;
 
-    /**
-     * End of last pipeline execution.
-     */
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "t_end")
+    //t_end
     private Date end;
 
-    @Column(name = "usr_name")
+    //usr_name
     private String usrName;
 
-    @Column(name = "usr_full_name")
+    //usr_full_name
     private String usrFullName;
 
-    /**
-     * Status of last pipeline execution.
-     */
-    @Enumerated(EnumType.ORDINAL)
     private PipelineExecutionStatus status;
 
-    /**
-     * Public vs private shareType.
-     */
-    @Enumerated(EnumType.ORDINAL)
-    @Column(name = "visibility")
-    private ShareType shareType;
-
-    @Column(name = "user_actor_name")
+    //user_actor_name
     private String userActorName;
+
+    public PipelineView(Long id,
+                        String name,
+                        Date start,
+                        Date end,
+                        String usrName,
+                        String usrFullName,
+                        PipelineExecutionStatus status,
+                        String userActorName)
+    {
+        this.id = id;
+        this.name = name;
+        this.start = start;
+        this.end = end;
+        this.usrName = usrName;
+        this.usrFullName = usrFullName;
+        this.status = status;
+        this.userActorName = userActorName;
+    }
 
     @Override
     public Long getId() {

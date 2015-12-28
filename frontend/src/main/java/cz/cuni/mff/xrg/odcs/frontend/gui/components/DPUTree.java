@@ -233,8 +233,7 @@ public class DPUTree extends CustomComponent {
 
             @Override
             public void buttonClick(ClickEvent event) {
-                DPUTemplatesExport exportWindow =
-                        new DPUTemplatesExport(dpuFacade.getAllTemplates(), exportService);
+                DPUTemplatesExport exportWindow = new DPUTemplatesExport(dpuFacade.getAllTemplates(), exportService);
                 UI.getCurrent().addWindow(exportWindow);
             }
         });
@@ -486,8 +485,8 @@ public class DPUTree extends CustomComponent {
     private void setTreeState(boolean isStateExpanded) {
         btnMinimize.setVisible(isExpandable && isStateExpanded);
         btnExpand.setVisible(isExpandable && !isStateExpanded);
-        buttonCreateDPU.setVisible(isExpandable && isStateExpanded);
-        exportButton.setVisible(isExpandable && isStateExpanded);
+        buttonCreateDPU.setVisible(isExpandable && isStateExpanded && this.permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_CREATE));
+        exportButton.setVisible(isExpandable && isStateExpanded && this.permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_EXPORT));
         layoutTree.setVisible(isStateExpanded);
         mainLayout.setSizeUndefined();
     }
@@ -518,8 +517,8 @@ public class DPUTree extends CustomComponent {
     }
 
     private void setButtonsVisible() {
-        this.buttonCreateDPU.setVisible(permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_CREATE) && this.isExpandable);
-        this.exportButton.setVisible(permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_EXPORT));
+        this.buttonCreateDPU.setVisible(this.permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_CREATE));
+        this.exportButton.setVisible(this.permissionUtils.hasUserAuthority(EntityPermissions.DPU_TEMPLATE_EXPORT));
     }
 
     @Override

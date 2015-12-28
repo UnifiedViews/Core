@@ -16,18 +16,6 @@
  */
 package cz.cuni.mff.xrg.odcs.frontend;
 
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.security.access.AccessDeniedException;
-import org.vaadin.dialogs.ConfirmDialog;
-import org.vaadin.dialogs.DefaultConfirmDialogFactory;
-
-import virtuoso.jdbc4.VirtuosoException;
-
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.navigator.ViewChangeListener;
@@ -35,12 +23,8 @@ import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.ErrorHandler;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinSession;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
-
 import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
 import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
 import cz.cuni.mff.xrg.odcs.frontend.auth.AuthenticationService;
@@ -55,6 +39,16 @@ import cz.cuni.mff.xrg.odcs.frontend.monitor.BackendHeartbeat;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigator;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorHolder;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.ClassNavigatorImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.security.access.AccessDeniedException;
+import org.vaadin.dialogs.ConfirmDialog;
+import org.vaadin.dialogs.DefaultConfirmDialogFactory;
+import virtuoso.jdbc4.VirtuosoException;
+
+import java.util.Map;
 
 /**
  * Frontend application entry point. Also provide access to the application
@@ -230,7 +224,11 @@ public class AppEntry extends com.vaadin.ui.UI {
                                 .getParameters();
                     }
                     // Prompt the user to save or cancel if the name is changed
-                    ConfirmDialog cd = ConfirmDialog.getFactory().create(Messages.getString("AppEntry.confirmDialog.name"), Messages.getString("AppEntry.confirmDialog.text"), Messages.getString("AppEntry.confirmDialog.save"), Messages.getString("AppEntry.confirmDialog.discard"),
+                    ConfirmDialog cd = ConfirmDialog.getFactory().create(
+                            Messages.getString("AppEntry.confirmDialog.name"),
+                            Messages.getString("AppEntry.confirmDialog.text"),
+                            Messages.getString("AppEntry.confirmDialog.save"),
+                            Messages.getString("AppEntry.confirmDialog.discard"),
                             Messages.getString("AppEntry.confirmDialog.cancel"));
                     cd.show(getUI(),
                             new ConfirmDialog.Listener() {

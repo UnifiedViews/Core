@@ -27,6 +27,7 @@ import cz.cuni.mff.xrg.odcs.rdf.enums.ParsingConfictType;
  * 
  * @author Jiri Tomes
  */
+@Deprecated
 public class TripleProblem {
 
     private String message;

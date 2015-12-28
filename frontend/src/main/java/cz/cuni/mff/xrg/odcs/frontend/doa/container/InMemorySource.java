@@ -16,17 +16,9 @@
  */
 package cz.cuni.mff.xrg.odcs.frontend.doa.container;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.*;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataAccessRead;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataQuery;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataQueryBuilder;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataQueryCount;
+import java.util.*;
 
 /**
  * Implementation of {@link ContainerSource}. The data are all loaded and hold
@@ -260,7 +252,7 @@ public class InMemorySource<T extends DataObject, BUILDER extends DataQueryBuild
     }
 
     @Override
-    public List<?> getItemIds(int startIndex, int numberOfItems) {
+    public List<Long> getItemIds(int startIndex, int numberOfItems) {
         List<Long> result = new ArrayList<>(numberOfItems);
         for (int i = 0; i < numberOfItems; ++i) {
             result.add(i, idsVisible.get(i + startIndex));

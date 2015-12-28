@@ -65,16 +65,20 @@ db_up() {
   TIMEOUT=60
   while [ 1 ]
   do
+    echo -n "Checking whether db is running:"
     mysql --password=$ROOT_PW -e ' SELECT "isRunning" '>/dev/null 2>&1
     if [ $? -eq 0 ]; then
+        echo -n "DB is running"
         break
     fi
 
+    echo -n "DB is NOT running, retrying"
     echo -n "."
     sleep 1
     CPT=$((${CPT}+1))
     if [ ${CPT} -eq ${TIMEOUT} ]
     then
+      echo -n "Timeout reached."
       echo -e "\nERROR: Connection to Mysql has not been established before timeout. Exiting"
       exit 1
     fi
@@ -90,64 +94,79 @@ db_configure() {
     DB_NAME=unifiedviews
     # if database unifiedviews is not exist
     if ! mysql -u $DBA_USER --password=$DBA_PASS -e 'use '$DB_NAME''; then
+    
+        echo -n "INFO: Creating MySQL database (which does not exists)..."
+    
         echo "create database if not exists $DB_NAME;" | mysql --password=$ROOT_PW
         echo "created database: $DB_NAME"
         # create a user if not exists
-        echo "create user '${DBA_USER}' identified by '${DBA_PASS}';" | mysql --password=$ROOT_PW || true
+        echo "create user '${DBA_USER}'@localhost identified by '${DBA_PASS}';" | mysql --password=$ROOT_PW || true
         echo "created user: $DBA_USER"
+        echo "grant all privileges on unifiedviews.* to uv@localhost;" | mysql --password=$ROOT_PW
         cd /usr/share/unifiedviews/mysql
-        mysql -u $DBA_USER --password=$DBA_PASS $DB_NAME < \
-        /usr/share/unifiedviews/mysql/schema.sql
-        mysql -u $DBA_USER --password=$DBA_PASS $DB_NAME < \
-        /usr/share/unifiedviews/mysql/data.sql
-    fi    
+        #mysql -u $DBA_USER --password=$DBA_PASS $DB_NAME < \
+        #/usr/share/unifiedviews/mysql/schema.sql
+        #mysql -u $DBA_USER --password=$DBA_PASS $DB_NAME < \
+        #/usr/share/unifiedviews/mysql/data.sql
     
-    version=`mysql -u $DBA_USER --password=$DBA_PASS -s -N -e "select value from properties WHERE properties.key='UV.Core.version' " $DB_NAME`
-    if [ "$version" = "001.004.000" ]
-    then
-       # set db schema version
-        mysql -u $DBA_USER --password=$DBA_PASS $DB_NAME < \
-       /usr/share/unifiedviews/mysql/1.5.0-update.sql
-    fi
+    else    
     
-    version=`mysql -u $DBA_USER --password=$DBA_PASS -s -N -e "select value from properties WHERE properties.key='UV.Core.version' " $DB_NAME`
-    if [ "$version" = "001.005.000" ]
-    then
-       # set db schema version
-       mysql -u $DBA_USER --password=$DBA_PASS $DB_NAME < \
-       /usr/share/unifiedviews/mysql/1.5.5-update.sql
-    fi    
-    
-    version=`mysql -u $DBA_USER --password=$DBA_PASS -s -N -e "select value from properties WHERE properties.key='UV.Core.version' " $DB_NAME`
-    if [ "$version" = "001.005.005" ]
-    then
-       # set db schema version
-       mysql -u $DBA_USER --password=$DBA_PASS $DB_NAME < \
-       /usr/share/unifiedviews/mysql/1.6.0-update.sql
-    fi    
-    
-    version=`mysql -u $DBA_USER --password=$DBA_PASS -s -N -e "select value from properties WHERE properties.key='UV.Core.version' " $DB_NAME`
-    if [ "$version" = "001.006.000" ]
-    then
-       # set db schema version
-       mysql -u $DBA_USER --password=$DBA_PASS $DB_NAME < \
-       /usr/share/unifiedviews/mysql/2.0.0-update.sql
-    fi        
+        echo -n "INFO: Updating MySQL database (the database exists)..."
+        version=`mysql -u $DBA_USER --password=$DBA_PASS -s -N -e "select value from properties WHERE properties.key='UV.Core.version' " $DB_NAME`
+        if [ "$version" = "001.004.000" ]
+        then
+           # set db schema version
+            mysql -u $DBA_USER --password=$DBA_PASS $DB_NAME < \
+           /usr/share/unifiedviews/mysql/1.5.0-update.sql
+        fi
+        
+        version=`mysql -u $DBA_USER --password=$DBA_PASS -s -N -e "select value from properties WHERE properties.key='UV.Core.version' " $DB_NAME`
+        if [ "$version" = "001.005.000" ]
+        then
+           # set db schema version
+           mysql -u $DBA_USER --password=$DBA_PASS $DB_NAME < \
+           /usr/share/unifiedviews/mysql/1.5.5-update.sql
+        fi    
+        
+        version=`mysql -u $DBA_USER --password=$DBA_PASS -s -N -e "select value from properties WHERE properties.key='UV.Core.version' " $DB_NAME`
+        if [ "$version" = "001.005.005" ]
+        then
+           # set db schema version
+           mysql -u $DBA_USER --password=$DBA_PASS $DB_NAME < \
+           /usr/share/unifiedviews/mysql/1.6.0-update.sql
+        fi    
+        
+        version=`mysql -u $DBA_USER --password=$DBA_PASS -s -N -e "select value from properties WHERE properties.key='UV.Core.version' " $DB_NAME`
+        if [ "$version" = "001.006.000" ]
+        then
+           # set db schema version
+           mysql -u $DBA_USER --password=$DBA_PASS $DB_NAME < \
+           /usr/share/unifiedviews/mysql/2.0.0-update.sql
+        fi        
 
-    version=`mysql -u $DBA_USER --password=$DBA_PASS -s -N -e "select value from properties WHERE properties.key='UV.Core.version' " $DB_NAME`
-    if [ "$version" = "002.000.000" ]
-    then
-       # set db schema version
-       mysql -u $DBA_USER --password=$DBA_PASS $DB_NAME < \
-       /usr/share/unifiedviews/mysql/2.1.0-update.sql
-    fi   
+        version=`mysql -u $DBA_USER --password=$DBA_PASS -s -N -e "select value from properties WHERE properties.key='UV.Core.version' " $DB_NAME`
+        if [ "$version" = "002.000.000" ]
+        then
+           # set db schema version
+           mysql -u $DBA_USER --password=$DBA_PASS $DB_NAME < \
+           /usr/share/unifiedviews/mysql/2.1.0-update.sql
+        fi   
+        
+        if [ "$version" = "002.001.000" ]
+            then
+                    # set db schema version
+            mysql -u $DBA_USER --password=$DBA_PASS $DB_NAME < \
+           /usr/share/unifiedviews/mysql/2.2.0-update.sql
+        fi
     
-    if [ "$version" = "002.001.000" ]
-	then
-		# set db schema version
-        mysql -u $DBA_USER --password=$DBA_PASS $DB_NAME < \
-       /usr/share/unifiedviews/mysql/2.2.0-update.sql
-	fi      
+        if [ "$version" = "002.002.000" ]
+            then
+                    # set db schema version
+            mysql -u $DBA_USER --password=$DBA_PASS $DB_NAME < \
+           /usr/share/unifiedviews/mysql/2.3.0-update.sql
+        fi     
+         
+    fi
     
     # set permissions for user uv
     echo "grant all on $DB_NAME.* to '$DBA_USER' identified by '$DBA_PASS';"  | mysql --password=$ROOT_PW || true

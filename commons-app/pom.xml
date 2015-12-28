@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>eu.unifiedviews</groupId>
 		<artifactId>uv-core</artifactId>
-		<version>2.2.0</version>
+		<version>2.3.0</version>
 	</parent>
 	<artifactId>commons-app</artifactId>
 	<name>commons-app</name>
@@ -12,16 +12,12 @@
 	<!-- Shared version number properties -->
 	<properties>
 		<logback.version>1.0.13</logback.version>
-		<aspectj.version>1.7.3</aspectj.version>
+		<aspectj.version>1.8.7</aspectj.version>
+		<eclipselink.version>2.5.2</eclipselink.version>
 		<maven.artifact.version>3.3.3</maven.artifact.version>
 	</properties>
 
 	<repositories>
-
-		<repository>
-			<id>eclipselink</id>
-			<url>http://www.eclipse.org/downloads/download.php?r=1&amp;nf=1&amp;file=/rt/eclipselink/maven.repo/</url>
-		</repository>
 
 		<repository>
 			<id>repo.eclipse.org</id>
@@ -35,6 +31,13 @@
 			<name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
 			<url>http://repository.springsource.com/maven/bundles/release</url>
 		</repository>
+
+		<repository>
+			<id>maven.eea.sk</id>
+			<name>maven.eea.sk-public</name>
+			<url>http://maven.eea.sk/artifactory/public/</url>
+		</repository>
+
 	</repositories>
 
 	<dependencies>
@@ -229,21 +232,26 @@
 		<!-- END OF SPRING DEPENDENCIES -->
 
 		<!-- Embedded database used for testing -->
-		<!-- <dependency> <groupId>com.h2database</groupId> <artifactId>h2</artifactId> <version>1.3.171</version> </dependency> -->
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<version>${h2.version}</version>
+            <scope>test</scope>
 		</dependency>
 
 		<!-- EclipseLink dependencies -->
-		<!-- EclipseLink needs at least version 2.5.1 to get around bug 413084 https://bugs.eclipse.org/bugs/show_bug.cgi?id=413084 -->
-		<dependency>
-			<groupId>org.eclipse.persistence</groupId>
-			<artifactId>eclipselink</artifactId>
-			<version>${eclipselink.version}</version>
-		</dependency>
-		<dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.core</artifactId>
+            <version>${eclipselink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa</artifactId>
+            <version>${eclipselink.version}</version>
+        </dependency>
+
+        <dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>javax.persistence</artifactId>
 			<version>${javax.persistence.version}</version>
@@ -255,11 +263,16 @@
 			<version>${commons.lang.version}</version>
 		</dependency>
 
-
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>${mysql.jdbc.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mariadb.jdbc</groupId>
+			<artifactId>mariadb-java-client</artifactId>
+			<version>1.2.3</version>
 		</dependency>
 
 		<!-- Aspect Oriented Programming with AspectJ -->
@@ -312,7 +325,25 @@
 			<artifactId>maven-artifact</artifactId>
 			<version>${maven.artifact.version}</version>
 		</dependency>
-	</dependencies>
+		<dependency>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-site-plugin</artifactId>
+			<version>3.3</version>
+		</dependency>
+
+        <!-- Needed for weaving -->
+        <dependency>
+            <groupId>javax.resource</groupId>
+            <artifactId>connector-api</artifactId>
+            <version>1.5</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.transaction</groupId>
+            <artifactId>jta</artifactId>
+            <version>1.1</version>
+        </dependency>
+
+    </dependencies>
 
 	<build>
 		<plugins>
@@ -335,7 +366,7 @@
 				<version>2.17</version>
 			</plugin>
 
-			<!-- Process classes after compilation to weave bytecode for JPA entities -->
+			<!-- Process classes after compilation to weave bytecode for JPA entities-->
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
@@ -369,8 +400,8 @@
 					<weaveDependencies>
 						<!-- We need to weave bytecode to EclipseLink dependency when catching exceptions thrown because corrupted sequences in db. See VirtuosoSequenceSanitizerAspect. -->
 						<weaveDependency>
-							<groupId>org.eclipse.persistence</groupId>
-							<artifactId>eclipselink</artifactId>
+                            <groupId>org.eclipse.persistence</groupId>
+                            <artifactId>org.eclipse.persistence.core</artifactId>
 						</weaveDependency>
 					</weaveDependencies>
 					<aspectLibraries>
@@ -395,17 +426,35 @@
 					<dependency>
 						<groupId>org.aspectj</groupId>
 						<artifactId>aspectjrt</artifactId>
-						<version>1.8.1</version>
+						<version>${aspectj.version}</version>
 					</dependency>
 					<dependency>
 						<groupId>org.aspectj</groupId>
 						<artifactId>aspectjtools</artifactId>
-						<version>1.8.1</version>
+						<version>${aspectj.version}</version>
 					</dependency>
 				</dependencies>
 			</plugin>
-		</plugins>
-		<resources>
+
+            <plugin>
+                <!-- workaround to solve the eclipselink lazy loading issue, see https://github.com/UnifiedViews/Core/pull/555: the eclipselink core packages are signed which causes the backend to fail on start because on backend packaging it copies all the dependencies
+which somehow messes up the signatures. The solution proposed in the web is to  filter the *.SF and *.RSA files from META-INF to remove the signature information when preparing the jar -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/*.RSA</exclude>
+                        <exclude>**/*.DSA</exclude>
+                        <exclude>**/*.SF</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
+        </plugins>
+
+
+        <resources>
 			<resource>
 				<directory>src/main/resources</directory>
 				<filtering>true</filtering>

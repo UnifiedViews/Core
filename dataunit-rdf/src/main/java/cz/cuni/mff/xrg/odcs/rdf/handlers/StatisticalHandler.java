@@ -35,6 +35,7 @@ import eu.unifiedviews.dpu.DPUContext;
  * 
  * @author Jiri Tomes
  */
+@Deprecated
 public class StatisticalHandler extends TripleCountHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(StatisticalHandler.class);

@@ -78,49 +78,6 @@
     <bean class="cz.cuni.mff.xrg.odcs.backend.communication.ProbeHandler"/>
     
 
-    <!-- data unit factory class -->
-<!--
-    <bean id="dataUnitFactory" class="cz.cuni.mff.xrg.odcs.backend.data.DataUnitFactory"/>
-
-	<bean id="filesDataUnitFactory" class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.files.localfs.LocalFSFilesDataUnitFactory"/>
-	
-    <bean id="rdfDataUnitFactory" class="cz.cuni.mff.xrg.odcs.commons.app.SelectImplementationFactoryBean">
-        <property name="key" value="${database.rdf.platform}"/>
-        <property name="implementations">
-            <map>
-                <entry key="inMemoryRDF">
-                    <bean id="inMemoryRdfDataUnitFactory"
-                          class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.inmemory.InMemoryRDFDataUnitFactory">
-                        <property name="repositoryPath" value="${general.workingdir}"/>
-                    </bean>
-                </entry>
-                <entry key="localRDF">
-                    <bean id="localRdfDataUnitFactory"
-                          class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.localrdf.LocalRDFDataUnitFactory">
-                        <property name="repositoryPath" value="${general.workingdir}"/>
-                    </bean>
-                </entry>
-                <entry key="virtuoso">
-                    <bean id="virtuosoRdfDataUnitFactory"
-                          class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.virtuoso.VirtuosoRDFDataUnitFactory">
-                        <property name="url" value="${database.rdf.url}"/>
-                        <property name="user" value="${database.rdf.user}"/>
-                        <property name="password" value="${database.rdf.password}"/>
-                    </bean>
-                </entry>
-                <entry key="remoteRDF">
-                    <bean id="remoteRdfDataUnitFactory"
-                          class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.remoterdf.RemoteRDFDataUnitFactory">
-                        <property name="url" value="${database.rdf.url}"/>
-                        <property name="user" value="${database.rdf.user}"/>
-                        <property name="password" value="${database.rdf.password}"/>
-                    </bean>
-                </entry>
-            </map>
-        </property>
-    </bean>
--->
-
     <!-- store events into database -->
     <bean class="cz.cuni.mff.xrg.odcs.backend.EventListenerDatabase"/>
 
@@ -136,14 +93,6 @@
         <constructor-arg name="refreshDatabase" value="false"/>
     </bean>
 
-    <!-- autodiscovery for DPU's pre/post executors -->
-    <context:component-scan
-            base-package="cz.cuni.mff.xrg.odcs.backend.execution.dpu.impl"/>
-    <!-- autodiscovery for pipeline's pre/post executors -->
-    <context:component-scan
-            base-package="cz.cuni.mff.xrg.odcs.backend.execution.pipeline.impl"/>
-    <!-- components for sending reports -->
-    <context:component-scan
-            base-package="cz.cuni.mff.xrg.odcs.backend.report"/>
+    <context:component-scan base-package="cz.cuni.mff.xrg.odcs.backend"/>
 
 </beans>

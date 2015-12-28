@@ -5,7 +5,7 @@
     <parent>
         <groupId>eu.unifiedviews</groupId>
         <artifactId>uv-core</artifactId>
-        <version>2.2.0</version>
+        <version>2.3.0</version>
     </parent>
 
     <groupId>eu.unifiedviews.packages</groupId>
@@ -28,7 +28,8 @@
     </modules>
 
     <properties>
-		<debian-package-version>2.2.0</debian-package-version>
+        <backend-version>2.3.0</backend-version>
+        <debian-package-version>2.3.0~</debian-package-version>
         <debian-package-name>${project.build.directory}/${project.artifactId}-${debian-package-version}_all.deb</debian-package-name>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>

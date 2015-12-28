@@ -74,6 +74,7 @@ db_configure() {
     pass="$3"
     CHK_PG_DB=$(su - postgres -c "psql -t -c \"select count(1) from pg_catalog.pg_database where datname = '${dbname}'\"")
     CHK_PG_USER=$(su - postgres -c "psql -t -c \"select count(1) from pg_user where usename = '${usrname}'\"")
+    echo -n "INFO: Configuring PostgreSQL database..."
 
     if [ ${CHK_PG_USER} -eq 0 ]
         then
@@ -94,61 +95,72 @@ db_configure() {
 
     if [ ${CHK_PG_DB} -eq 0 ]
     then
-        echo -n "INFO: Creating PostgreSQL database..."
+        echo -n "INFO: Creating PostgreSQL database (which does not exists)..."
         su - postgres -c "createdb  -O ${usrname} ${dbname}" 
         
-        su - postgres -c "psql  -d ${dbname}" < \
-        /usr/share/unifiedviews/pgsql/schema.sql
+        #su - postgres -c "psql  -d ${dbname}" < \
+        #/usr/share/unifiedviews/pgsql/schema.sql
         
-        su - postgres -c "psql  -d ${dbname}" < \
-        /usr/share/unifiedviews/pgsql/data-core.sql
+        #su - postgres -c "psql  -d ${dbname}" < \
+        #/usr/share/unifiedviews/pgsql/data-core.sql
 
-        su - postgres -c "psql  -d ${dbname}" < \
-        /usr/share/unifiedviews/pgsql/data-permissions.sql
+        #su - postgres -c "psql  -d ${dbname}" < \
+        #/usr/share/unifiedviews/pgsql/data-permissions.sql
 
         su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ${usrname};\"" 
         su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ${usrname};\"" 
         echo " Done" 
-    fi
+    
+    else
+         echo -n "INFO: Updating PostgreSQL database (the database exists)..."
+         version=`su - postgres -c  "psql -A -t -d unifiedviews -c \"select value from properties WHERE properties.key='UV.Core.version' \""`
+         if [ "$version" = "001.005.005" ]
+         then
+           # set db schema version
+            su - postgres -c "psql -d ${dbname}" < \
+            /usr/share/unifiedviews/pgsql/updates/1.6.0-update.sql
+            su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ${usrname};\"" 
+            su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ${usrname};\"" 
+         fi
+         
+         if [ "$version" = "001.006.000" ]
+         then
+           # set db schema version
+            su - postgres -c "psql -d ${dbname}" < \
+            /usr/share/unifiedviews/pgsql/updates/2.0.0-update.sql
+            su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ${usrname};\"" 
+            su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ${usrname};\"" 
+        fi     
+         
+        if [ "$version" = "002.000.000" ]
+        then
+            su - postgres -c "psql -d ${dbname}" < \
+            /usr/share/unifiedviews/pgsql/updates/2.1.0-core.sql
+            
+            su - postgres -c "psql -d ${dbname}" < \
+            /usr/share/unifiedviews/pgsql/updates/2.1.0-permissions.sql
+            su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ${usrname};\"" 
+            su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ${usrname};\"" 
+         fi     
 
-     version=`su - postgres -c  "psql -A -t -d unifiedviews -c \"select value from properties WHERE properties.key='UV.Core.version' \""`
-     if [ "$version" = "001.005.005" ]
-     then
-       # set db schema version
-        su - postgres -c "psql -d ${dbname}" < \
-        /usr/share/unifiedviews/pgsql/updates/1.6.0-update.sql
-        su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ${usrname};\"" 
-        su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ${usrname};\"" 
-     fi
-     
-     if [ "$version" = "001.006.000" ]
-     then
-       # set db schema version
-        su - postgres -c "psql -d ${dbname}" < \
-        /usr/share/unifiedviews/pgsql/updates/2.0.0-update.sql
-        su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ${usrname};\"" 
-        su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ${usrname};\"" 
-    fi     
-     
-    if [ "$version" = "002.000.000" ]
-    then
-        su - postgres -c "psql -d ${dbname}" < \
-        /usr/share/unifiedviews/pgsql/updates/2.1.0-core.sql
+        if [ "$version" = "002.001.000" ]
+            then
+                    # set db schema version
+                    su - postgres -c "psql -d ${dbname}" < \
+                    /usr/share/unifiedviews/pgsql/updates/2.2.0-update.sql
+                    su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ${usrname};\""
+                    su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ${usrname};\""
+            fi
         
-        su - postgres -c "psql -d ${dbname}" < \
-        /usr/share/unifiedviews/pgsql/updates/2.1.0-permissions.sql
-        su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ${usrname};\"" 
-        su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ${usrname};\"" 
-     fi     
-
-    if [ "$version" = "002.001.000" ]
-	then
-		# set db schema version
-		su - postgres -c "psql -d ${dbname}" < \
-		/usr/share/unifiedviews/pgsql/updates/2.2.0-update.sql
-		su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ${usrname};\""
-		su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ${usrname};\""
-	fi  
+        if [ "$version" = "002.002.000" ]
+            then
+                    # set db schema version
+                    su - postgres -c "psql -d ${dbname}" < \
+                    /usr/share/unifiedviews/pgsql/updates/2.3.0-update.sql
+                    su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ${usrname};\""
+                    su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ${usrname};\""
+            fi  
+    fi
 
     # update backend config
     sed --in-place \

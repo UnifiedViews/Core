@@ -469,7 +469,7 @@ public class Executor implements Runnable {
         // that the execution finished ..
         eventPublisher.publishEvent(new PipelineFinished(execution, this));
 
-        LOG.trace("Saving pipeline chanegs into SQL ..");
+        LOG.trace("Saving pipeline changes into SQL ..");
 
         // save the execution
         try {

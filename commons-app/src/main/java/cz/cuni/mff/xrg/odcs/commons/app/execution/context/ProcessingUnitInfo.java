@@ -16,22 +16,21 @@
  */
 package cz.cuni.mff.xrg.odcs.commons.app.execution.context;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-
-import javax.persistence.*;
-
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.DPUExecutionState;
 import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 
+import javax.persistence.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+
 /**
  * Contains and manage information about execution for single {@link DPUInstanceRecord}. The information class (this) is created at the
  * start of the DPU execution. So the information class in not accessible for
  * all the DPUs from the beginning of the execution.
- *
+ * 
  * @author Petyr
  */
 @Entity
@@ -44,12 +43,14 @@ public class ProcessingUnitInfo implements DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_context_dpu")
     @SequenceGenerator(name = "seq_exec_context_dpu", allocationSize = 1)
+    @Column(name = "id")
     private Long id;
 
     /**
      * Describe state of the DPU execution.
      */
     @Enumerated(EnumType.ORDINAL)
+    @Column(name = "state", columnDefinition = "SMALLINT")
     private DPUExecutionState state = DPUExecutionState.PREPROCESSING;
 
     /**
@@ -68,7 +69,7 @@ public class ProcessingUnitInfo implements DataObject {
 
     /**
      * Create information about new DataUnit.
-     *
+     * 
      * @param name
      * @param type
      * @param isInput
@@ -114,7 +115,7 @@ public class ProcessingUnitInfo implements DataObject {
     /**
      * Returns true if two objects represent the same pipeline. This holds if
      * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
-     *
+     * 
      * @param obj
      * @return true if both objects represent the same pipeline
      */
@@ -138,7 +139,7 @@ public class ProcessingUnitInfo implements DataObject {
 
     /**
      * Hashcode is compatible with {@link #equals(java.lang.Object)}.
-     *
+     * 
      * @return The value of hashcode.
      */
     @Override

@@ -16,23 +16,15 @@
  */
 package cz.cuni.mff.xrg.odcs.commons.app.user;
 
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+
+import javax.persistence.*;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.SequenceGenerator;
-
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
-
 /**
  * Represent settings for scheduler notification.
- *
+ * 
  * @author Maria Kukhar
  */
 @MappedSuperclass
@@ -44,27 +36,28 @@ public abstract class NotificationRecord implements DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_sch_notification")
     @SequenceGenerator(name = "seq_sch_notification", allocationSize = 1)
+    @Column(name = "id")
     private Long id;
 
     /**
      * Type of notification in case of successful execution:
      */
     @Enumerated(EnumType.ORDINAL)
-    @Column(name = "type_success")
+    @Column(name = "type_success", columnDefinition = "SMALLINT")
     private NotificationRecordType typeSuccess;
 
     /**
      * Type of notification in case of error execution:
      */
     @Enumerated(EnumType.ORDINAL)
-    @Column(name = "type_error")
+    @Column(name = "type_error", columnDefinition = "SMALLINT")
     private NotificationRecordType typeError;
 
     /**
      * Type of notification in case of started execution
      */
     @Enumerated(EnumType.ORDINAL)
-    @Column(name = "type_started")
+    @Column(name = "type_started", columnDefinition = "SMALLINT")
     private NotificationRecordType typeStarted;
 
     /**
@@ -116,7 +109,7 @@ public abstract class NotificationRecord implements DataObject {
     /**
      * Returns true if two objects represent the same pipeline. This holds if
      * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
-     *
+     * 
      * @param obj
      * @return true if both objects represent the same pipeline
      */
@@ -140,7 +133,7 @@ public abstract class NotificationRecord implements DataObject {
 
     /**
      * Hashcode is compatible with {@link #equals(java.lang.Object)}.
-     *
+     * 
      * @return The value of hashcode.
      */
     @Override

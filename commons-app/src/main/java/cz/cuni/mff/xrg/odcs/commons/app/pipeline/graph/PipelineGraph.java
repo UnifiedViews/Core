@@ -16,22 +16,13 @@
  */
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-
-import javax.persistence.*;
-
-import com.mysql.jdbc.Messages;
-
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
+
+import javax.persistence.*;
+import java.util.*;
 
 /**
  * Oriented acyclic graph representation of pipeline. Each Node represents a
@@ -51,7 +42,7 @@ public class PipelineGraph implements DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_graph")
     @SequenceGenerator(name = "seq_ppl_graph", allocationSize = 1)
-    @SuppressWarnings("unused")
+    @Column(name = "id")
     private Long id;
 
     /**

@@ -16,6 +16,10 @@
  */
 package cz.cuni.mff.xrg.odcs.commons.app.module;
 
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.Messages;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.artifact.versioning.ComparableVersion;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.jar.Attributes;
@@ -23,11 +27,6 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.artifact.versioning.ComparableVersion;
-
-import cz.cuni.mff.xrg.odcs.commons.app.i18n.Messages;
 
 public class DPUJarUtils {
 
@@ -137,7 +136,7 @@ public class DPUJarUtils {
      * 
      * @param v1String
      * @param v2String
-     * @return -1 if v1String < v2String,
+     * @return -1 if v1String < v2String,q
      *          1 if v1String > v2String,
      *          0 if v1String == v2String 
      */

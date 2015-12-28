@@ -16,30 +16,29 @@
  */
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline;
 
+import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.SharedEntity;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
+import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
+import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.persistence.*;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.apache.commons.lang3.StringUtils;
-
-import cz.cuni.mff.xrg.odcs.commons.app.auth.ShareType;
-import cz.cuni.mff.xrg.odcs.commons.app.auth.SharedEntity;
-import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph;
-import cz.cuni.mff.xrg.odcs.commons.app.user.OwnedEntity;
-import cz.cuni.mff.xrg.odcs.commons.app.user.User;
-import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
-
 /**
  * Represents a fixed workflow composed of one or several extractor, transformer
  * and loader modules ({@link DPUInstanceRecord}s) organized in acyclic graph.
- *
+ * 
  * @author Jiri Tomes
  * @author Jan Vojt
  * @author Bogo
@@ -55,18 +54,20 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_model")
     @SequenceGenerator(name = "seq_ppl_model", allocationSize = 1)
+    @Column(name = "id")
     private Long id;
 
     /**
      * Human-readable pipeline name
      */
-    @Column(unique = true)
+    @Column(name = "name", length = 1024)
     private String name;
 
     /**
      * Human-readable pipeline description
      */
-    @Column
+    @Lob
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "pipeline", fetch = FetchType.LAZY)
@@ -87,7 +88,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
      * Public vs private shareType.
      */
     @Enumerated(EnumType.ORDINAL)
-    @Column(name = "visibility")
+    @Column(name = "visibility", columnDefinition = "SMALLINT")
     private ShareType shareType;
 
     /**
@@ -108,6 +109,15 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
     @Column(name = "last_change")
     private Date lastChange;
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "pipeline", orphanRemoval = true)
+    private Set<PipelineExecution> executions = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "pipeline", orphanRemoval = true)
+    private Set<Schedule> schedules = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "pipeline", orphanRemoval = true)
+    private Set<OpenEvent> openEvents = new HashSet<>();
+
     /**
      * Default constructor for JPA
      */
@@ -118,7 +128,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 
     /**
      * Copy constructor. Creates a deep copy of given pipeline.
-     *
+     * 
      * @param pipeline
      *            to copy
      */
@@ -139,7 +149,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 
     /**
      * Constructor with given pipeline name and description.
-     *
+     * 
      * @param name
      *            Name of pipeline
      * @param description
@@ -153,7 +163,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 
     /**
      * Returns the name of the pipeline.
-     *
+     * 
      * @return the name of the pipeline.
      */
     public String getName() {
@@ -162,7 +172,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 
     /**
      * Set new name to the pipeline.
-     *
+     * 
      * @param newName
      *            String value of new name of pipeline.
      */
@@ -172,7 +182,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 
     /**
      * Returns the pipeline description.
-     *
+     * 
      * @return the value of the pipeline description.
      */
     public String getDescription() {
@@ -181,7 +191,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 
     /**
      * Set new value of the pipeline description.
-     *
+     * 
      * @param newDescription
      *            new value of the pipeline description.
      */
@@ -191,7 +201,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 
     /**
      * Returns the instance of {@link PipelineGraph} for this pipeline.
-     *
+     * 
      * @return the instance of {@link PipelineGraph} for this pipeline.
      */
     public PipelineGraph getGraph() {
@@ -200,7 +210,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 
     /**
      * Set new value of {@link PipelineGraph} to this pipeline.
-     *
+     * 
      * @param graph
      *            instance of {@link PipelineGraph} will be set to this
      *            pipeline.
@@ -212,7 +222,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 
     /**
      * Returns the set ID of this pipeline as {@link Long} value.
-     *
+     * 
      * @return the set ID of this pipeline as {@link Long} value.
      */
     @Override
@@ -222,17 +232,20 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 
     /**
      * Set new value of pipeline owner.
-     *
+     * 
      * @param owner
      *            instance of {@link User} as new pipeline owner.
      */
     public void setUser(User owner) {
         this.owner = owner;
+
+        if (owner != null)
+            owner.getPipelines().add(this);
     }
 
     /**
      * Return the instance of {@link User} as owner of this pipeline.
-     *
+     * 
      * @return the owner of this pipeline.
      */
     @Override
@@ -242,7 +255,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 
     /**
      * Returns the set of pipeline conflicts.
-     *
+     * 
      * @return the set of pipeline conflicts.
      */
     public Set<Pipeline> getConflicts() {
@@ -252,7 +265,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
     /**
      * Returns the pipeline visibility as one of {@link ShareType} values set
      * for this pipeline.
-     *
+     * 
      * @return the pipeline visibility as one of {@link ShareType} values set
      *         for this pipeline.
      */
@@ -263,7 +276,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 
     /**
      * Set the pipeline {@link ShareType} values.
-     *
+     * 
      * @param shareType
      *            new value
      */
@@ -273,7 +286,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 
     /**
      * Returns the {@link Date} instance where the pipeline was last changed.
-     *
+     * 
      * @return {@link Date} where the pipeline was last changed.
      */
     public Date getLastChange() {
@@ -283,7 +296,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
     /**
      * Set the {@link Date} instance where the pipeline was last changed to this
      * pipeline.
-     *
+     * 
      * @param lastChange
      *            value of {@link Date} that will be set.
      */
@@ -291,18 +304,10 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
         this.lastChange = lastChange;
     }
 
-    public UserActor getActor() {
-        return this.actor;
-    }
-
-    public void setActor(UserActor actor) {
-        this.actor = actor;
-    }
-
     /**
      * Returns true if two objects represent the same pipeline. This holds if
      * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
-     *
+     * 
      * @param obj
      * @return true if both objects represent the same pipeline
      */
@@ -326,7 +331,7 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
 
     /**
      * Hashcode is compatible with {@link #equals(java.lang.Object)}.
-     *
+     * 
      * @return The value of hashcode.
      */
     @Override
@@ -339,4 +344,50 @@ public class Pipeline implements OwnedEntity, SharedEntity, Serializable, DataOb
         return hash;
     }
 
+    public Set<PipelineExecution> getExecutions() {
+        return executions;
+    }
+
+    public void setExecutions(Set<PipelineExecution> executions) {
+        this.executions = executions;
+    }
+
+    public Set<Schedule> getSchedules() {
+        return schedules;
+    }
+
+    public void setSchedules(Set<Schedule> schedules) {
+        this.schedules = schedules;
+    }
+
+    public Set<OpenEvent> getOpenEvents() {
+        return openEvents;
+    }
+
+    public void setOpenEvents(Set<OpenEvent> openEvents) {
+        this.openEvents = openEvents;
+    }
+
+    public UserActor getActor() {
+        return actor;
+    }
+
+    public void setActor(UserActor actor) {
+        this.actor = actor;
+
+        if (actor != null)
+            actor.getPipelines().add(this);
+    }
+
+    @Override
+    public String toString() {
+        return "Pipeline{" +
+                "id=" + id +
+                ", name=" + name +
+                ", description=" + description +
+                ", owner=" + owner +
+                ", actor='" + actor + '\'' +
+                ", lastChange='" + lastChange + '\'' +
+                '}';
+    }
 }

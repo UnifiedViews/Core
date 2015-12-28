@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>eu.unifiedviews</groupId>
         <artifactId>uv-core</artifactId>
-        <version>2.2.0</version>
+        <version>2.3.0</version>
     </parent>
     <artifactId>backend</artifactId>
     <packaging>jar</packaging>
@@ -17,10 +17,17 @@
     </properties>
 
     <dependencies>
+       
         <dependency> <!-- commons-app project -->
             <groupId>${project.groupId}</groupId>
             <artifactId>commons-app</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        
+        <dependency> 
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>4.4</version>
         </dependency>
 
         <dependency> <!-- apache.commons : parse cmd. args -->
@@ -62,13 +69,6 @@
         </dependency>
     </dependencies>
 
-    <pluginRepositories>
-        <pluginRepository>
-            <id>onejar-maven-plugin.googlecode.com</id>
-            <url>http://onejar-maven-plugin.googlecode.com/svn/mavenrepo</url>
-        </pluginRepository>
-    </pluginRepositories>
-
     <build>
         <plugins>
             <plugin>
@@ -79,76 +79,53 @@
                     <header>${project.basedir}/GPL-3.txt</header>
                 </configuration>
             </plugin>
+
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.3.1</version>
+                <version>2.4</version>
                 <configuration>
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <mainClass>cz.cuni.mff.xrg.odcs.backend.AppEntry</mainClass>
                             <classpathPrefix>lib/</classpathPrefix>
+                            <classpathLayoutType>custom</classpathLayoutType>
+                            <customClasspathLayout>$${artifact.artifactId}-$${artifact.version}$${dashClassifier?}-$${artifact.extension}/</customClasspathLayout>
+
                         </manifest>
                     </archive>
                 </configuration>
             </plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.3</version>
-                <executions>
-                    <execution>
-                        <id>copy-dependencies</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                            <!-- the two lines below tell Maven not to include
-                            test scoped dependencies -->
-                            <includeScope>runtime</includeScope>
-                            <excludeScope>provided</excludeScope>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <version>2.9</version>
+            <executions>
+                <execution>
+                    <!-- Dependencies are not just copied, but also unpacked - this is a workaround to solve the eclipselink lazy loading issue, see https://github.com/UnifiedViews/Core/pull/555: 
+                     the eclipselink core packages are signed which causes the backend to fail on start because on backend packaging it copies all the dependencies which somehow messes up the signatures. 
+                     The solution proposed in the web is to  filter the *.SF and *.RSA files from META-INF to remove the signature information when preparing the jar -->
+                    <id>unpack-dependencies</id>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>unpack-dependencies</goal>
+                    </goals>
+                    <configuration>
+                        <excludes>**\/*.SF,**\/*.DSA,**\/*.RSA</excludes>
+                        <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                        <includeScope>runtime</includeScope>
+                        <excludeScope>provided</excludeScope>
+                        <useSubDirectoryPerArtifact>true</useSubDirectoryPerArtifact>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
+
         </plugins>
 
-        <pluginManagement>
-            <plugins>
-                <!--This plugin's configuration is used to store Eclipse
-                m2e settings only. It has no influence on the Maven build itself. -->
-                <plugin>
-                    <groupId>org.eclipse.m2e</groupId>
-                    <artifactId>lifecycle-mapping</artifactId>
-                    <version>1.0.0</version>
-                    <configuration>
-                        <lifecycleMappingMetadata>
-                            <pluginExecutions>
-                                <!-- Fix m2e not supporting copy-dependency
-                                plugin -->
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>org.apache.maven.plugins</groupId>
-                                        <versionRange>[1.0.0,)</versionRange>
-                                        <artifactId>maven-dependency-plugin</artifactId>
-                                        <goals>
-                                            <goal>copy-dependencies</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <ignore />
-                                    </action>
-                                </pluginExecution>
-                            </pluginExecutions>
-                        </lifecycleMappingMetadata>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
 
         <resources>
             <resource>
@@ -156,6 +133,8 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
+
+
     </build>
     <!-- define license -->
     <licenses>

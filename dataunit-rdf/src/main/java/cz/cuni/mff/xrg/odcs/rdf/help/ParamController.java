@@ -30,6 +30,7 @@ import cz.cuni.mff.xrg.odcs.rdf.i18n.Messages;
  * 
  * @author Jiri Tomes
  */
+@Deprecated
 public class ParamController {
 
     private static final Logger logger = LoggerFactory.getLogger(ParamController.class);

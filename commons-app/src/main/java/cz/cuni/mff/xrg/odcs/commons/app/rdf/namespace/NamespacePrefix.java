@@ -16,21 +16,14 @@
  */
 package cz.cuni.mff.xrg.odcs.commons.app.rdf.namespace;
 
-import java.util.Objects;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+
+import javax.persistence.*;
+import java.util.Objects;
 
 /**
  * Entity representing RDF namespace prefix.
- *
+ * 
  * @author Jan Vojt
  */
 @Entity
@@ -43,18 +36,19 @@ public class NamespacePrefix implements DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_rdf_ns_prefix")
     @SequenceGenerator(name = "seq_rdf_ns_prefix", allocationSize = 1)
+    @Column(name = "id")
     private Long id;
 
     /**
      * Prefix for namespace.
      */
-    @Column(length = 25)
+    @Column(name = "name", nullable = false, unique = true, length = 255)
     private String name;
 
     /**
      * URI represented by prefix.
      */
-    @Column(name = "uri", length = 255)
+    @Column(name = "uri", nullable = false, length = 2048)
     private String prefixURI;
 
     /**
@@ -65,7 +59,7 @@ public class NamespacePrefix implements DataObject {
 
     /**
      * Constructs new prefix with given name for given URI.
-     *
+     * 
      * @param name
      *            prefix
      * @param prefixURI
@@ -104,7 +98,7 @@ public class NamespacePrefix implements DataObject {
     /**
      * Returns true if two objects represent the same pipeline. This holds if
      * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
-     *
+     * 
      * @param obj
      * @return true if both objects represent the same pipeline
      */
@@ -128,7 +122,7 @@ public class NamespacePrefix implements DataObject {
 
     /**
      * Hashcode is compatible with {@link #equals(java.lang.Object)}.
-     *
+     * 
      * @return The value of hashcode.
      */
     @Override

@@ -4,20 +4,16 @@
 	<parent>
 		<groupId>eu.unifiedviews</groupId>
 		<artifactId>uv-core</artifactId>
-		<version>2.2.0</version>
+		<version>2.3.0</version>
 	</parent>
 	<artifactId>dataunit-rdf</artifactId>
 	<name>dataunit-rdf</name>
-	<description>Definition of RDFDataUnit.</description>
+	<description>Helper classes for RDFDataUnit. Do not reuse this module, it is deprecated, but it is still needed, because frontend uses it for browse/query features and certain UV 1.X DPUs use it. </description>
 
 	<dependencies>
 		<dependency>
 			<groupId>eu.unifiedviews</groupId>
-			<artifactId>uv-dpu-helpers</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>eu.unifiedviews</groupId>
-			<artifactId>uv-dataunit-files</artifactId>
+			<artifactId>uv-dpu-api</artifactId>
 		</dependency>
 		<dependency> <!-- dataunit base project -->
 			<groupId>eu.unifiedviews</groupId>

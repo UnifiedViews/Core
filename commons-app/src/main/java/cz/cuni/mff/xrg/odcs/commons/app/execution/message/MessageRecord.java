@@ -16,27 +16,27 @@
  */
 package cz.cuni.mff.xrg.odcs.commons.app.execution.message;
 
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.Objects;
-
-import javax.persistence.*;
-
-import org.apache.commons.lang3.StringUtils;
-
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.persistence.annotations.Index;
+
+import javax.persistence.*;
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.Objects;
 
 /**
  * Represent a single message created during DPURecord execution.
- *
+ * 
  * @author Petyr
  * @author Bogo
  */
 @Entity
 @Table(name = "exec_record")
+@Index(name = "ix_EXEC_RECORD", columnNames = "r_time, r_type, dpu_id, execution_id")
 public class MessageRecord implements DataObject {
 
     /**
@@ -45,6 +45,7 @@ public class MessageRecord implements DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_exec_record")
     @SequenceGenerator(name = "seq_exec_record", allocationSize = 1)
+    @Column(name = "id")
     private Long id;
 
     /**
@@ -65,26 +66,27 @@ public class MessageRecord implements DataObject {
      * DPURecord which emitted the message.
      */
     @ManyToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "dpu_id", nullable = true)
+    @JoinColumn(name = "dpu_id")
     private DPUInstanceRecord dpuInstance;
 
     /**
      * Pipeline execution during which message was emitted.
      */
-    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "execution_id")
     private PipelineExecution execution;
 
     /**
      * Short message, should be under 50 characters.
      */
-    @Column(name = "short_message")
+    @Column(name = "short_message", length = 128)
     private String shortMessage;
 
     /**
      * Full message text.
      */
-    @Column(name = "full_message")
+    @Lob
+    @Column(name = "full_message", columnDefinition = "TEXT")
     private String fullMessage;
 
     /**
@@ -95,7 +97,7 @@ public class MessageRecord implements DataObject {
 
     /**
      * Constructor.
-     *
+     * 
      * @param time
      *            Time of creation.
      * @param type
@@ -117,10 +119,15 @@ public class MessageRecord implements DataObject {
             String fullMessage) {
         this.time = time;
         this.type = type;
-        this.dpuInstance = dpuInstance;
         this.execution = execution;
         this.shortMessage = StringUtils.abbreviate(shortMessage, LenghtLimits.SHORT_MESSAGE);
         this.fullMessage = fullMessage;
+        this.dpuInstance = dpuInstance;
+
+        if (dpuInstance != null)
+            dpuInstance.getMessageRecords().add(this);
+        if (execution != null)
+            execution.getMessages().add(this);
     }
 
     @Override
@@ -180,7 +187,7 @@ public class MessageRecord implements DataObject {
     /**
      * Returns true if two objects represent the same pipeline. This holds if
      * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
-     *
+     * 
      * @param obj
      * @return true if both objects represent the same pipeline
      */
@@ -204,7 +211,7 @@ public class MessageRecord implements DataObject {
 
     /**
      * Hashcode is compatible with {@link #equals(java.lang.Object)}.
-     *
+     * 
      * @return The value of hashcode.
      */
     @Override

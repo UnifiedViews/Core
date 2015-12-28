@@ -16,13 +16,12 @@
  */
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline;
 
-import java.util.Date;
-import java.util.Objects;
-
-import javax.persistence.*;
-
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
+
+import javax.persistence.*;
+import java.util.Date;
+import java.util.Objects;
 
 /**
  * Represents a single event of opening pipeline detail in canvas by given owner
@@ -37,6 +36,7 @@ public class OpenEvent implements DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_open_event")
     @SequenceGenerator(name = "seq_ppl_open_event", allocationSize = 1)
+    @Column(name = "id")
     private Long id;
 
     /**
@@ -73,6 +73,8 @@ public class OpenEvent implements DataObject {
 
     public void setPipeline(Pipeline pipeline) {
         this.pipeline = pipeline;
+
+        if (pipeline != null) pipeline.getOpenEvents().add(this);
     }
 
     public User getUser() {
@@ -81,6 +83,8 @@ public class OpenEvent implements DataObject {
 
     public void setUser(User user) {
         this.owner = user;
+
+        if (user != null) user.getOpenEvents().add(this);
     }
 
     public Date getTimestamp() {

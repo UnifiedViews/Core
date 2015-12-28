@@ -16,12 +16,14 @@
  */
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph;
 
-import java.util.Objects;
-
-import javax.persistence.*;
-
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Node represents DPURecord on the pipeline and holds information about its
@@ -41,7 +43,7 @@ public class Node implements DataObject {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_ppl_node")
     @SequenceGenerator(name = "seq_ppl_node", allocationSize = 1)
-    @SuppressWarnings("unused")
+    @Column(name = "id")
     private Long id;
 
     @OneToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -59,6 +61,16 @@ public class Node implements DataObject {
     @JoinColumn(name = "graph_id")
     private PipelineGraph graph;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "debugNode", orphanRemoval = true)
+    private Set<PipelineExecution> executions = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY, mappedBy = "from", orphanRemoval = true)
+    private Set<Edge> startNodeOfEdges = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY, mappedBy = "to", orphanRemoval = true)
+    private Set<Edge> endNodeOfEdges = new HashSet<>();
+
+
     /**
      * Empty constructor for JPA.
      */
@@ -73,10 +85,13 @@ public class Node implements DataObject {
      *            node value to copy
      */
     public Node(Node node) {
-        position = node.getPosition() == null
-                ? null : new Position(node.getPosition());
-        dpuInstance = node.getDpuInstance() == null
-                ? null : new DPUInstanceRecord(node.getDpuInstance());
+        if (node.getPosition() != null) {
+            setPosition(new Position(node.getPosition()));
+        }
+
+        if (node.getDpuInstance() != null) {
+            setDpuInstance(new DPUInstanceRecord(node.getDpuInstance()));
+        }
     }
 
     /**
@@ -86,7 +101,7 @@ public class Node implements DataObject {
      *            Value of DPU instance.
      */
     public Node(DPUInstanceRecord dpuInstance) {
-        this.dpuInstance = dpuInstance;
+        setDpuInstance(dpuInstance);
     }
 
     /**
@@ -115,6 +130,8 @@ public class Node implements DataObject {
      */
     public void setDpuInstance(DPUInstanceRecord dpuInstance) {
         this.dpuInstance = dpuInstance;
+
+        if (dpuInstance != null) dpuInstance.setNode(this);
     }
 
     /**
@@ -125,6 +142,8 @@ public class Node implements DataObject {
      */
     public void setPosition(Position position) {
         this.position = position;
+
+        if (position != null) position.setNode(this);
     }
 
     /**
@@ -195,6 +214,30 @@ public class Node implements DataObject {
     @Override
     public Long getId() {
         return id;
+    }
+
+    public Set<PipelineExecution> getExecutions() {
+        return executions;
+    }
+
+    public void setExecutions(Set<PipelineExecution> executions) {
+        this.executions = executions;
+    }
+
+    public Set<Edge> getStartNodeOfEdges() {
+        return startNodeOfEdges;
+    }
+
+    public void setStartNodeOfEdges(Set<Edge> startNodeOfEdges) {
+        this.startNodeOfEdges = startNodeOfEdges;
+    }
+
+    public Set<Edge> getEndNodeOfEdges() {
+        return endNodeOfEdges;
+    }
+
+    public void setEndNodeOfEdges(Set<Edge> endNodeOfEdges) {
+        this.endNodeOfEdges = endNodeOfEdges;
     }
     
     public void setId(Long id) {

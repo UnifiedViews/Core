@@ -16,103 +16,81 @@
  */
 package eu.unifiedviews.commons.dao.view;
 
-import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
+
+import java.util.Date;
 
 /**
  * @author Škoda Petr
  */
-@Entity
-@Table(name = "exec_view")
 public class ExecutionView implements DataObject {
 
-    /**
-     * Unique id of pipeline execution.
-     */
-    @Id
     private Long id;
-
-    /**
-     * Actual status for executed pipeline.
-     */
-    @Enumerated(EnumType.ORDINAL)
     private PipelineExecutionStatus status;
 
-    /**
-     * Id of pipeline being executed.
-     */
-    @Column(name = "pipeline_id")
-    private String pipelineId;
+    //pipeline_id
+    private Long pipelineId;
 
-    /**
-     * Name of pipeline being executed.
-     */
-    @Column(name = "pipeline_name")
+    //pipeline_name
     private String pipelineName;
 
-    /**
-     * Run in debug mode?
-     */
-    @Column(name = "debug_mode")
+    //debug_mode
     private boolean isDebugging;
 
-    /**
-     * Timestamp when this execution started, or null.
-     */
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "t_start")
+    //t_start
     private Date start;
 
-    /**
-     * Timestamp when this execution started, or null.
-     */
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "t_end")
+    //t_end
     private Date end;
 
-    /**
-     * Schedule that planned this execution. Null for execution created by user.
-     */
-    @Column(name = "schedule_id")
-    private Integer schedule;
+    //schedule_id
+    private Long scheduleId;
 
-    /**
-     * Execution owner.
-     */
-    @Column(name = "owner_name")
+    //owner_name
     private String ownerName;
 
-    @Column(name = "owner_full_name")
+    //owner_full_name
     private String ownerFullName;
 
-    @Column(name = "user_actor_name")
+    //user_actor_name
     private String userActorName;
 
-    /**
-     * True if pipeline should or has been stopped on user request.
-     */
-    @Column(name = "stop")
+    //stop
     private boolean stop;
 
-    /**
-     * Timestamp when this execution was last changed.
-     */
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "t_last_change")
+    //t_last_change
     private Date lastChange;
 
-    @Column(name = "backend_id")
+    public ExecutionView(Long id,
+                         PipelineExecutionStatus status,
+                         Long pipelineId,
+                         String pipelineName,
+                         boolean isDebugging,
+                         Date start,
+                         Date end,
+                         Long scheduleId,
+                         String ownerName,
+                         String ownerFullName,
+                         String userActorName,
+                         boolean stop,
+                         Date lastChange)
+    {
+        this.id = id;
+        this.status = status;
+        this.pipelineId = pipelineId;
+        this.pipelineName = pipelineName;
+        this.isDebugging = isDebugging;
+        this.start = start;
+        this.end = end;
+        this.scheduleId = scheduleId;
+        this.ownerName = ownerName;
+        this.ownerFullName = ownerFullName;
+        this.userActorName = userActorName;
+        this.stop = stop;
+        this.lastChange = lastChange;
+    }
+
     private String backendId;
 
     @Override
@@ -132,11 +110,11 @@ public class ExecutionView implements DataObject {
         this.status = status;
     }
 
-    public String getPipelineId() {
+    public Long getPipelineId() {
         return pipelineId;
     }
 
-    public void setPipelineId(String pipelineId) {
+    public void setPipelineId(Long pipelineId) {
         this.pipelineId = pipelineId;
     }
 
@@ -172,12 +150,12 @@ public class ExecutionView implements DataObject {
         this.end = end;
     }
 
-    public Integer getSchedule() {
-        return schedule;
+    public Long getScheduleId() {
+        return scheduleId;
     }
 
-    public void setSchedule(Integer schedule) {
-        this.schedule = schedule;
+    public void setScheduleOd(Long scheduleId) {
+        this.scheduleId = scheduleId;
     }
 
     public String getOwnerName() {
