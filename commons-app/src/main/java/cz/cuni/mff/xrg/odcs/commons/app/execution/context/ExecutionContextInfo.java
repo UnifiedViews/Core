@@ -327,4 +327,11 @@ public class ExecutionContextInfo implements DataObject {
         return hash;
     }
 
+    @Override
+    public String toString() {
+        return "ExecutioContextInfo{" +
+                "id=" + id +
+                '}';
+    }
+
 }

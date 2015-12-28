@@ -6,5 +6,5 @@ Priority: extra
 Architecture: all
 Maintainer: jmc@eea.sk
 Homepage: https://github.com/UnifiedViews/Core
-Depends:  unifiedviews-webapp-mysql (>> 2.2) | unifiedviews-webapp-pgsql  (>> 2.2), unifiedviews-backend (>> 2.2), unifiedviews-backend (<< 2.3)
+Depends:  unifiedviews-webapp-mysql (>> 2.3) | unifiedviews-webapp-pgsql  (>> 2.3), unifiedviews-backend (>> 2.3), unifiedviews-backend (<< 2.4)
 Description: The tool uses data processing pipelines for obtaining, processing, and storing RDF data.

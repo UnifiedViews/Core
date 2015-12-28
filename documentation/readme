@@ -1,5 +1,0 @@
-Every property that binds String to LONG NVARCHAR must be not-empty. In case that is empty it will throw an exception. Like:
-16:12:02.175 [http-apr-8080-exec-30] ERROR c.c.m.x.o.f.AppEntry - Uncaught exception
-java.lang.NullPointerException: null
-	at java.lang.String.<init>(String.java:481) ~[na:1.7.0_45]
-	at virtuoso.jdbc4.VirtuosoBlob.getSubString(Unknown Source) ~[virtjdbc-4.1.jar:na]

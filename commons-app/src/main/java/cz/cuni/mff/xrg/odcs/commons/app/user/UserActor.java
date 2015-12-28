@@ -88,4 +88,5 @@ public class UserActor implements DataObject {
     public void setPipelines(Set<Pipeline> pipelines) {
         this.pipelines = pipelines;
     }
+
 }

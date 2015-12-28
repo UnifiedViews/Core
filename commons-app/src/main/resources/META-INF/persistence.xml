@@ -19,6 +19,7 @@
         <class>cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.PipelineGraph</class>
         <class>cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Position</class>
         <class>cz.cuni.mff.xrg.odcs.commons.app.properties.RuntimeProperty</class>
+        <class>cz.cuni.mff.xrg.odcs.commons.app.properties.Property</class>
         <class>cz.cuni.mff.xrg.odcs.commons.app.rdf.namespace.NamespacePrefix</class>
         <class>cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule</class>
         <class>cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord</class>

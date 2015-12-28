@@ -4,5 +4,5 @@ Section: java
 Priority: extra
 Architecture: all
 Maintainer: jmc@eea.sk
-Depends: unifiedviews-backend-mysql (>> 2.2) | unifiedviews-backend-pgsql (>> 2.2)
+Depends: unifiedviews-backend-mysql (>> 2.3) | unifiedviews-backend-pgsql (>> 2.3)
 Description: The tool uses data processing pipelines for obtaining, processing, and storing RDF data.

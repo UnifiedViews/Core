@@ -399,9 +399,6 @@ public class PipelineExecution implements OwnedEntity, DataObject {
      */
     public void setOwner(User owner) {
         this.owner = owner;
-
-        if (owner != null)
-            owner.getExecutions().add(this);
     }
 
     /**
@@ -523,6 +520,26 @@ public class PipelineExecution implements OwnedEntity, DataObject {
 
     public void setMessages(Set<MessageRecord> messages) {
         this.messages = messages;
+    }
+
+    @Override
+    public String toString() {
+        return "PipelineExecution{" +
+                "id=" + id +
+                ", status=" + status +
+                ", isDebugging=" + isDebugging +
+                ", orderNumber=" + orderNumber +
+                ", start='" + start + '\'' +
+                ", end='" + end + '\'' +
+                ", schedule=" + schedule +
+                ", stop=" + stop +
+                ", lastChange='" + lastChange + '\'' +
+                ", backendId=" + backendId + '\'' +
+                ", actor=" + actor +
+                ", context=" + context +
+                ", pipeline=" + pipeline +
+                ", owner=" + owner +
+                '}';
     }
 
 }

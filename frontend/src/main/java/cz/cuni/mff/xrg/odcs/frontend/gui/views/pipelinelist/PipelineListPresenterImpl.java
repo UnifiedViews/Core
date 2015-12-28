@@ -112,8 +112,11 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
     private ImportService importService;
 
     private ClassNavigator navigator;
+
     private PipelineListData dataObject;
+
     private RefreshManager refreshManager;
+
     private ContainerSourceBase<PipelineView> pipelineViewSource;
 
     private Date lastLoad = new Date(0L);
@@ -144,7 +147,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
         pipelineViewSource = new ContainerSourceBase<>(
                 pipelineHelper.getPipelineViews(),
                 pipelineViewAccessor
-        );
+                );
         dataObject = new PipelineListPresenter.PipelineListData(new ReadOnlyContainer<>(pipelineViewSource));
 
         // prepare view

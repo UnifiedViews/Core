@@ -47,11 +47,13 @@ public class Log implements DataObject {
 
     /**
      * Primary key of message stored in database.
+     * The naming of the sequence generator "tablename_columname_seq" is the PostgreSQL default
+     * sequence naming for SERIAL
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_logging")
-    @SequenceGenerator(name = "seq_logging", allocationSize = 1)
-    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "logging_id_seq")
+    @SequenceGenerator(name = "logging_id_seq", sequenceName = "logging_id_seq", allocationSize = 1)
+    @Column(name = "id", nullable = false)
     private Long id;
 
     /**

@@ -16,6 +16,7 @@
  */
 package cz.cuni.mff.xrg.odcs.backend.auxiliaries;
 
+import cz.cuni.mff.xrg.odcs.commons.app.properties.Property;
 import cz.cuni.mff.xrg.odcs.commons.app.properties.RuntimeProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.user.*;
 import org.slf4j.Logger;
@@ -105,6 +106,14 @@ public class DatabaseInitializer {
         prop3.setName("locale");
         prop3.setValue("en");
 
+        //set properties holding version of UV in DB (used by Debian installation to detect the version)
+        Property property1 = new Property();
+        property1.setKey("UV.Core.version");
+        property1.setValue("002.003.000");
+        Property property2 = new Property();
+        property2.setKey("UV.Plugin-DevEnv.version");
+        property2.setValue("002.001.005");
+
         addNewPermissionToRoles("administrator", adminRole);
         addNewPermissionToRoles("pipeline.delete", true, adminRole, userRole);
         addNewPermissionToRoles("pipeline.edit", true, adminRole, userRole);
@@ -158,6 +167,8 @@ public class DatabaseInitializer {
         em.persist(prop1);
         em.persist(prop2);
         em.persist(prop3);
+        em.persist(property1);
+        em.persist(property2);
         em.persist(adminRole);
         em.persist(userRole);
 
