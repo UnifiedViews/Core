@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>eu.unifiedviews</groupId>
 		<artifactId>uv-pom</artifactId>
-		<version>2.1.5</version>
+		<version>2.1.6-SNAPSHOT</version>
 	</parent>
 
 	<groupId>eu.unifiedviews</groupId>
 	<artifactId>uv-core</artifactId>
-	<version>2.3.0</version>
+	<version>2.3.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>UnifiedViews-Core</name>
 	<description />
@@ -24,11 +24,11 @@
 
 		<!-- TODO: update ussage as rdf/files-impls utilize project version, not this property -->
 		<uv-dpu-api.version>${unifiedviews.api.version}</uv-dpu-api.version>
-		<uv-dpu-api-helpers.version>2.1.5</uv-dpu-api-helpers.version>		
+		<uv-dpu-api-helpers.version>2.1.6-SNAPSHOT</uv-dpu-api-helpers.version>		
 		<uv-dataunit-rdf.version>${unifiedviews.api.version}</uv-dataunit-rdf.version>
 		<uv-dataunit-files.version>${unifiedviews.api.version}</uv-dataunit-files.version>
 		<uv-dataunit-relational.version>${unifiedviews.api.version}</uv-dataunit-relational.version>
-		<uv-dataunit-helpers.version>2.1.5</uv-dataunit-helpers.version>		
+		<uv-dataunit-helpers.version>2.1.6-SNAPSHOT</uv-dataunit-helpers.version>		
 
 		<dataunit.version>${project.version}</dataunit.version>
 
