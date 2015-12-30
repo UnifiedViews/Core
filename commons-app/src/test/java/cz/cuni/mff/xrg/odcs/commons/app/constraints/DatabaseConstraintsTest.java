@@ -464,29 +464,30 @@ public class DatabaseConstraintsTest {
         }.ensureReferencingInstanceDelete(Node.class, DPUInstanceRecord.class);
     }
 
-    @Test
-    public void ON_DELETE_ppl_position_DELETE_ppl_node() {
-        new DeleteConstraintTest() {
-
-            @Override
-            Object createReferencedInstance(EntityManager em) {
-                em.getTransaction().begin();
-                DPUInstanceRecord dpuInstance = new DPUInstanceRecord();
-                Position position = new Position();
-                Node node = new Node();
-                node.setDpuInstance(dpuInstance);
-                node.setPosition(position);
-
-                em.persist(dpuInstance);
-                em.persist(position);
-                em.persist(node);
-
-                em.getTransaction().commit();
-                return position;
-            }
-
-        }.ensureReferencingInstanceDelete(Node.class, Position.class);
-    }
+    // Note: the test is not needed, ppl_node is removed, ppl_position is dependant class
+    //    @Test
+    //    public void ON_DELETE_ppl_position_DELETE_ppl_node() {
+    //        new DeleteConstraintTest() {
+    //
+    //            @Override
+    //            Object createReferencedInstance(EntityManager em) {
+    //                em.getTransaction().begin();
+    //                DPUInstanceRecord dpuInstance = new DPUInstanceRecord();
+    //                Position position = new Position();
+    //                Node node = new Node();
+    //                node.setDpuInstance(dpuInstance);
+    //                node.setPosition(position);
+    //
+    //                em.persist(dpuInstance);
+    //                em.persist(position);
+    //                em.persist(node);
+    //
+    //                em.getTransaction().commit();
+    //                return position;
+    //            }
+    //
+    //        }.ensureReferencingInstanceDelete(Node.class, Position.class);
+    //    }
 
     @Test
     public void ON_DELETE_ppl_graph_DELETE_ppl_edge() {
