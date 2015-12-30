@@ -28,7 +28,7 @@ import java.util.Objects;
 
 /**
  * Represent coordinates of object in system (on canvas).
- *
+ * 
  * @author Jiri Tomes
  */
 @Entity
@@ -56,9 +56,6 @@ public class Position implements DataObject {
     @Column(name = "pos_y")
     private int y;
 
-    @OneToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private Node node;
-
     /**
      * No-arg constructor for JPA
      */
@@ -67,7 +64,7 @@ public class Position implements DataObject {
 
     /**
      * Create new instance for position based on parameters.
-     *
+     * 
      * @param x
      *            int value of X axis
      * @param y
@@ -80,7 +77,7 @@ public class Position implements DataObject {
 
     /**
      * Copy constructor.
-     *
+     * 
      * @param position
      *            the value of position.
      */
@@ -91,7 +88,7 @@ public class Position implements DataObject {
 
     /**
      * Change actual position.
-     *
+     * 
      * @param newX
      *            new value of X axis.
      * @param newY
@@ -104,7 +101,7 @@ public class Position implements DataObject {
 
     /**
      * Returns the actual position as point.
-     *
+     * 
      * @return The instance of {@link Point} as actual position.
      */
     public Point getPositionAsPoint() {
@@ -114,7 +111,7 @@ public class Position implements DataObject {
 
     /**
      * Returns the value of X axis of the position.
-     *
+     * 
      * @return The value of X axis of the position.
      */
     public int getX() {
@@ -123,7 +120,7 @@ public class Position implements DataObject {
 
     /**
      * Set the new value of X axis for this position.
-     *
+     * 
      * @param newX
      *            The new value of X axis of the position.
      */
@@ -133,7 +130,7 @@ public class Position implements DataObject {
 
     /**
      * Returns the value of Y axis of the position.
-     *
+     * 
      * @return The value of Y axis of the position.
      */
     public int getY() {
@@ -142,7 +139,7 @@ public class Position implements DataObject {
 
     /**
      * Set the new value of Y axis for this position.
-     *
+     * 
      * @param newY
      *            The new value of Y axis of the position.
      */
@@ -152,7 +149,7 @@ public class Position implements DataObject {
 
     /**
      * Returns the set ID of this position as {@link Long} value.
-     *
+     * 
      * @return the set ID of this position as {@link Long} value.
      */
     @Override
@@ -163,7 +160,7 @@ public class Position implements DataObject {
     /**
      * Returns true if two objects represent the same pipeline. This holds if
      * and only if <code>this.id == null ? this == obj : this.id == o.id</code>.
-     *
+     * 
      * @param obj
      * @return true if both objects represent the same pipeline
      */
@@ -187,7 +184,7 @@ public class Position implements DataObject {
 
     /**
      * Hashcode is compatible with {@link #equals(java.lang.Object)}.
-     *
+     * 
      * @return The value of hashcode.
      */
     @Override
@@ -200,11 +197,4 @@ public class Position implements DataObject {
         return hash;
     }
 
-    public Node getNode() {
-        return node;
-    }
-
-    public void setNode(Node node) {
-        this.node = node;
-    }
 }
