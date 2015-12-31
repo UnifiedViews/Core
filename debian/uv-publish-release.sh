@@ -26,7 +26,7 @@ aptly snapshot drop $snapshot_name #drop snapshot
 aptly repo drop uv-release #drop repository
 aptly repo create -distribution=wheezy -component=main uv-release #create repo
 aptly repo add -force-replace=true  uv-release  /Users/tomasknap/Documents/PROJECTS/ETL-SWProj/UnifiedView/Core/debian  #add deb packages
-aptly repo add -force-replace=true  uv-release  /Users/tomasknap/Documents/PROJECTS/ETL-SWProj/UnifiedView/Plugins/debian  #add deb packages
+#aptly repo add -force-replace=true  uv-release  /Users/tomasknap/Documents/PROJECTS/ETL-SWProj/UnifiedView/Plugins/debian  #add deb packages
 aptly snapshot create $snapshot_name from repo uv-release  #create snapshot
 aptly publish snapshot -distribution=wheezy -architectures=i386,amd64 $snapshot_name   #publish snapshot
 
