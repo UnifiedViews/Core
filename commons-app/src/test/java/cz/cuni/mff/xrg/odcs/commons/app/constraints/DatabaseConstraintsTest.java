@@ -514,51 +514,51 @@ public class DatabaseConstraintsTest {
         }.ensureReferencingInstanceDelete(Edge.class, PipelineGraph.class);
     }
 
-    @Test
-    public void ON_DELETE_ppl_node_from_DELETE_ppl_edge() {
-        new DeleteConstraintTest() {
+    //    @Test
+    //    public void ON_DELETE_ppl_node_from_DELETE_ppl_edge() {
+    //        new DeleteConstraintTest() {
+    //
+    //            @Override
+    //            Object createReferencedInstance(EntityManager em) {
+    //                em.getTransaction().begin();
+    //                Node nodeFrom = new Node();
+    //                DPUInstanceRecord dpuInstance = new DPUInstanceRecord();
+    //                nodeFrom.setDpuInstance(dpuInstance);
+    //                Edge edge = new Edge();
+    //                edge.setFrom(nodeFrom);
+    //
+    //                em.persist(dpuInstance);
+    //                em.persist(nodeFrom);
+    //                em.persist(edge);
+    //
+    //                em.getTransaction().commit();
+    //                return nodeFrom;
+    //            }
+    //        }.ensureReferencingInstanceDelete(Edge.class, Node.class);
+    //    }
 
-            @Override
-            Object createReferencedInstance(EntityManager em) {
-                em.getTransaction().begin();
-                Node nodeFrom = new Node();
-                DPUInstanceRecord dpuInstance = new DPUInstanceRecord();
-                nodeFrom.setDpuInstance(dpuInstance);
-                Edge edge = new Edge();
-                edge.setFrom(nodeFrom);
-
-                em.persist(dpuInstance);
-                em.persist(nodeFrom);
-                em.persist(edge);
-
-                em.getTransaction().commit();
-                return nodeFrom;
-            }
-        }.ensureReferencingInstanceDelete(Edge.class, Node.class);
-    }
-
-    @Test
-    public void ON_DELETE_ppl_node_to_DELETE_ppl_edge() {
-        new DeleteConstraintTest() {
-
-            @Override
-            Object createReferencedInstance(EntityManager em) {
-                em.getTransaction().begin();
-                Node nodeTo = new Node();
-                DPUInstanceRecord dpuInstance = new DPUInstanceRecord();
-                nodeTo.setDpuInstance(dpuInstance);
-                Edge edge = new Edge();
-                edge.setTo(nodeTo);
-
-                em.persist(dpuInstance);
-                em.persist(nodeTo);
-                em.persist(edge);
-
-                em.getTransaction().commit();
-                return nodeTo;
-            }
-        }.ensureReferencingInstanceDelete(Edge.class, Node.class);
-    }
+    //    @Test
+    //    public void ON_DELETE_ppl_node_to_DELETE_ppl_edge() {
+    //        new DeleteConstraintTest() {
+    //
+    //            @Override
+    //            Object createReferencedInstance(EntityManager em) {
+    //                em.getTransaction().begin();
+    //                Node nodeTo = new Node();
+    //                DPUInstanceRecord dpuInstance = new DPUInstanceRecord();
+    //                nodeTo.setDpuInstance(dpuInstance);
+    //                Edge edge = new Edge();
+    //                edge.setTo(nodeTo);
+    //
+    //                em.persist(dpuInstance);
+    //                em.persist(nodeTo);
+    //                em.persist(edge);
+    //
+    //                em.getTransaction().commit();
+    //                return nodeTo;
+    //            }
+    //        }.ensureReferencingInstanceDelete(Edge.class, Node.class);
+    //    }
 
     @Test
     public void ON_DELETE_exec_schedule_DELETE_sch_sch_notification() {

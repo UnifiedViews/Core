@@ -64,11 +64,11 @@ public class Node implements DataObject {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "debugNode", orphanRemoval = true)
     private Set<PipelineExecution> executions = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY, mappedBy = "from", orphanRemoval = true)
-    private Set<Edge> startNodeOfEdges = new HashSet<>();
-
-    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY, mappedBy = "to", orphanRemoval = true)
-    private Set<Edge> endNodeOfEdges = new HashSet<>();
+    //    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY, mappedBy = "from", orphanRemoval = true)
+    //    private Set<Edge> startNodeOfEdges = new HashSet<>();
+    //
+    //    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY, mappedBy = "to", orphanRemoval = true)
+    //    private Set<Edge> endNodeOfEdges = new HashSet<>();
 
     /**
      * Empty constructor for JPA.
@@ -222,21 +222,21 @@ public class Node implements DataObject {
         this.executions = executions;
     }
 
-    public Set<Edge> getStartNodeOfEdges() {
-        return startNodeOfEdges;
-    }
-
-    public void setStartNodeOfEdges(Set<Edge> startNodeOfEdges) {
-        this.startNodeOfEdges = startNodeOfEdges;
-    }
-
-    public Set<Edge> getEndNodeOfEdges() {
-        return endNodeOfEdges;
-    }
-
-    public void setEndNodeOfEdges(Set<Edge> endNodeOfEdges) {
-        this.endNodeOfEdges = endNodeOfEdges;
-    }
+    //    public Set<Edge> getStartNodeOfEdges() {
+    //        return startNodeOfEdges;
+    //    }
+    //
+    //    public void setStartNodeOfEdges(Set<Edge> startNodeOfEdges) {
+    //        this.startNodeOfEdges = startNodeOfEdges;
+    //    }
+    //
+    //    public Set<Edge> getEndNodeOfEdges() {
+    //        return endNodeOfEdges;
+    //    }
+    //
+    //    public void setEndNodeOfEdges(Set<Edge> endNodeOfEdges) {
+    //        this.endNodeOfEdges = endNodeOfEdges;
+    //    }
 
     public void setId(Long id) {
         this.id = id;
