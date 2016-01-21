@@ -23,6 +23,7 @@ import eu.unifiedviews.dpu.config.DPUConfigException;
  * 
  * @author Jiri Tomes
  */
+@Deprecated
 public class SPARQLValidationException extends DPUConfigException {
 
     private int queryNumber = 1;

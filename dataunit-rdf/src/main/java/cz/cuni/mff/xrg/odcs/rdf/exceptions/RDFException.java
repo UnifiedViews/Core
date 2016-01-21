@@ -22,6 +22,7 @@ package cz.cuni.mff.xrg.odcs.rdf.exceptions;
  * 
  * @author Jiri Tomes
  */
+@Deprecated
 public class RDFException extends RDFDataUnitException {
 
     /**

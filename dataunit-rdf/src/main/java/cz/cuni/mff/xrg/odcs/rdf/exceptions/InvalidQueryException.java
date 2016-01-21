@@ -24,10 +24,11 @@ import eu.unifiedviews.dataunit.DataUnitException;
  * 
  * @author Jiri Tomes
  */
+@Deprecated
 public class InvalidQueryException extends DataUnitException {
 
     /**
-     * Create a new instance of {@link InvalidQueryException} with the default {@link #message}.
+     * Create a new instance of {@link InvalidQueryException} with the default message.
      */
     public InvalidQueryException() {
         super(Messages.getString("InvalidQueryException.exception"));

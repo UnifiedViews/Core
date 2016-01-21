@@ -37,6 +37,7 @@ public enum ConfigProperty {
     BACKEND_ID("backend.id"),
     BACKEND_STARTUP_RESTART_RUNNING("backend.startup.restart.running"),
     LOCALE("locale"),
+    BACKEND_EXECUTION_CLEANUP_DAYS_LIMIT("backend.execution.cleanup.days.limit"),
 
     EXECUTION_LOG_HISTORY("exec.log.history"),
     EXECUTION_LOG_SIZE_MAX("exec.log.msg.maxSize"),
@@ -107,6 +108,9 @@ public enum ConfigProperty {
 
     CRYPTOGRAPHY_ENABLED("cryptography.enabled"),
     CRYPTOGRAPHY_KEY_FILE("cryptography.key.file"),
+
+    RENEW_IFRAME_ENABLED("frontend.renew.iframe.enabled"),
+    RENEW_IFRAME_SRC("frontend.renew.iframe.src"),
 
     DPU_UV_T_FILES_METADATA_POOL_PARTY_PASSWORD("dpu.uv-t-filesMetadata.pool.party.password"),
     DPU_UV_L_RELATIONAL_TO_CKAN_SECRET_TOKEN("dpu.uv-l-relationalToCkan.secret.token"),

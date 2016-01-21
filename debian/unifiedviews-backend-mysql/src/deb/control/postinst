@@ -93,8 +93,9 @@ db_configure() {
         echo "create database if not exists $DB_NAME;" | mysql --password=$ROOT_PW
         echo "created database: $DB_NAME"
         # create a user if not exists
-        echo "create user '${DBA_USER}' identified by '${DBA_PASS}';" | mysql --password=$ROOT_PW || true
+        echo "create user '${DBA_USER}'@localhost identified by '${DBA_PASS}';" | mysql --password=$ROOT_PW || true
         echo "created user: $DBA_USER"
+        echo "grant all privileges on unifiedviews.* to uv@localhost;" | mysql --password=$ROOT_PW
         cd /usr/share/unifiedviews/mysql
         mysql -u $DBA_USER --password=$DBA_PASS $DB_NAME < \
         /usr/share/unifiedviews/mysql/schema.sql

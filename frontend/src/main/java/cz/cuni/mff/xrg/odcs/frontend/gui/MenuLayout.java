@@ -19,6 +19,8 @@ package cz.cuni.mff.xrg.odcs.frontend.gui;
 import java.util.Collection;
 import java.util.HashMap;
 
+import com.vaadin.server.ExternalResource;
+import cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas.SessionRefresh;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -177,6 +179,16 @@ public class MenuLayout extends CustomComponent {
 
         final HorizontalLayout headerLine = new HorizontalLayout(menuBar, userName, logOutButton, backendStatus);
         headerLine.setSizeFull();
+
+        if(appConfig.contains(ConfigProperty.RENEW_IFRAME_ENABLED) && appConfig.getBoolean(ConfigProperty.RENEW_IFRAME_ENABLED)) {
+            final SessionRefresh sessionRefresh = new SessionRefresh();
+            final BrowserFrame renewFrame = new BrowserFrame("",new ExternalResource(appConfig.getString(ConfigProperty.RENEW_IFRAME_SRC)));
+            renewFrame.setId("renewFrame");
+            renewFrame.setVisible(true);
+            renewFrame.setWidth(0, Unit.PIXELS);
+            renewFrame.setHeight(0, Unit.PIXELS);
+            headerLine.addComponents(sessionRefresh, renewFrame);
+        }
 
         headerLine.setComponentAlignment(menuBar, Alignment.MIDDLE_LEFT);
         headerLine.setComponentAlignment(userName, Alignment.MIDDLE_CENTER);

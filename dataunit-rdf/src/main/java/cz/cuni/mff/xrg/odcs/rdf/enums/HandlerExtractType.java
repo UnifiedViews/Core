@@ -24,6 +24,7 @@ import cz.cuni.mff.xrg.odcs.rdf.handlers.StatisticalHandler;
  * 
  * @author Jiri Tomes
  */
+@Deprecated
 public enum HandlerExtractType {
 
     /**

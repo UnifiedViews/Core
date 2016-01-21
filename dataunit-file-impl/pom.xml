@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>eu.unifiedviews</groupId>
 		<artifactId>uv-core</artifactId>
-		<version>2.2.0</version>
+		<version>2.2.1</version>
 	</parent>
 	<artifactId>dataunit-file-impl</artifactId>
 	<name>dataunit-file-impl</name>
@@ -22,11 +22,6 @@
 		<dependency> <!-- dataunit project -->
 			<groupId>eu.unifiedviews</groupId>
 			<artifactId>dataunit</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency> <!-- file dataunit project -->
-			<groupId>eu.unifiedviews</groupId>
-			<artifactId>dataunit-file</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

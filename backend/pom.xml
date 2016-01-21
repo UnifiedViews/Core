@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>eu.unifiedviews</groupId>
         <artifactId>uv-core</artifactId>
-        <version>2.2.0</version>
+        <version>2.2.1</version>
     </parent>
     <artifactId>backend</artifactId>
     <packaging>jar</packaging>
@@ -107,8 +107,8 @@
                         </goals>
                         <configuration>
                             <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                            <!-- the two lines below tell Maven not to include
-                            test scoped dependencies -->
+                            <!-- the two lines below tell Maven not to include 
+                                test scoped dependencies -->
                             <includeScope>runtime</includeScope>
                             <excludeScope>provided</excludeScope>
                         </configuration>
@@ -119,8 +119,8 @@
 
         <pluginManagement>
             <plugins>
-                <!--This plugin's configuration is used to store Eclipse
-                m2e settings only. It has no influence on the Maven build itself. -->
+                <!--This plugin's configuration is used to store Eclipse 
+                    m2e settings only. It has no influence on the Maven build itself. -->
                 <plugin>
                     <groupId>org.eclipse.m2e</groupId>
                     <artifactId>lifecycle-mapping</artifactId>
@@ -128,8 +128,8 @@
                     <configuration>
                         <lifecycleMappingMetadata>
                             <pluginExecutions>
-                                <!-- Fix m2e not supporting copy-dependency
-                                plugin -->
+                                <!-- Fix m2e not supporting copy-dependency 
+                                    plugin -->
                                 <pluginExecution>
                                     <pluginExecutionFilter>
                                         <groupId>org.apache.maven.plugins</groupId>

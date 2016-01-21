@@ -126,7 +126,7 @@ public class Initial extends ViewComponent {
                 }
             }
         } catch (Exception e) {
-            LOG.error("Failed to load initial page text from external resource {}, using default text");
+            LOG.warn("Failed to load initial page custom text from external resource, using default text");
         }
 
         String resourceFileName = INITIAL_TEXT_RESOURCE_PREFIX + locale.toLanguageTag() + INITIAL_TEXT_RESOURCE_POSTFIX;

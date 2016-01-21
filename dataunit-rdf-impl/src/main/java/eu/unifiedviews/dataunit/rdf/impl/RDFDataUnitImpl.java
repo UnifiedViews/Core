@@ -139,9 +139,10 @@ class RDFDataUnitImpl extends AbstractWritableMetadataDataUnit implements Manage
 
                 @Override
                 public void execute(RepositoryConnection connection) throws RepositoryException, DataUnitException {
+                    //adds triple with symbolic name
                     addEntry(entrySubject, symbolicName, connection);
                     final ValueFactory valueFactory = connection.getValueFactory();
-                    // Add file uri.
+                    //adds triple with data graph URI 
                     connection.add(
                             entrySubject,
                             valueFactory.createURI(RDFDataUnitImpl.PREDICATE_DATAGRAPH_URI),

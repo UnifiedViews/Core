@@ -201,6 +201,15 @@ public class AppConfig extends PropertyPlaceholderConfigurer {
         return (Properties) prop.clone();
     }
 
+    /**
+     * Test if given key is present in application properties.
+     * @param key possible key
+     * @return true if and only if the specified property is present in application properties.
+     */
+    public boolean contains(ConfigProperty key) {
+        return this.prop.containsKey(key.toString());
+    }
+
     private void postprocess() {
         // get cryptography configuration
         try {

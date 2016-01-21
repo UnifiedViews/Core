@@ -41,6 +41,7 @@ import eu.unifiedviews.dpu.DPUContext;
  * 
  * @author Jiri Tomes
  */
+@Deprecated
 public class TripleCountHandler extends RDFInserter implements TripleCounter {
 
     /**

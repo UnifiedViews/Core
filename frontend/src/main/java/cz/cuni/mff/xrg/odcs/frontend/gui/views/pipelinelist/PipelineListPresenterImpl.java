@@ -17,8 +17,8 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist;
 
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -48,6 +48,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportService;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
@@ -117,6 +118,17 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
     private Date lastLoad = new Date(0L);
 
     /**
+     * Pipeline cache for light pipelines loading
+     */
+    private Map<Long, Pipeline> lightPipelineCache = new HashMap<>();
+
+    private static final int LIGHT_CACHE_MAX_SIZE = 100;
+
+    private static final int LIGHT_CACHE_TIMEOUT = 300000;
+
+    private Date lightCacheLastReload = new Date();
+
+    /**
      * Application's configuration.
      */
     @Autowired
@@ -165,14 +177,25 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
         refreshManager.addListener(RefreshManager.PIPELINE_LIST, new Refresher.RefreshListener() {
             private long lastRefreshFinished = 0;
 
+            @SuppressWarnings("unqualified-field-access")
             @Override
             public void refresh(Refresher source) {
                 if (new Date().getTime() - lastRefreshFinished > RefreshManager.MIN_REFRESH_INTERVAL) {
-                    boolean hasModifiedPipelinesOrExecutions = pipelineFacade.hasModifiedPipelines(lastLoad)
-                            || pipelineFacade.hasModifiedExecutions(lastLoad)
-                            || (cachedSource.size() > 0 &&
-                            pipelineFacade.hasDeletedPipelines((List<Long>) cachedSource.getItemIds(0, cachedSource.size())));
+                    boolean hasModifiedPipelines = pipelineFacade.hasModifiedPipelines(lastLoad);
+                    boolean hasModifiedExecutions = pipelineFacade.hasModifiedExecutions(lastLoad);
+                    boolean hasDeletedExecutions = cachedSource.size() > 0 && pipelineFacade.hasDeletedPipelines((List<Long>) cachedSource.getItemIds(0, cachedSource.size()));
+                    boolean hasModifiedPipelinesOrExecutions = hasModifiedPipelines
+                            || hasModifiedExecutions
+                            || hasDeletedExecutions;
+                    LOG.debug("Last load: {}, hasModifiedPipelines: {}, hasModifiedExecutions: {}, hasDeletedPipelines: {}", lastLoad, hasModifiedPipelines, hasModifiedExecutions,
+                            hasDeletedExecutions);
+
+                    if (hasModifiedPipelines) {
+                        reloadLightPipelineCache();
+                    }
+
                     if (hasModifiedPipelinesOrExecutions) {
+                        LOG.debug("Execution / pipeline modified, refreshing ...");
                         lastLoad = new Date();
                         refreshEventHandler();
                     }
@@ -180,8 +203,9 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
                     lastRefreshFinished = new Date().getTime();
                 }
             }
+
         });
-        refreshManager.triggerRefresh();
+        this.refreshManager.triggerRefresh();
     }
 
     @Override
@@ -239,17 +263,15 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
         String message = Messages.getString("PipelineListPresenterImpl.delete.dialog", pipeline.getName());
         List<Schedule> schedules = scheduleFacade.getSchedulesFor(pipeline);
         if (!schedules.isEmpty()) {
-            HashSet<String> usersWithSchedules = new HashSet<>();
+            List<User> usersWithSchedules = new LinkedList<>();
             for (Schedule schedule : schedules) {
-                usersWithSchedules.add(schedule.getOwner().getUsername());
+                usersWithSchedules.add(schedule.getOwner());
             }
-            Iterator<String> it = usersWithSchedules.iterator();
-            String users = it.next();
-            while (it.hasNext()) {
-                users = users + ", " + it.next();
-            }
+
+            String users = getUserListAsString(usersWithSchedules);
+
             String scheduleMessage = Messages.getString("PipelineListPresenterImpl.pipeline.scheduled", users);
-            message = message + scheduleMessage;
+            message = message + " " + scheduleMessage;
         }
         ConfirmDialog.show(UI.getCurrent(),
                 Messages.getString("PipelineListPresenterImpl.delete.confirmation"), message, Messages.getString("PipelineListPresenterImpl.delete.confirmation.deleteButton"), Messages.getString("PipelineListPresenterImpl.delete.confirmation.cancelButton"), new ConfirmDialog.Listener() {
@@ -261,6 +283,26 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
                         }
                     }
                 });
+    }
+
+    private static String getUserListAsString(List<User> userList) {
+        StringBuilder usersString = new StringBuilder();
+        for (User user : userList) {
+            String userName = user.getUsername();
+            if (user.getFullName() != null && !user.getFullName().equals("")) {
+                userName = user.getFullName();
+            }
+            if (user.getUserActor() != null) {
+                userName += " (" + user.getUserActor().getName() + ")";
+            }
+            usersString.append(userName);
+            usersString.append(",");
+        }
+        if (usersString.length() > 1) {
+            usersString.setLength(usersString.length() - 1);
+        }
+
+        return usersString.toString();
     }
 
     @Override
@@ -331,8 +373,39 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
         }
     }
 
+    /**
+     * Get light copy of pipeline.
+     * Light executions are cached as this method is called multiple times per one pipeline.
+     * 
+     * @param pipelineId
+     * @return light copy of pipeline
+     */
     private Pipeline getLightPipeline(long pipelineId) {
-        return pipelineFacade.getPipeline(pipelineId);
+        if (this.lightPipelineCache.size() >= LIGHT_CACHE_MAX_SIZE) {
+            LOG.debug("Light pipeline cache size exceeded, reloading ...");
+            reloadLightPipelineCache();
+        }
+
+        if (this.lightCacheLastReload.before(new Date(new Date().getTime() - LIGHT_CACHE_TIMEOUT))) {
+            LOG.debug("Light pipeline cache timeout, reloading ...");
+            reloadLightPipelineCache();
+        }
+
+        Pipeline pipeline = null;
+        if (this.lightPipelineCache.containsKey(pipelineId)) {
+            pipeline = this.lightPipelineCache.get(pipelineId);
+        } else {
+            pipeline = this.pipelineFacade.getPipeline(pipelineId);
+            this.lightPipelineCache.put(pipelineId, pipeline);
+        }
+
+        return pipeline;
+
+    }
+
+    private void reloadLightPipelineCache() {
+        this.lightPipelineCache.clear();
+        this.lightCacheLastReload = new Date();
     }
 
     @Override

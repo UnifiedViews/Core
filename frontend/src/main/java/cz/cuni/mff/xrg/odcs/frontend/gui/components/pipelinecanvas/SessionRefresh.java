@@ -14,32 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
  */
-package cz.cuni.mff.xrg.odcs.rdf.interfaces;
+package cz.cuni.mff.xrg.odcs.frontend.gui.components.pipelinecanvas;
 
-/**
- * Interface provides information about extracted triples.
- * 
- * @author Jiri Tomes
- */
-@Deprecated
-public interface TripleCounter {
+import com.vaadin.annotations.JavaScript;
+import com.vaadin.ui.AbstractJavaScriptComponent;
 
-    /**
-     * Returns count of extracted triples.
-     * 
-     * @return count of extracted triples.
-     */
-    public long getTripleCount();
-
-    /**
-     * Returns true if there is no triples, false otherwise.
-     * 
-     * @return true if there is no triples, false otherwise.
-     */
-    public boolean isEmpty();
-
-    /**
-     * Set count of extracted triples to 0.
-     */
-    public void reset();
+@JavaScript({ "js_sessionRefresh.js", "jquery-2.0.0.min.js" })
+public class SessionRefresh extends AbstractJavaScriptComponent {
 }
