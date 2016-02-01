@@ -27,6 +27,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.communication.EmailSender;
  * configuration.
  * At the end of the check round .. send messages to the owners of DPUs
  * which has invalid configuration.
+ * Not implemented so far.
  * 
  * @author Petyr
  */

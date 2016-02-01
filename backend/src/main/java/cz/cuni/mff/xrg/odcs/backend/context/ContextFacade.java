@@ -25,7 +25,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
- * Facade that provides method for manipulation with {@link Context}.
+ * Facade provides methods for manipulating {@link Context}.
  * 
  * @author Petyr
  */
