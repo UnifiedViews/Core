@@ -19,7 +19,6 @@ package cz.cuni.mff.xrg.odcs.frontend;
 import com.vaadin.server.UICreateEvent;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
-import org.springframework.beans.factory.annotation.Autowired;
 import ru.xpoft.vaadin.SpringApplicationContext;
 import ru.xpoft.vaadin.SpringUIProvider;
 

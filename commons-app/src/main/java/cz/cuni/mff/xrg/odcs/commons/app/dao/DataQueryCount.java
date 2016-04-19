@@ -17,7 +17,7 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dao;
 
 /**
- * Query that can be used to get count of data that satisfied given criteria
+ * Query that can be used to get count of data that satisfy the given criteria
  * from {@link DataAccessRead}.
  * 
  * @author Petyr

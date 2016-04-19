@@ -16,7 +16,6 @@
  */
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist;
 
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Presenter;
 import eu.unifiedviews.commons.dao.view.PipelineView;
@@ -99,7 +98,7 @@ public interface PipelineListPresenter extends Presenter {
      * @return true if user has permission to schedule, false otherwise
      */
     public boolean canSchedulePipeline(long pipelineId);
-    
+
     /**
      * Tells whether user has permission to copy pipeline with given id, so
      * we can decide whether to hide copy button.
@@ -109,8 +108,7 @@ public interface PipelineListPresenter extends Presenter {
      * @return true if user has permission to copy, false otherwise
      */
     public boolean canCopyPipeline(long pipelineId);
-    
-    
+
     /**
      * Schedule pipeline with given id.
      * 
@@ -234,8 +232,7 @@ public interface PipelineListPresenter extends Presenter {
     }
 
     /**
-     * 
      * @return
      */
-	public boolean isLayoutInitialized();
+    public boolean isLayoutInitialized();
 }

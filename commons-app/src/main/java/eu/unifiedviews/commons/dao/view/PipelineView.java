@@ -17,19 +17,23 @@
 package eu.unifiedviews.commons.dao.view;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAuthorizator;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 
 import java.io.Serializable;
 import java.util.Date;
 
 /**
- * View for pipelines.
- *
+ * View for pipelines. It is an object which is displayed by the PipelineListView in frontend.
+ * We do not directly use Pipeline object, as it is necessary to get also certain data about last execution runs from PipelineExecution object.
+ * It is in commons-app, because it is needed by {@link DbAuthorizator}
+ * 
  * @author Škoda Petr
  */
 public class PipelineView implements Serializable, DataObject {
 
     private Long id;
+
     private String name;
 
     //t_start
@@ -50,13 +54,13 @@ public class PipelineView implements Serializable, DataObject {
     private String userActorName;
 
     public PipelineView(Long id,
-                        String name,
-                        Date start,
-                        Date end,
-                        String usrName,
-                        String usrFullName,
-                        PipelineExecutionStatus status,
-                        String userActorName)
+            String name,
+            Date start,
+            Date end,
+            String usrName,
+            String usrFullName,
+            PipelineExecutionStatus status,
+            String userActorName)
     {
         this.id = id;
         this.name = name;

@@ -35,7 +35,8 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Take care about execution of scheduled plans.
+ * Take care about execution of scheduled plans. If something should be executed,
+ * new pipeline execution record is created
  * 
  * @author Petyr
  */
@@ -43,9 +44,9 @@ class Scheduler implements ApplicationListener<ApplicationEvent> {
 
     private static final Logger LOG = LoggerFactory.getLogger(Schedule.class);
 
-
     @Autowired
     private AppConfig appConfig;
+
     /**
      * Schedule facade.
      */

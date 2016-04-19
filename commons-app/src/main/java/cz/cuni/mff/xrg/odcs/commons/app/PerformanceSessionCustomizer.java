@@ -27,7 +27,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * Class used when it is necessary to have detailed information about the way
+ * how JPA creates queries to work with database
+ * To turn the detailed logging on, change L73 to "true", otherwise this class has no effect
+ * 
  * @author Škoda Petr
  */
 public class PerformanceSessionCustomizer implements SessionCustomizer {
