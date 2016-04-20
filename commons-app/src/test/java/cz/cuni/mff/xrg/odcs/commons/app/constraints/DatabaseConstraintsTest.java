@@ -371,29 +371,29 @@ public class DatabaseConstraintsTest {
         }.ensureReferencingInstanceDelete(Schedule.class, User.class);
     }
 
-    @Test
-    public void ON_DELETE_usr_user_DELETE_ppl_model() {
-        new DeleteConstraintTest() {
-
-            @Override
-            Object createReferencedInstance(EntityManager em) {
-                em.getTransaction().begin();
-                Pipeline pipeline = new Pipeline();
-                User user = new User();
-                user.setUsername("user_4");
-                user.setExternalIdentifier("dummy");
-                user.setPassword("pwd");
-                pipeline.setUser(user);
-
-                em.persist(pipeline);
-                em.persist(user);
-                em.getTransaction().commit();
-
-                return user;
-            }
-
-        }.ensureReferencingInstanceDelete(Pipeline.class, User.class);
-    }
+    //    @Test
+    //    public void ON_DELETE_usr_user_DELETE_ppl_model() {
+    //        new DeleteConstraintTest() {
+    //
+    //            @Override
+    //            Object createReferencedInstance(EntityManager em) {
+    //                em.getTransaction().begin();
+    //                Pipeline pipeline = new Pipeline();
+    //                User user = new User();
+    //                user.setUsername("user_4");
+    //                user.setExternalIdentifier("dummy");
+    //                user.setPassword("pwd");
+    //                pipeline.setUser(user);
+    //
+    //                em.persist(pipeline);
+    //                em.persist(user);
+    //                em.getTransaction().commit();
+    //
+    //                return user;
+    //            }
+    //
+    //        }.ensureReferencingInstanceDelete(Pipeline.class, User.class);
+    //    }
 
     @Test
     public void ON_DELETE_ppl_model_DELETE_ppl_graph() {
