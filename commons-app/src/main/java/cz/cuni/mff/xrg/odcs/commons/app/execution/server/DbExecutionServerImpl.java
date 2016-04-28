@@ -49,14 +49,31 @@ public class DbExecutionServerImpl extends DbAccessBase<ExecutionServer> impleme
     @Override
     @Transactional
     public int allocateQueuedExecutionsForBackendByPriority(String backendID, int limit) {
-        final String queryStr = "UPDATE exec_pipeline SET backend_id = '%s'"
+	if ( 1 == 1 ) {
+	    // Version for Ms SQL Server 2014
+	    final String queryStrMsSql = "UPDATE exec_pipeline SET backend_id = '%s'"
                 + " WHERE id IN (SELECT id FROM"
-                + " (SELECT e.id from exec_pipeline e WHERE e.backend_id IS NULL AND e.status = %d"
-                + " ORDER BY e.order_number ASC, e.id ASC LIMIT %d FOR UPDATE) AS temp)";
-        String query = String.format(queryStr,
-                backendID,
-                0, // = QUEUED
-                limit);
+	        + " (SELECT TOP %d e.id from exec_pipeline e WHERE e.backend_id IS NULL AND e.status = %d"
+                + " ORDER BY e.order_number ASC, e.id ASC) AS temp)";
+
+	    String query = String.format(queryStrMsSql,
+					 backendID,
+					 limit,
+					 0 // = QUEUED
+					 );
+	} else {
+	    // Version for everything else (note limit/status params are inverse)
+	    final String queryStrDefault = "UPDATE exec_pipeline SET backend_id = '%s'"
+                + " WHERE id IN (SELECT id FROM"
+	        + " (SELECT e.id from exec_pipeline e WHERE e.backend_id IS NULL AND e.status = %d"
+                + "  ORDER BY e.order_number ASC, e.id ASC LIMIT %d) AS temp)";
+	    String query = String.format(queryStrDefault,
+					 backendID,
+					 0, // = QUEUED
+					 limit
+					 );
+	};
+	
         return this.em.createNativeQuery(query).executeUpdate();
     }
 
