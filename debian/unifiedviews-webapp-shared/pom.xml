@@ -133,6 +133,14 @@
                                         <prefix>/etc/unifiedviews</prefix>
                                     </mapper>
                                 </data>
+                                <data>
+                                    <src>${basedir}/src/deb/etc/logrotate.d</src>
+                                    <type>directory</type>
+                                    <mapper>
+                                        <type>perm</type>
+                                        <prefix>/etc/logrotate.d</prefix>
+                                    </mapper>
+                                </data>                                       
                                 <!-- prepare folders folders cache, log and tmp for unifiedviews -->
                                 <data>
                                     <type>template</type>
