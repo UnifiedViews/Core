@@ -344,7 +344,7 @@ public class ReadOnlyContainer<T extends DataObject> implements Container,
             return classAccessor.sortable();
         } else {
             if (!classAccessor.sortable().isEmpty()) {
-                LOG.warn("Container has non-filterable source but "
+                LOG.warn("Container has non sortable source but "
                         + "ClassAccess {} define sortable columns.",
                         classAccessor.getClass().getSimpleName());
             }
@@ -375,13 +375,13 @@ public class ReadOnlyContainer<T extends DataObject> implements Container,
 
     @Override
     public List<String> getFilterables() {
-        if (source instanceof ContainerSource.Sortable) {
+        if (source instanceof ContainerSource.Filterable) {
             // ok return list from accessor
             return classAccessor.filterable();
         } else {
-            if (!classAccessor.sortable().isEmpty()) {
-                LOG.warn("Container has non-filterable source but "
-                        + "ClassAccess {} define sortable columns.",
+            if (!classAccessor.filterable().isEmpty()) {
+                LOG.warn("Container has non filterable source but "
+                        + "ClassAccess {} define filterable columns.",
                         classAccessor.getClass().getSimpleName());
             }
             return new ArrayList<>(0);
