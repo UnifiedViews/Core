@@ -52,8 +52,7 @@
     <logger name="org.springframework" level="WARN"/>
     <logger name="org.eclipse.persistence" level="WARN"/>
 
-    <root level="ALL">
-        <appender-ref ref="STDOUT"/>
+    <root level="INFO">
         <appender-ref ref="FILE_ALL"/>
         <appender-ref ref="FILE_ERROR"/>
     </root>
