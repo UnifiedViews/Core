@@ -25,12 +25,14 @@ import cz.cuni.mff.xrg.odcs.commons.app.auth.PermissionUtils;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.DbMessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
+import cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.ExecutionViewAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.MessageRecordAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.ContainerSourceBase;
@@ -75,8 +77,11 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
     @Autowired
     private PipelineHelper pipelineHelper;
 
+    //    @Autowired
+    //    private ExecutionListView view;
+
     @Autowired
-    private ExecutionListView view;
+    private DbExecution dbExecution;
 
     @Autowired
     private Utils utils;
@@ -85,11 +90,23 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
     private PermissionUtils permissionUtils;
 
     private ExecutionListData dataObject;
+
     private RefreshManager refreshManager;
+
     private Date lastLoad = new Date(0L);
+
     private ClassNavigator navigator;
+
     private boolean isInitialized = false;
-    private ContainerSourceBase<ExecutionView> executionViewSource;
+
+    //private ContainerSourceBase<ExecutionView> executionViewSource;
+
+    //private DbCachedSource<ExecutionView> cachedSource;
+
+    @Autowired
+    private ExecutionListView view;
+
+    private DbCachedSource<PipelineExecution> cachedSource;
 
     @Override
     public Object enter() {
@@ -100,11 +117,16 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
         }
 
         navigator = ((AppEntry) UI.getCurrent()).getNavigation();
-        executionViewSource = new ContainerSourceBase<>(
-            pipelineHelper.getExecutionViews(),
-            new ExecutionViewAccessor());
 
-        ReadOnlyContainer c = new ReadOnlyContainer<>(executionViewSource);
+        //        cachedSource = new DbCachedSource<>(dbExecutionVie, new ExecutionViewAccessor(), utils.getPageLength());
+        //        executionViewSource = new ContainerSourceBase<>(
+        //                pipelineHelper.getExecutionViews(),
+        //                new ExecutionViewAccessor());
+
+        cachedSource = new DbCachedSource<>(dbExecution, new ExecutionAccessor(),
+                utils.getPageLength());
+
+        ReadOnlyContainer c = new ReadOnlyContainer<>(cachedSource);
         c.sort(new Object[] { "id" }, new boolean[] { false });
         dataObject = new ExecutionListData(c);
 
@@ -184,12 +206,13 @@ public class ExecutionListPresenterImpl implements ExecutionListPresenter, PostL
     @Override
     public void refreshEventHandler() {
         boolean hasModifiedExecutions = pipelineFacade.hasModifiedExecutions(lastLoad)
-                || (executionViewSource.size() > 0 &&
-                pipelineFacade.hasDeletedExecutions(executionViewSource.getItemIds(0, executionViewSource.size())));
+                || (cachedSource.size() > 0 &&
+                pipelineFacade.hasDeletedExecutions(cachedSource.getItemIds(0, cachedSource.size())));
         view.refresh(hasModifiedExecutions);
         if (hasModifiedExecutions) {
             lastLoad = new Date();
-            executionViewSource.setDataItems(pipelineHelper.getExecutionViews());
+            cachedSource.invalidate();
+            //cachedSource.setDataItems(pipelineHelper.getExecutionViews());
             dataObject.getContainer().refresh();
         }
     }

@@ -63,7 +63,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
     /**
      * Pipeline being executed.
      */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pipeline_id")
     private Pipeline pipeline;
 
@@ -107,7 +107,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
     /**
      * Schedule that planned this execution. Null for execution created by user.
      */
-    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "schedule_id", nullable = true)
     private Schedule schedule;
 

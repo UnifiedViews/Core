@@ -147,9 +147,9 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         LOG.trace("showExecutionDetail()");
         presenter.stopRefreshEventHandler();
         // secure existance of detail layout
-//		if (logLayout == null) {
-//			buildExecutionDetail(execution);
-//		} 
+        //		if (logLayout == null) {
+        //			buildExecutionDetail(execution);
+        //		} 
         // will just set the debug view content
         LOG.trace("showExecutionDetail() : buildDebugView");
         buildDebugView(execution);
@@ -417,27 +417,27 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         logLayout.setExpandRatio(debugView, 1.0f);
 
         // Layout for buttons  Close and  Export on the bottom
-//		HorizontalLayout buttonBar = new HorizontalLayout();
-//		buttonBar.setWidth("100%");
-//
-//		Button buttonClose = new Button();
-//		buttonClose.setCaption("Close");
-//		buttonClose.setHeight("25px");
-//		buttonClose.setWidth("100px");
-//		buttonClose.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-//			@Override
-//			public void buttonClick(Button.ClickEvent event) {
-//				presenter.stopRefreshEventHandler();
-//				hsplit.setSplitPosition(100, Unit.PERCENTAGE);
-//				//hsplit.setHeight("100%");
-//				hsplit.setLocked(true);
-//			}
-//		});
-//		buttonBar.addComponent(buttonClose);
-//		buttonBar.setComponentAlignment(buttonClose, Alignment.BOTTOM_RIGHT);
-//
-//		logLayout.addComponent(buttonBar);
-//		logLayout.setExpandRatio(buttonBar, 0);
+        //		HorizontalLayout buttonBar = new HorizontalLayout();
+        //		buttonBar.setWidth("100%");
+        //
+        //		Button buttonClose = new Button();
+        //		buttonClose.setCaption("Close");
+        //		buttonClose.setHeight("25px");
+        //		buttonClose.setWidth("100px");
+        //		buttonClose.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+        //			@Override
+        //			public void buttonClick(Button.ClickEvent event) {
+        //				presenter.stopRefreshEventHandler();
+        //				hsplit.setSplitPosition(100, Unit.PERCENTAGE);
+        //				//hsplit.setHeight("100%");
+        //				hsplit.setLocked(true);
+        //			}
+        //		});
+        //		buttonBar.addComponent(buttonClose);
+        //		buttonBar.setComponentAlignment(buttonClose, Alignment.BOTTOM_RIGHT);
+        //
+        //		logLayout.addComponent(buttonBar);
+        //		logLayout.setExpandRatio(buttonBar, 0);
 
     }
 
