@@ -105,22 +105,6 @@
 		<developerConnection />
 	</scm>
 
-	<developers>
-		<!-- <developer> <id></id> <name></name> <email></email> <roles> <role>developer</role> </roles> </developer> -->
-	</developers>
-
-	<contributors>
-		<contributor>
-			<name>Tomas Knap</name>
-			<email>knap@ksi.mff.cuni.cz</email>
-			<roles>
-				<role>project supervisor</role>
-			</roles>
-			<url>http://www.ksi.mff.cuni.cz/~knap</url>
-			<organization>Faculty of Mathematics and Physics, Charles University in Prague</organization>
-		</contributor>
-	</contributors>
-
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -136,7 +120,29 @@
 		</dependencies>
 	</dependencyManagement>
 
+	<distributionManagement>
+        	<repository>
+            		<id>releases</id>
+            		<url>https://mvn.semantic-web.at/nexus/content/repositories/releases/</url>
+        	</repository>
+	        <snapshotRepository>
+	            	<id>snapshots</id>
+	            	<url>https://mvn.semantic-web.at/nexus/content/repositories/snapshots</url>
+	        </snapshotRepository>
+
+    	</distributionManagement>
+
 	<repositories>
+		
+		<repository>
+            		<id>releases</id>
+            		<url>https://mvn.semantic-web.at/nexus/content/repositories/releases/</url>
+	 	</repository>
+        	<repository>
+            		<id>snapshots</id>
+            		<url>https://mvn.semantic-web.at/nexus/content/repositories/snapshots</url>
+        	</repository>
+		
 		<repository>
 			<id>maven.eea.sk</id>
 			<name>maven.eea.sk-public</name>
