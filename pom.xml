@@ -121,18 +121,6 @@
 		</dependencies>
 	</dependencyManagement>
 
-	<distributionManagement>
-        	<repository>
-            		<id>releases</id>
-            		<url>https://mvn.semantic-web.at/nexus/content/repositories/releases</url>
-        	</repository>
-	        <snapshotRepository>
-	            	<id>snapshots</id>
-	            	<url>https://mvn.semantic-web.at/nexus/content/repositories/snapshots</url>
-	        </snapshotRepository>
-
-    	</distributionManagement>
-
 	<repositories>
 		
 		<repository>
