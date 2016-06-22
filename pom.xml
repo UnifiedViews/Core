@@ -6,6 +6,7 @@
 		<groupId>eu.unifiedviews</groupId>
 		<artifactId>uv-pom</artifactId>
 		<version>2.1.6</version>
+		<relativePath>../uv-pom/pom.xml</relativePath>
 	</parent>
 
 	<groupId>eu.unifiedviews</groupId>
@@ -123,7 +124,7 @@
 	<distributionManagement>
         	<repository>
             		<id>releases</id>
-            		<url>https://mvn.semantic-web.at/nexus/content/repositories/releases/</url>
+            		<url>https://mvn.semantic-web.at/nexus/content/repositories/releases</url>
         	</repository>
 	        <snapshotRepository>
 	            	<id>snapshots</id>
@@ -136,7 +137,7 @@
 		
 		<repository>
             		<id>releases</id>
-            		<url>https://mvn.semantic-web.at/nexus/content/repositories/releases/</url>
+            		<url>https://mvn.semantic-web.at/nexus/content/repositories/releases</url>
 	 	</repository>
         	<repository>
             		<id>snapshots</id>
