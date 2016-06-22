@@ -1195,7 +1195,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
         @Override
         /**
-         * @TODO This code duplicates the code also defined in {@link cz.cuni.mff.xrg.odcs.backend.execution.pipeline.impl.CleanupThread} (backend)
+         * Note: This code duplicates the code also defined in {@link cz.cuni.mff.xrg.odcs.backend.execution.pipeline.impl.CleanupThread} (backend)
          */
         public void run() {
             try {
