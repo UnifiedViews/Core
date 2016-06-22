@@ -85,7 +85,7 @@ public class CleanupThread {
             deleteExecutions();
         }
 
-        LOG.info("Deleting temp data for all failed executions");
+        LOG.info("Deleting temp data for all failed/cancelled executions");
         deleteTempDataForFailedExecutions();
         LOG.info("Executions cleanup successfully finished");
     }
@@ -93,6 +93,7 @@ public class CleanupThread {
     /**
      * Delete all finished executions older than the defined count of days and all its data and files
      * Deletes execution from DB along with logs, events and deletes execution files from disk
+     * Note: This code duplicates the code also defined in {@link cz.cuni.mff.xrg.odcs.frontend.gui.views.Settings.PipelineExecutionDeleterThread} (frontend)
      */
     private void deleteExecutions() {
         List<PipelineExecution> finishedPipelineExecutions = this.pipelineFacade.getAllExecutions(PipelineExecutionStatus.CANCELLED, this.backendId);
@@ -130,6 +131,8 @@ public class CleanupThread {
 
     /**
      * Delete temp execution files for non debugging failed and canceled executions
+     * Note: Check whether this code is needed. Because there is CleanUp PostExecutor which, for every finished pipeline
+     * (even those which fail or are cancelled) cleans up the working directory.
      */
     private void deleteTempDataForFailedExecutions() {
         List<PipelineExecution> failedExecutions = this.pipelineFacade.getAllExecutions(PipelineExecutionStatus.FAILED, this.backendId);
@@ -142,13 +145,13 @@ public class CleanupThread {
                     CleanupUtils.deleteDirectory(executionDir);
                     cleanedExecutions++;
                 } catch (MissingResourceException e) {
-                    LOG.warn("No resources to delete for Pipeline execution id: {}", failed.getId(), e);
+                    LOG.info("No resources to delete for Pipeline execution id: {}", failed.getId(), e);
                 } catch (Exception e) {
                     LOG.error("Failed to delete temp data for execution {}", failed.getId(), e);
                 }
             }
         }
-        LOG.info("Deleted temp execution data for {} failed executions", cleanedExecutions);
+        LOG.info("Deleted temp execution data for {} failed/cancelled executions", cleanedExecutions);
     }
 
 }
