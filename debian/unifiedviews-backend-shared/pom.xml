@@ -148,14 +148,6 @@
                                         <prefix>/etc/unifiedviews</prefix>
                                     </mapper>
                                 </data>
-                                <data>
-                                    <src>${basedir}/src/deb/etc/logrotate.d</src>
-                                    <type>directory</type>
-                                    <mapper>
-                                        <type>perm</type>
-                                        <prefix>/etc/logrotate.d</prefix>
-                                    </mapper>
-                                </data>                                
                                 <!-- unifiedviews-backend files: lib and dpu -->
  								<data>
 									<src>${basedir}/../../target/lib</src>

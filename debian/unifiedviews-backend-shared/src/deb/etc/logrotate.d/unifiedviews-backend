@@ -1,8 +1,0 @@
-/var/log/unifiedviews/backend/* {
-  copytruncate
-  weekly
-  rotate 52
-  compress
-  missingok
-  create 640 unifiedviews unifiedviews
-}

@@ -1,4 +1,4 @@
-/var/log/unifiedviews/frontend/* {
+/var/log/unifiedviews/frontend/catalina.out {
   copytruncate
   weekly
   rotate 52
