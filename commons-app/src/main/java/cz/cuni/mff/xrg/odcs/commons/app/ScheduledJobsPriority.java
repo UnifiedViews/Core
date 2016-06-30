@@ -16,6 +16,11 @@
  */
 package cz.cuni.mff.xrg.odcs.commons.app;
 
+/**
+ * Priorities for the scheduled events
+ * 
+ * @author tomasknap
+ */
 public enum ScheduledJobsPriority {
     IGNORE(0), HIGHEST(3), MEDIUM(2), LOWEST(1);
 

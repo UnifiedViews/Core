@@ -24,6 +24,7 @@ import java.util.List;
 public class ContainerSourceBase<T extends DataObject> implements ContainerSource<T> {
 
     private List<T> dataItems;
+
     private ClassAccessor<T> classAccessor;
 
     public ContainerSourceBase(List<T> dataItems, ClassAccessor<T> classAccessor) {
@@ -39,10 +40,11 @@ public class ContainerSourceBase<T extends DataObject> implements ContainerSourc
     @Override
     public T getObject(Long id) {
         for (T item : dataItems) {
-            if (item.getId().equals(id)) return item;
+            if (item.getId().equals(id))
+                return item;
         }
 
-        throw new IllegalArgumentException("Item with id " +id.toString()+ " not found");
+        throw new IllegalArgumentException("Item with id " + id.toString() + " not found");
     }
 
     @Override
@@ -54,7 +56,8 @@ public class ContainerSourceBase<T extends DataObject> implements ContainerSourc
     public int indexOfId(Long itemId) {
         int index = 0;
         for (T item : dataItems) {
-            if (item.getId().equals(itemId)) return index;
+            if (item.getId().equals(itemId))
+                return index;
             index++;
         }
 
@@ -66,8 +69,7 @@ public class ContainerSourceBase<T extends DataObject> implements ContainerSourc
         try {
             getObject(id);
             return true;
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             return false;
         }
     }
@@ -77,7 +79,8 @@ public class ContainerSourceBase<T extends DataObject> implements ContainerSourc
         List<Long> items = new ArrayList();
 
         for (int i = 0; i < dataItems.size(); i++) {
-            if (i >= startIndex && (i - startIndex < numberOfItems)) items.add(dataItems.get(i).getId());
+            if (i >= startIndex && (i - startIndex < numberOfItems))
+                items.add(dataItems.get(i).getId());
         }
 
         return items;

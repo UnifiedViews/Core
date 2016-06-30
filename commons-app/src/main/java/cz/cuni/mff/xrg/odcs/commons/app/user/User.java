@@ -20,7 +20,6 @@ import cz.cuni.mff.xrg.odcs.commons.app.auth.PasswordHash;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.OpenEvent;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.Schedule;
 import cz.cuni.mff.xrg.odcs.commons.app.scheduling.ScheduleNotificationRecord;
 import org.springframework.security.core.GrantedAuthority;
@@ -81,13 +80,10 @@ public class User implements UserDetails, DataObject {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner", orphanRemoval = true)
     private Set<Schedule> schedules = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner", orphanRemoval = true)
-    private Set<Pipeline> pipelines = new HashSet<>();
-
     /**
      * User roles representing sets of privileges.
      */
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "usr_user_role",
             joinColumns = { @JoinColumn(name = "user_id", referencedColumnName = "id") },
             inverseJoinColumns = { @JoinColumn(name = "role_id", referencedColumnName = "id") })
@@ -400,14 +396,6 @@ public class User implements UserDetails, DataObject {
 
     public void setSchedules(Set<Schedule> schedules) {
         this.schedules = schedules;
-    }
-
-    public Set<Pipeline> getPipelines() {
-        return pipelines;
-    }
-
-    public void setPipelines(Set<Pipeline> pipelines) {
-        this.pipelines = pipelines;
     }
 
     public Set<OpenEvent> getOpenEvents() {

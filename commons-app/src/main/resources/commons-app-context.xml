@@ -94,7 +94,7 @@
     <!-- authorizator required by dao -->
     <bean id="dbAuthorizator" class="cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAuthorizatorImpl"/>
 
-    <!-- translator for ODCS filters -->
+    <!-- translator for UnifiedViews filters -->
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.dao.db.filter.BaseFilterTranslator"/>
 
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager"/>
@@ -104,8 +104,5 @@
     <bean class="cz.cuni.mff.xrg.odcs.commons.app.dataunit.relational.RelationalRepositoryManager"/>
     <bean class="eu.unifiedviews.commons.util.DbPropertiesTableUtils"/>
     
-    <!-- DAO layer. -->
-    <context:component-scan base-package="eu.unifiedviews.commons.dao.impl"/>
-
-    <context:component-scan base-package="eu.unifiedviews.audit" />
+   
 </beans>

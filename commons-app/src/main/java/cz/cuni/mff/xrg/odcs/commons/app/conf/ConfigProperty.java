@@ -37,6 +37,7 @@ public enum ConfigProperty {
     BACKEND_ID("backend.id"),
     BACKEND_STARTUP_RESTART_RUNNING("backend.startup.restart.running"),
     LOCALE("locale"),
+    BACKEND_EXECUTION_CLEANUP_DAYS_LIMIT("backend.execution.cleanup.days.limit"),
 
     EXECUTION_LOG_HISTORY("exec.log.history"),
     EXECUTION_LOG_SIZE_MAX("exec.log.msg.maxSize"),

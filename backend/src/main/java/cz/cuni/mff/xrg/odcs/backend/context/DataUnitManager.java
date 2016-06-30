@@ -39,7 +39,7 @@ import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 
 /**
- * Class provide functionality pro manage list of {@link ManagableDataUnit}s.
+ * Class provides functionality for managing list of {@link ManagableDataUnit}s.
  * 
  * @author Petyr
  */
@@ -68,7 +68,7 @@ final class DataUnitManager {
     private final DataUnitFactory dataUnitFactory;
 
     /**
-     * Manage mapping context into execution's directory.
+     * Manage mapping of context into execution's directory.
      */
     private final ExecutionContextInfo context;
 

@@ -185,7 +185,7 @@ public class Context implements DPUContext {
      * Create required {@link ManagableDataUnit} and add it to the context if
      * not exist, if the {@link ManagableDataUnit} with given type is already in
      * context then the existing instance is returned.
-     *
+     * 
      * @param type
      *            Type of {@link ManagableDataUnit} to create.
      * @param name
@@ -258,7 +258,7 @@ public class Context implements DPUContext {
     /**
      * Return identification of single DPU template shared by all templates with
      * same name.
-     *
+     * 
      * @return DPU template identification.
      */
     private String getTemplateIdentification() {

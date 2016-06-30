@@ -17,16 +17,21 @@
 package eu.unifiedviews.commons.dao.view;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
+import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAuthorizator;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 
 import java.util.Date;
 
 /**
+ * View for pipeline executions. It is an object which is displayed by the ExecutionListView in frontend.
+ * It is in commons-app, because it is needed by {@link DbAuthorizator}
+ * 
  * @author Škoda Petr
  */
 public class ExecutionView implements DataObject {
 
     private Long id;
+
     private PipelineExecutionStatus status;
 
     //pipeline_id
@@ -63,18 +68,18 @@ public class ExecutionView implements DataObject {
     private Date lastChange;
 
     public ExecutionView(Long id,
-                         PipelineExecutionStatus status,
-                         Long pipelineId,
-                         String pipelineName,
-                         boolean isDebugging,
-                         Date start,
-                         Date end,
-                         Long scheduleId,
-                         String ownerName,
-                         String ownerFullName,
-                         String userActorName,
-                         boolean stop,
-                         Date lastChange)
+            PipelineExecutionStatus status,
+            Long pipelineId,
+            String pipelineName,
+            boolean isDebugging,
+            Date start,
+            Date end,
+            Long scheduleId,
+            String ownerName,
+            String ownerFullName,
+            String userActorName,
+            boolean stop,
+            Date lastChange)
     {
         this.id = id;
         this.status = status;

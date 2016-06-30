@@ -48,6 +48,7 @@ import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
  * custom Vaadin Table. Our extension modifies its paging controls to fit our
  * needs, supplies it with our improved FilterGenerator and fixes filter visual
  * by setting height and width to 100%
+ * Uses internally ReadOnlyContainer - custom solution to load data to the table
  * 
  * @author Bogo
  */

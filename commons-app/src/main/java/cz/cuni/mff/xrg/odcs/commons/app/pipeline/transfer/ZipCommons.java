@@ -24,16 +24,15 @@ import java.io.*;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 
 public class ZipCommons {
     private static final Logger LOG = LoggerFactory.getLogger(ZipCommons.class);
 
-    public static String  uniteSeparator = "/";
+    public static String uniteSeparator = "/";
 
     /**
      * Unzip given zip file into given directory.
-     *
+     * 
      * @param sourceZip
      * @param targetDir
      */

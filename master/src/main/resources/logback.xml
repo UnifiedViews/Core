@@ -4,6 +4,10 @@
     <property resource="../config.properties"/>
     <property file="${configFileLocation}"/>
 
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+        <resetJUL>true</resetJUL>
+    </contextListener>
+
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{26} - %msg%n</pattern>
@@ -12,6 +16,9 @@
 
     <appender name="FILE_ALL" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${frontend.log.directory}/master.log</file>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- daily rollover -->
             <fileNamePattern>${frontend.log.directory}/master.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
@@ -52,8 +59,7 @@
     <logger name="org.springframework" level="WARN"/>
     <logger name="org.eclipse.persistence" level="WARN"/>
 
-    <root level="ALL">
-        <appender-ref ref="STDOUT"/>
+    <root level="INFO">
         <appender-ref ref="FILE_ALL"/>
         <appender-ref ref="FILE_ERROR"/>
     </root>
