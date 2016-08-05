@@ -52,6 +52,8 @@ import eu.unifiedviews.dataunit.MetadataDataUnit;
 import eu.unifiedviews.dataunit.WritableMetadataDataUnit;
 
 /**
+ * Base class for dealing with metadata of all data units - metadata for data units is saved in RDF store.
+ *
  * @author Michal Klempa
  * @author Škoda Petr
  */
@@ -59,6 +61,7 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractWritableMetadataDataUnit.class);
 
+    //names for the variables in the SPARQL queries projected out
     protected static final String SYMBOLIC_NAME_BINDING = "symbolicName";
 
     protected static final String PREDICATE_BINDING = "predicate";

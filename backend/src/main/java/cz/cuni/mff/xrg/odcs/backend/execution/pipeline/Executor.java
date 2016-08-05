@@ -323,7 +323,7 @@ public class Executor implements Runnable {
             execResult.failure();
         }
 
-        // and we also have evidance about user abort request
+        // and we also have evidence about user abort request
         boolean userAbortRequest = false;
 
         // execute each node

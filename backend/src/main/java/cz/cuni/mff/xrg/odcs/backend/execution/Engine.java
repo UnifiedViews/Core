@@ -119,6 +119,8 @@ public class Engine implements ApplicationListener<ApplicationEvent> {
 
     @PostConstruct
     private void propertySetter() {
+
+        //Creates a thread pool that creates new threads as needed, but will reuse previously constructed threads when they are available.
         this.executorService = Executors.newCachedThreadPool();
         this.startUpDone = false;
 
