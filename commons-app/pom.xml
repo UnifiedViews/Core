@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>eu.unifiedviews</groupId>
 		<artifactId>uv-core</artifactId>
-		<version>2.2.2-SNAPSHOT</version>
+		<version>2.2.2</version>
 	</parent>
 	<artifactId>commons-app</artifactId>
 	<name>commons-app</name>
@@ -306,7 +306,7 @@
 			<artifactId>jasypt</artifactId>
 			<version>${jasypt.version}</version>
 		</dependency>
-		
+
 		<dependency> <!-- userd for comparing versions for import/export -->
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-artifact</artifactId>
