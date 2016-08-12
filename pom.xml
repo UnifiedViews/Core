@@ -11,7 +11,7 @@
 
 	<groupId>eu.unifiedviews</groupId>
 	<artifactId>uv-core</artifactId>
-	<version>2.3.1</version>
+	<version>2.3.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>UnifiedViews-Core</name>
 	<description />
@@ -184,14 +184,14 @@
 						<exclude>**/package-info.java</exclude>
 					</excludes>
 				</configuration>
-				<executions>
+				<!-- <executions>
 					<execution>
 						<phase>validate</phase>
 						<goals>
 							<goal>check</goal>
 						</goals>
 					</execution>
-				</executions>
+				</executions>-->
 			</plugin>
 
 			<!-- integration tests (*SysTest) are disabled by default; use SYSTESTS profile to enable it -->
