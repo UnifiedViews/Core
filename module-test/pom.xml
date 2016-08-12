@@ -68,15 +68,6 @@
 
 	</dependencies>
 
-	<!-- define license -->
-	<licenses>
-		<license>
-			<name>GNU Lesser General Public License, Version 3</name>
-			<url>https://www.gnu.org/licenses/lgpl-3.0.txt</url>
-			<distribution>repo</distribution>
-			<!-- https://maven.apache.org/pom.html#Licenses -->
-		</license>
-	</licenses>
 
 	<!-- add license from LICENSE.md to the generated JAR file -->
 	<build>

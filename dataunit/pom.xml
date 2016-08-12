@@ -277,13 +277,4 @@
 			</plugin>
 		</plugins>
 	</build>
-	<!-- define license -->
-	<licenses>
-		<license>
-			<name>GNU General Public License, Version 3</name>
-			<url>https://www.gnu.org/licenses/gpl-3.0.txt</url>
-			<distribution>repo</distribution>
-			<!-- https://maven.apache.org/pom.html#Licenses -->
-		</license>
-	</licenses>
 </project>
