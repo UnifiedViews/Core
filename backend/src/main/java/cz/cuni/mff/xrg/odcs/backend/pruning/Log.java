@@ -36,9 +36,8 @@ class Log {
 
         // get user settings
         Integer history = null;
-        try {
+        if (config.contains(ConfigProperty.EXECUTION_LOG_HISTORY)) {
             history = config.getInteger(ConfigProperty.EXECUTION_LOG_HISTORY);
-        } finally {
         }
 
         if (history == null || history <= -1) {
