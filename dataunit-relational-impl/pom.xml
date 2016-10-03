@@ -4,6 +4,7 @@
 		<artifactId>uv-core</artifactId>
 		<groupId>eu.unifiedviews</groupId>
 		<version>2.3.2-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<groupId>eu.unifiedviews</groupId>
