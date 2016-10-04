@@ -1,19 +1,3 @@
-/**
- * This file is part of UnifiedViews.
- *
- * UnifiedViews is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * UnifiedViews is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
- */
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist;
 
 import java.util.Date;
@@ -32,6 +16,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ScheduleFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.DbPipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
@@ -42,13 +27,16 @@ import cz.cuni.mff.xrg.odcs.frontend.AppEntry;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
+import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineViewAccessor;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.ContainerSourceBase;
+import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbCachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
 import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.PipelineImport;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PostLogoutCleaner;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
+import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenter;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenterImpl;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
@@ -81,7 +69,13 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
     private PipelineFacade pipelineFacade;
 
     @Autowired
-    private PipelineViewAccessor pipelineViewAccessor;
+    private DbPipeline dbPipeline;
+
+    @Autowired
+    private PipelineAccessor pipelineAccessor;
+
+    //    @Autowired
+    //    private PipelineViewAccessor pipelineViewAccessor;
 
     @Autowired
     private PipelineListView view;
@@ -105,9 +99,11 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
 
     private PipelineListData dataObject;
 
+    private DbCachedSource<Pipeline> cachedSource;
+
     private RefreshManager refreshManager;
 
-    private ContainerSourceBase<PipelineView> pipelineViewSource;
+    //private ContainerSourceBase<PipelineView> pipelineViewSource;
 
     private Date lastLoad = new Date(0L);
 
@@ -134,11 +130,18 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
         }
 
         navigator = ((AppEntry) UI.getCurrent()).getNavigation();
-        pipelineViewSource = new ContainerSourceBase<>(
-                pipelineHelper.getPipelineViews(),
-                pipelineViewAccessor
-                );
-        dataObject = new PipelineListPresenter.PipelineListData(new ReadOnlyContainer<>(pipelineViewSource));
+
+        // prepare data object
+        cachedSource = new DbCachedSource<>(dbPipeline, pipelineAccessor, utils.getPageLength());
+
+        ReadOnlyContainer c = new ReadOnlyContainer<>(cachedSource);
+        dataObject = new PipelineListPresenter.PipelineListData(c);
+
+        //        pipelineViewSource = new ContainerSourceBase<>(
+        //                pipelineHelper.getPipelineViews(),
+        //                pipelineViewAccessor
+        //                );
+        //        dataObject = new PipelineListPresenter.PipelineListData(new ReadOnlyContainer<>(pipelineViewSource));
 
         // prepare view
         Object viewObject = view.enter(this);
@@ -166,7 +169,7 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
                 if (new Date().getTime() - lastRefreshFinished > RefreshManager.MIN_REFRESH_INTERVAL) {
                     boolean hasModifiedPipelinesOrExecutions = pipelineFacade.hasModifiedPipelines(lastLoad)
                             || pipelineFacade.hasModifiedExecutions(lastLoad)
-                            || pipelineFacade.hasDeletedPipelines(pipelineViewSource.getItemIds(0, pipelineViewSource.size()));
+                            || pipelineFacade.hasDeletedPipelines(cachedSource.getItemIds(0, cachedSource.size()));
                     if (hasModifiedPipelinesOrExecutions) {
                         lastLoad = new Date();
                         refreshEventHandler();
@@ -206,7 +209,9 @@ public class PipelineListPresenterImpl implements PipelineListPresenter, PostLog
 
     @Override
     public void refreshEventHandler() {
-        pipelineViewSource.setDataItems(pipelineHelper.getPipelineViews());
+        //cachedSource.setDataItems(pipelineHelper.getPipelineViews());
+        pipelineAccessor.clearExecCache();
+        cachedSource.invalidate();
         dataObject.getContainer().refresh();
         view.refreshTableControls();
     }

@@ -1,19 +1,3 @@
-/**
- * This file is part of UnifiedViews.
- *
- * UnifiedViews is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * UnifiedViews is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
- */
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist;
 
 import static cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus.RUNNING;
@@ -147,9 +131,9 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         LOG.trace("showExecutionDetail()");
         presenter.stopRefreshEventHandler();
         // secure existance of detail layout
-//		if (logLayout == null) {
-//			buildExecutionDetail(execution);
-//		} 
+        //		if (logLayout == null) {
+        //			buildExecutionDetail(execution);
+        //		} 
         // will just set the debug view content
         LOG.trace("showExecutionDetail() : buildDebugView");
         buildDebugView(execution);
@@ -417,27 +401,27 @@ public class ExecutionListViewImpl extends CustomComponent implements ExecutionL
         logLayout.setExpandRatio(debugView, 1.0f);
 
         // Layout for buttons  Close and  Export on the bottom
-//		HorizontalLayout buttonBar = new HorizontalLayout();
-//		buttonBar.setWidth("100%");
-//
-//		Button buttonClose = new Button();
-//		buttonClose.setCaption("Close");
-//		buttonClose.setHeight("25px");
-//		buttonClose.setWidth("100px");
-//		buttonClose.addClickListener(new com.vaadin.ui.Button.ClickListener() {
-//			@Override
-//			public void buttonClick(Button.ClickEvent event) {
-//				presenter.stopRefreshEventHandler();
-//				hsplit.setSplitPosition(100, Unit.PERCENTAGE);
-//				//hsplit.setHeight("100%");
-//				hsplit.setLocked(true);
-//			}
-//		});
-//		buttonBar.addComponent(buttonClose);
-//		buttonBar.setComponentAlignment(buttonClose, Alignment.BOTTOM_RIGHT);
-//
-//		logLayout.addComponent(buttonBar);
-//		logLayout.setExpandRatio(buttonBar, 0);
+        //		HorizontalLayout buttonBar = new HorizontalLayout();
+        //		buttonBar.setWidth("100%");
+        //
+        //		Button buttonClose = new Button();
+        //		buttonClose.setCaption("Close");
+        //		buttonClose.setHeight("25px");
+        //		buttonClose.setWidth("100px");
+        //		buttonClose.addClickListener(new com.vaadin.ui.Button.ClickListener() {
+        //			@Override
+        //			public void buttonClick(Button.ClickEvent event) {
+        //				presenter.stopRefreshEventHandler();
+        //				hsplit.setSplitPosition(100, Unit.PERCENTAGE);
+        //				//hsplit.setHeight("100%");
+        //				hsplit.setLocked(true);
+        //			}
+        //		});
+        //		buttonBar.addComponent(buttonClose);
+        //		buttonBar.setComponentAlignment(buttonClose, Alignment.BOTTOM_RIGHT);
+        //
+        //		logLayout.addComponent(buttonBar);
+        //		logLayout.setExpandRatio(buttonBar, 0);
 
     }
 

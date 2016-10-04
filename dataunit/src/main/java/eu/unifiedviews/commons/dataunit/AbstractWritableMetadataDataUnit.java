@@ -1,19 +1,3 @@
-/**
- * This file is part of UnifiedViews.
- *
- * UnifiedViews is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * UnifiedViews is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
- */
 package eu.unifiedviews.commons.dataunit;
 
 import java.io.PrintWriter;
@@ -52,6 +36,8 @@ import eu.unifiedviews.dataunit.MetadataDataUnit;
 import eu.unifiedviews.dataunit.WritableMetadataDataUnit;
 
 /**
+ * Base class for dealing with metadata of all data units - metadata for data units is saved in RDF store.
+ *
  * @author Michal Klempa
  * @author Škoda Petr
  */
@@ -59,6 +45,7 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractWritableMetadataDataUnit.class);
 
+    //names for the variables in the SPARQL queries projected out
     protected static final String SYMBOLIC_NAME_BINDING = "symbolicName";
 
     protected static final String PREDICATE_BINDING = "predicate";

@@ -1,19 +1,3 @@
-/**
- * This file is part of UnifiedViews.
- *
- * UnifiedViews is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * UnifiedViews is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
- */
 package cz.cuni.mff.xrg.odcs.frontend.gui.views;
 
 import java.io.File;
@@ -86,7 +70,7 @@ import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
  * GUI for Settings page which opens from the main menu. For User role it
  * contains Email notifications form. For Administrator role it contains extra
  * functionality: Users list, Prune execution records, Release locked pipelines
- *
+ * 
  * @author Maria Kukhar
  */
 @org.springframework.stereotype.Component
@@ -258,12 +242,12 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         usersLayout.setStyleName("settings");
 
         //layout for Namespace Prefixes
-//		prefixesLayout = new VerticalLayout();
-//		prefixesLayout.setImmediate(true);
-//		prefixesLayout.setWidth("100%");
-//		prefixesLayout.setHeight("100%");
-//		prefixesLayout = prefixesList.buildNamespacePrefixesLayout();
-//		prefixesLayout.setStyleName("settings");
+        //		prefixesLayout = new VerticalLayout();
+        //		prefixesLayout.setImmediate(true);
+        //		prefixesLayout.setWidth("100%");
+        //		prefixesLayout.setHeight("100%");
+        //		prefixesLayout = prefixesList.buildNamespacePrefixesLayout();
+        //		prefixesLayout.setStyleName("settings");
 
         //My account tab
         accountButton = new NativeButton(Messages.getString("Settings.my.account"));
@@ -343,28 +327,28 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         tabsLayout.setComponentAlignment(usersButton, Alignment.TOP_RIGHT);
 
         //Namespace prefixes tab
-//		prefixesButton = new NativeButton("Namespace Prefixes");
-//		prefixesButton.setHeight("40px");
-//		prefixesButton.setWidth("170px");
-//		prefixesButton.setStyleName("multiline");
-//		prefixesButton.setVisible(loggedUser.getRoles().contains(Role.ROLE_ADMIN));
-//		prefixesButton.addClickListener(new ClickListener() {
-//			private static final long serialVersionUID = 1L;
-//
-//			@Override
-//			public void buttonClick(ClickEvent event) {
-//				if (shownTab.equals(accountButton)) {
-//					myAccountSaveConfirmation(prefixesButton, prefixesLayout);
-//				} else {
-//					if (shownTab.equals(notificationsButton)) {
-//						notificationSaveConfirmation(prefixesButton,
-//								prefixesLayout);
-//					} else {
-//						buttonPush(prefixesButton, prefixesLayout);
-//					}
-//				}
-//			}
-//		});
+        //		prefixesButton = new NativeButton("Namespace Prefixes");
+        //		prefixesButton.setHeight("40px");
+        //		prefixesButton.setWidth("170px");
+        //		prefixesButton.setStyleName("multiline");
+        //		prefixesButton.setVisible(loggedUser.getRoles().contains(Role.ROLE_ADMIN));
+        //		prefixesButton.addClickListener(new ClickListener() {
+        //			private static final long serialVersionUID = 1L;
+        //
+        //			@Override
+        //			public void buttonClick(ClickEvent event) {
+        //				if (shownTab.equals(accountButton)) {
+        //					myAccountSaveConfirmation(prefixesButton, prefixesLayout);
+        //				} else {
+        //					if (shownTab.equals(notificationsButton)) {
+        //						notificationSaveConfirmation(prefixesButton,
+        //								prefixesLayout);
+        //					} else {
+        //						buttonPush(prefixesButton, prefixesLayout);
+        //					}
+        //				}
+        //			}
+        //		});
 
         //tabsLayout.addComponent(prefixesButton);
         //tabsLayout.setComponentAlignment(prefixesButton, Alignment.TOP_RIGHT);
@@ -632,7 +616,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
     /**
      * Validates and return the TextField.value
-     *
+     * 
      * @param layout
      *            GridLayout
      * @param column
@@ -659,7 +643,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
     /**
      * Building Schedule notifications layout. Appear after pushing Schedule
      * notifications tab
-     *
+     * 
      * @return notificationsLayout Layout with components of Schedule
      *         notifications.
      */
@@ -686,7 +670,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
     /**
      * Building My account layout. Appear after pushing My account tab
-     *
+     * 
      * @return accountLayout Layout with components of My account.
      */
     private VerticalLayout buildMyAccountLayout() {
@@ -748,7 +732,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
     /**
      * Building layout with button Save for saving My account tab
-     *
+     * 
      * @return buttonBar Layout with button
      */
     private HorizontalLayout buildButtonMyAccountBar() {
@@ -782,7 +766,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
     /**
      * Building layout with button Save for saving notifications
-     *
+     * 
      * @return buttonBar Layout with button
      */
     private HorizontalLayout buildButtonNotificationBar() {
@@ -817,7 +801,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
     /**
      * Showing active tab.
-     *
+     * 
      * @param pressedButton
      *            Tab that was pressed.
      * @param layoutShow
@@ -905,7 +889,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
      * tab and push anoter tab. User can save changes or discard. After that
      * will be shown another selected tab. If there was no changes, a
      * confirmation window will not be shown.
-     *
+     * 
      * @param pressedButton
      *            New tab that was push.
      * @param layoutShow
@@ -946,7 +930,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
      * notifications tab and push another tab. User can save changes or discard.
      * After that will be shown another selected tab. If there was no changes, a
      * confirmation window will not be shown.
-     *
+     * 
      * @param pressedButton
      *            New tab that was push.
      * @param layoutShow
@@ -1079,7 +1063,7 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
 
     /**
      * Check for permission.
-     *
+     * 
      * @param type
      *            Required permission.
      * @return If the user has given permission
@@ -1194,6 +1178,9 @@ public class Settings extends ViewComponent implements PostLogoutCleaner {
         }
 
         @Override
+        /**
+         * Note: This code duplicates the code also defined in {@link cz.cuni.mff.xrg.odcs.backend.execution.pipeline.impl.CleanupThread} (backend)
+         */
         public void run() {
             try {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
