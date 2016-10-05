@@ -1,7 +1,6 @@
-package cz.cuni.mff.xrg.odcs.frontend.gui.dialog;
+package cz.cuni.mff.xrg.odcs.frontend.gui.dialogs;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.TreeSet;

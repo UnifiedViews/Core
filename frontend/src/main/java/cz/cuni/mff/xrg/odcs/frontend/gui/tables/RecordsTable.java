@@ -25,7 +25,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbCachedSource;
-import cz.cuni.mff.xrg.odcs.frontend.gui.details.RecordDetail;
+import cz.cuni.mff.xrg.odcs.frontend.gui.dialogs.details.RecordDetail;
 
 /**
  * Table with event records related to given pipeline execution.

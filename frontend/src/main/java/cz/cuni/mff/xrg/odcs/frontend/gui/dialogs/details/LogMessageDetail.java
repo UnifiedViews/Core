@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.frontend.gui.details;
+package cz.cuni.mff.xrg.odcs.frontend.gui.dialogs.details;
 
 import java.text.DateFormat;
 import java.util.Date;

@@ -39,7 +39,7 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.download.OnDemandStreamResource
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.ValueItem;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbCachedSource;
-import cz.cuni.mff.xrg.odcs.frontend.gui.details.LogMessageDetail;
+import cz.cuni.mff.xrg.odcs.frontend.gui.dialogs.details.LogMessageDetail;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 
 /**

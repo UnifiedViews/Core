@@ -1,4 +1,4 @@
-package cz.cuni.mff.xrg.odcs.frontend.gui.dialog;
+package cz.cuni.mff.xrg.odcs.frontend.gui.dialogs;
 
 import java.util.HashMap;
 import java.util.Map;
