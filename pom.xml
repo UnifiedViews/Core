@@ -124,11 +124,11 @@
 	<repositories>
 
 		<repository>
-            		<id>uv-releases</id>
+            		<id>uv-releases-public</id>
            		<url>https://repository.unifiedviews.eu/nexus/content/repositories/releases</url>
        		</repository>
 		<repository>
-            		<id>uv-snapshots</id>
+            		<id>uv-snapshots-public</id>
 			<url>https://repository.unifiedviews.eu/nexus/content/repositories/snapshots/</url>
 		</repository>
 		<repository>
