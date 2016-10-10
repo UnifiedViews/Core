@@ -52,8 +52,8 @@
 		<commons.lang.version>3.4</commons.lang.version>
 		<commons.validator.version>1.4.0</commons.validator.version>
 		<h2.version>1.4.182</h2.version>
-		<httpclient.osgi.version>4.5.1</httpclient.osgi.version>
-		<httpcore.osgi.version>4.4.4</httpcore.osgi.version>
+		<httpclient.osgi.version>4.5.2</httpclient.osgi.version>
+		<httpcore.osgi.version>4.4.5</httpcore.osgi.version>
 		<osgi.version>4.3.1</osgi.version>
 		<jsch.version>0.1.49_1</jsch.version>
 		<xml.apis.version>1.4.01</xml.apis.version>
