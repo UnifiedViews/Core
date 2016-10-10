@@ -122,21 +122,6 @@
 	</dependencyManagement>
 
 	<repositories>
-		
-		 <repository>
-            		<id>uv-releases</id>
-           		<url>https://repository.unifiedviews.eu/nexus/content/repositories/releases</url>
-        	</repository>
-		<repository>
-            		<id>uv-snapshots</id>
-           		<url>https://repository.unifiedviews.eu/nexus/content/repositories/snapshots/</url>
-		</repository>
-		
-		<repository>
-			<id>maven.eea.sk</id>
-			<name>maven.eea.sk-public</name>
-			<url>http://maven.eea.sk/artifactory/public/</url>
-		</repository>
 
 		<repository> <!-- spring repositories -->
 			<id>com.springsource.repository.bundles.release</id>
