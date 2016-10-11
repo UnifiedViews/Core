@@ -125,11 +125,11 @@
 
 		<repository>
             		<id>uv-releases</id>
-           		<url>https://repository.unifiedviews.eu/nexus/content/repositories/releases</url>
+           		<url>http://repository.unifiedviews.eu/nexus/content/repositories/releases</url>
        		</repository>
 		<repository>
             		<id>uv-snapshots</id>
-			<url>https://repository.unifiedviews.eu/nexus/content/repositories/snapshots/</url>
+			<url>http://repository.unifiedviews.eu/nexus/content/repositories/snapshots/</url>
 		</repository>
 		<repository>
 			<id>maven.eea.sk</id>
