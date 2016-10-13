@@ -6,7 +6,7 @@
 		<groupId>eu.unifiedviews</groupId>
 		<artifactId>uv-pom</artifactId>
 		<version>2.1.7-SNAPSHOT</version>
-		<relativePath>../uv-pom/pom.xml</relativePath>
+		<relativePath/>
 	</parent>
 
 	<groupId>eu.unifiedviews</groupId>
@@ -52,8 +52,8 @@
 		<commons.lang.version>3.4</commons.lang.version>
 		<commons.validator.version>1.4.0</commons.validator.version>
 		<h2.version>1.4.182</h2.version>
-		<httpclient.osgi.version>4.5.1</httpclient.osgi.version>
-		<httpcore.osgi.version>4.4.4</httpcore.osgi.version>
+		<httpclient.osgi.version>4.5.2</httpclient.osgi.version>
+		<httpcore.osgi.version>4.4.5</httpcore.osgi.version>
 		<osgi.version>4.3.1</osgi.version>
 		<jsch.version>0.1.49_1</jsch.version>
 		<xml.apis.version>1.4.01</xml.apis.version>
@@ -122,22 +122,21 @@
 	</dependencyManagement>
 
 	<repositories>
-		
-		 <repository>
+
+		<repository>
             		<id>uv-releases</id>
-           		<url>https://repository.unifiedviews.eu/nexus/content/repositories/releases</url>
-        	</repository>
+           		<url>http://repository.unifiedviews.eu/nexus/content/repositories/releases</url>
+       		</repository>
 		<repository>
             		<id>uv-snapshots</id>
-           		<url>https://repository.unifiedviews.eu/nexus/content/repositories/snapshots/</url>
+			<url>http://repository.unifiedviews.eu/nexus/content/repositories/snapshots/</url>
 		</repository>
-		
 		<repository>
 			<id>maven.eea.sk</id>
 			<name>maven.eea.sk-public</name>
 			<url>http://maven.eea.sk/artifactory/public/</url>
 		</repository>
-
+		
 		<repository> <!-- spring repositories -->
 			<id>com.springsource.repository.bundles.release</id>
 			<name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
