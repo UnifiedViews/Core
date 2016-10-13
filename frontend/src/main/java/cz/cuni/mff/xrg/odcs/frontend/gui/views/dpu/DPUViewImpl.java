@@ -241,6 +241,7 @@ public class DPUViewImpl extends CustomComponent implements DPUView {
 
         //DPU Template Tree
         dpuTree.setExpandable(false);
+        dpuTree.setShowButtonCreateTemplate(false);
         dpuTree.fillTree();
         if (dpuTree.getListeners(ItemClickEvent.class).isEmpty()) {
             dpuTree.addItemClickListener(new ItemClickEvent.ItemClickListener() {

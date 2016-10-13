@@ -88,6 +88,16 @@ public class DPUTree extends CustomComponent {
 
     private boolean isValid = true;
 
+    public boolean isShowButtonCreateTemplate() {
+        return showButtonCreateTemplate;
+    }
+
+    public void setShowButtonCreateTemplate(boolean showButtonCreateTemplate) {
+        this.showButtonCreateTemplate = showButtonCreateTemplate;
+    }
+
+    private boolean showButtonCreateTemplate = true;
+
     /**
      * Creates new DPUTree.
      */
@@ -185,28 +195,30 @@ public class DPUTree extends CustomComponent {
         topLine.setVisible(isExpandable);
         mainLayout.addComponent(topLine);
 
-        buttonCreateDPU = new Button();
-        buttonCreateDPU.setCaption(Messages.getString("DPUTree.create.dpu"));
-        buttonCreateDPU.setHeight("25px");
-        buttonCreateDPU.setWidth("180px");
-        buttonCreateDPU
-                .addClickListener(new Button.ClickListener() {
-                    private static final long serialVersionUID = 1L;
+        if (showButtonCreateTemplate) {
+            buttonCreateDPU = new Button();
+            buttonCreateDPU.setCaption(Messages.getString("DPUTree.create.dpu"));
+            buttonCreateDPU.setHeight("25px");
+            buttonCreateDPU.setWidth("180px");
+            buttonCreateDPU
+                    .addClickListener(new Button.ClickListener() {
+                        private static final long serialVersionUID = 1L;
 
-                    @Override
-                    public void buttonClick(Button.ClickEvent event) {
-                        //Open the dialog for DPU Template creation
-                        if (!UI.getCurrent().getWindows().contains(createDPU)) {
-                            createDPU.initClean();
-                            UI.getCurrent().addWindow(createDPU);
-                            createDPU.removeCloseListener(createDPUCloseListener);
-                            createDPU.addCloseListener(createDPUCloseListener);
-                        } else {
-                            createDPU.bringToFront();
+                        @Override
+                        public void buttonClick(Button.ClickEvent event) {
+                            //Open the dialog for DPU Template creation
+                            if (!UI.getCurrent().getWindows().contains(createDPU)) {
+                                createDPU.initClean();
+                                UI.getCurrent().addWindow(createDPU);
+                                createDPU.removeCloseListener(createDPUCloseListener);
+                                createDPU.addCloseListener(createDPUCloseListener);
+                            } else {
+                                createDPU.bringToFront();
+                            }
+
                         }
-
-                    }
-                });
+                    });
+        }
 
         exportButton = new Button(Messages.getString("DPUTree.export.dpu"));
         exportButton.setHeight("25px");
