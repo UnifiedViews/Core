@@ -8,7 +8,8 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>dataunit-rdf-impl</artifactId>
-	<name>dataunit-rdf-impl</name>
+	<version>2.3.2-SNAPSHOT</version>
+        <name>dataunit-rdf-impl</name>
 
 	<dependencies>
 		<dependency>
