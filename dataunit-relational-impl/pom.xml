@@ -9,7 +9,7 @@
 
 	<groupId>eu.unifiedviews</groupId>
 	<artifactId>dataunit-relational-impl</artifactId>
-        <version>2.3.2-SNAPSHOT</version>
+        <version>2.3.2</version>
 	<name>dataunit-relational-impl</name>
 
 	<dependencies>

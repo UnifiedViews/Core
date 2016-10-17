@@ -7,7 +7,7 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>module-test</artifactId>
-        <version>2.3.2-SNAPSHOT</version>
+        <version>2.3.2</version>
 	<description>Contains classes for test support.</description>
 
 	<dependencies>
