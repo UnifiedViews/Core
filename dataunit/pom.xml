@@ -7,7 +7,8 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>dataunit</artifactId>
-	<description>Base project for new DataUnit's implementations.</description>
+	<version>2.3.2-SNAPSHOT</version>
+        <description>Base project for new DataUnit's implementations.</description>
 	<packaging>jar</packaging>	
 
 	<dependencies>

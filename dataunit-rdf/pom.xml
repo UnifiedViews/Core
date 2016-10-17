@@ -8,7 +8,8 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>dataunit-rdf</artifactId>
-	<name>dataunit-rdf</name>
+	<version>2.3.2-SNAPSHOT</version>
+        <name>dataunit-rdf</name>
 	<description>Helper classes for RDFDataUnit. Do not reuse this module, it is deprecated, but it is still needed, because frontend uses it for browse/query features and certain UV 1.X DPUs use it. </description>
 
 	<dependencies>
