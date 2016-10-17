@@ -1,28 +1,7 @@
 Packages
 ========
 
-Provides source for creating UnifiedViews packages for various Linux distributions.
-
-How to install with dependency 
-
-~~~bash
-echo "deb http://packages.comsode.eu/debian wheezy main" > /etc/apt/sources.list.d/odn.list
-wget -O - http://packages.comsode.eu/key/odn.gpg.key | apt-key add -
-apt-get update
-~~~
-
-
-To install unifiedview using postgresql
-~~~bash
-apt-get install unifiedviews-pgsql
-~~~
-
-To install unifiedview using mysql
-~~~bash
-apt-get install unifiedviews-mysql
-~~~
-
-
+How to install UnifiedViews from debian packages? See [Installation Guide](https://grips.semantic-web.at/display/UDDOC/Installation+Guide)
 
 How to create .deb packages for Debian:
 
@@ -38,5 +17,4 @@ The known issues:
 - be aware of the possible problem - https://github.com/UnifiedViews/Core/issues/258
 - to add backup configuration before an update installation of packages
 - to clean database schema during a purge phase 
-- to change location from /etc/unifiedviews to /etc/default/unifiedviews
-
+- to change location from /etc/unifiedviews to /etc/default/unifiedview
