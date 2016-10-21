@@ -1,3 +1,21 @@
+UnifiedViews License - Module module-test
+====================
+
+UnifiedViews (hereafter meant as UnifiedViews - Module module-test) is meant to be an free and open source for all now and in future.
+We encourage continuous, self sustainable development supported by both the open source community and commercial stake holders. This way both parties (community and commercial users) profit from each other by code and financial resources for core development. Therefore we adopted a dual licensing approach for UnifiedViews. All contributor need to agree and sign the CLA (https://github.com/UnifiedViews/Core/blob/master/ContributorAgreement_UnifiedViews.pdf), if they want to push in the repository of UnifiedViews.
+
+Open source Software License
+====================
+
+The Open Source version of UnifiedViews - Module module-test - is released under the terms of LGPLv3 or later http://opensource.org/licenses/lgpl-3.0.html (or see license text below).
+
+
+Commercial Software License
+====================
+
+The commercial version allows to use, modify, copy and distribute without any restrictions as stated in the commercial license agreement.
+
+
 GNU Lesser General Public License
 =================================
 

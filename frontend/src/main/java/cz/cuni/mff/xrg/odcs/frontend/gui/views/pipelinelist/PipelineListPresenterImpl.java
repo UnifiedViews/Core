@@ -1,19 +1,3 @@
-/**
- * This file is part of UnifiedViews.
- *
- * UnifiedViews is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * UnifiedViews is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
- */
 package cz.cuni.mff.xrg.odcs.frontend.gui.views.pipelinelist;
 
 import java.util.Date;
@@ -44,15 +28,12 @@ import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.PipelineHelper;
 import cz.cuni.mff.xrg.odcs.frontend.auxiliaries.RefreshManager;
 import cz.cuni.mff.xrg.odcs.frontend.container.ReadOnlyContainer;
 import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineAccessor;
-import cz.cuni.mff.xrg.odcs.frontend.container.accessor.PipelineViewAccessor;
-import cz.cuni.mff.xrg.odcs.frontend.doa.container.ContainerSourceBase;
 import cz.cuni.mff.xrg.odcs.frontend.doa.container.db.DbCachedSource;
 import cz.cuni.mff.xrg.odcs.frontend.gui.components.SchedulePipeline;
-import cz.cuni.mff.xrg.odcs.frontend.gui.dialog.PipelineImport;
+import cz.cuni.mff.xrg.odcs.frontend.gui.dialogs.PipelineImport;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PipelineEdit;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.PostLogoutCleaner;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.Utils;
-import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenter;
 import cz.cuni.mff.xrg.odcs.frontend.gui.views.executionlist.ExecutionListPresenterImpl;
 import cz.cuni.mff.xrg.odcs.frontend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;

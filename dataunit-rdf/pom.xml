@@ -4,10 +4,12 @@
 	<parent>
 		<groupId>eu.unifiedviews</groupId>
 		<artifactId>uv-core</artifactId>
-			<version>2.3.1</version>
+		<version>2.3.2</version>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>dataunit-rdf</artifactId>
-	<name>dataunit-rdf</name>
+	<version>2.3.2</version>
+        <name>dataunit-rdf</name>
 	<description>Helper classes for RDFDataUnit. Do not reuse this module, it is deprecated, but it is still needed, because frontend uses it for browse/query features and certain UV 1.X DPUs use it. </description>
 
 	<dependencies>
@@ -279,13 +281,4 @@
 		</plugins>
 	</build>
 
-	<!-- define license -->
-	<licenses>
-		<license>
-			<name>GNU General Public License, Version 3</name>
-			<url>https://www.gnu.org/licenses/gpl-3.0.txt</url>
-			<distribution>repo</distribution>
-			<!-- https://maven.apache.org/pom.html#Licenses -->
-		</license>
-	</licenses>
 </project>

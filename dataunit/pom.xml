@@ -3,11 +3,13 @@
 	<parent>
 		<groupId>eu.unifiedviews</groupId>
 		<artifactId>uv-core</artifactId>
-		<version>2.3.1</version>
+		<version>2.3.2</version>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>dataunit</artifactId>
-	<description>Base project for new DataUnit's implementations.</description>
-	<packaging>jar</packaging>
+	<version>2.3.2</version>
+        <description>Base project for new DataUnit's implementations.</description>
+	<packaging>jar</packaging>	
 
 	<dependencies>
 		<dependency>
@@ -277,13 +279,4 @@
 			</plugin>
 		</plugins>
 	</build>
-	<!-- define license -->
-	<licenses>
-		<license>
-			<name>GNU General Public License, Version 3</name>
-			<url>https://www.gnu.org/licenses/gpl-3.0.txt</url>
-			<distribution>repo</distribution>
-			<!-- https://maven.apache.org/pom.html#Licenses -->
-		</license>
-	</licenses>
 </project>
