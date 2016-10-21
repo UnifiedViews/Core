@@ -1,22 +1,21 @@
 package cz.cuni.mff.xrg.odcs.commons.app.rdf;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
+import eu.unifiedviews.commons.rdf.repository.ManagableRepository;
+import eu.unifiedviews.commons.rdf.repository.RDFException;
+import eu.unifiedviews.commons.rdf.repository.RepositoryFactory;
 import org.openrdf.repository.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
-import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
-import eu.unifiedviews.commons.rdf.repository.ManagableRepository;
-import eu.unifiedviews.commons.rdf.repository.RDFException;
-import eu.unifiedviews.commons.rdf.repository.RepositoryFactory;
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Provide access to repositories.
@@ -86,6 +85,9 @@ public class RepositoryManager {
                 break;
             case "remoteRDF":
                 repositoryType = ManagableRepository.Type.REMOTE_RDF;
+                break;
+            case "marklogic":
+                repositoryType = ManagableRepository.Type.MARKLOGIC;
                 break;
             default:
                 throw new RuntimeException("Unknown repository type.");

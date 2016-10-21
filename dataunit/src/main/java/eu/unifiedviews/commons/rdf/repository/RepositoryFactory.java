@@ -55,6 +55,9 @@ public class RepositoryFactory {
             case VIRTUOSO:
                 repository = new Virtuoso(uri, user, password);
                 break;
+            case MARKLOGIC:
+                repository = new MarkLogic(uri, user, password);
+                break;
             default:
                 throw new RDFException("Unknown repository type: " + type.toString());
         }

@@ -74,7 +74,7 @@ class RemoteRDF implements ManagableRepository{
 
     @Override
     public ConnectionSource getConnectionSource() {
-        return new ConnectionSourceImpl(repository, false);
+        return new ConnectionSourceImpl(repository);
     }
 
     @Override

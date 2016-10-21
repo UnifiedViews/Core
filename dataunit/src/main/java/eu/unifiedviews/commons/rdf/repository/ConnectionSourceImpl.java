@@ -36,6 +36,16 @@ class ConnectionSourceImpl implements ConnectionSource {
         this.retryOnFailure = retryOnFailure;
     }
 
+    /**
+     * Used repository.
+     *
+     * @param repository
+     */
+    public ConnectionSourceImpl(Repository repository) {
+        this.repository = repository;
+        this.retryOnFailure = false;
+    }
+
     @Override
     public RepositoryConnection getConnection() throws RepositoryException {
         return repository.getConnection();

@@ -1,15 +1,14 @@
 package eu.unifiedviews.commons.rdf.repository;
 
-import java.io.File;
-
+import eu.unifiedviews.commons.dataunit.core.ConnectionSource;
+import eu.unifiedviews.dataunit.DataUnitException;
 import org.apache.commons.io.FileUtils;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.sail.nativerdf.NativeStore;
 
-import eu.unifiedviews.commons.dataunit.core.ConnectionSource;
-import eu.unifiedviews.dataunit.DataUnitException;
+import java.io.File;
 
 /**
  *
@@ -41,7 +40,7 @@ class LocalRDF implements ManagableRepository {
 
     @Override
     public ConnectionSource getConnectionSource() {
-        return new ConnectionSourceImpl(repository, false);
+        return new ConnectionSourceImpl(repository);
     }
 
     @Override

@@ -264,6 +264,16 @@
 			<artifactId>com.openlinksw.virtuoso.virtjdbc4_1</artifactId>
 			<version>${virtuoso.jdbc.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.marklogic</groupId>
+			<artifactId>marklogic-sesame</artifactId>
+			<version>1.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.marklogic</groupId>
+			<artifactId>java-client-api</artifactId>
+			<version>3.0.6</version>
+		</dependency>
 	</dependencies>
 
 	<build>
