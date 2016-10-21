@@ -3,11 +3,12 @@
 	<parent>
 		<groupId>eu.unifiedviews</groupId>
 		<artifactId>uv-core</artifactId>
-		<version>2.3.2-SNAPSHOT</version>
+		<version>2.3.2</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>dataunit</artifactId>
-	<description>Base project for new DataUnit's implementations.</description>
+	<version>2.3.2</version>
+        <description>Base project for new DataUnit's implementations.</description>
 	<packaging>jar</packaging>	
 
 	<dependencies>
