@@ -4,11 +4,11 @@
 	<parent>
 		<groupId>eu.unifiedviews</groupId>
 		<artifactId>uv-core</artifactId>
-		<version>2.3.2</version>
+		<version>2.3.3-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>dataunit-file-impl</artifactId>
-	<version>2.3.2</version>
+	<version>2.3.3-SNAPSHOT</version>
         <name>dataunit-file-impl</name>
 	<description>Implementation of FileDataUnit.</description>
 
