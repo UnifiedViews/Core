@@ -1,13 +1,13 @@
-UnifiedViews License
+UnifiedViews License - Debian packages
 ====================
 
-UnifiedViews is meant to be an free and open source for all now and in future.
+UnifiedViews (hereafter meant as UnifiedViews - Debian packages) is meant to be an free and open source for all now and in future.
 We encourage continuous, self sustainable development supported by both the open source community and commercial stake holders. This way both parties (community and commercial users) profit from each other by code and financial resources for core development. Therefore we adopted a dual licensing approach for UnifiedViews. All contributor need to agree and sign the CLA (Contribution Agreement), if they want to push in the master repository of UnifiedViews.
 
 Open source Software License
 ====================
 
-The Open Source version of UnifiedViews is released under the terms of GPLv3 or later http://www.gnu.org/licenses/gpl-3.0.html (or see license text below) and LGPLv3 or later http://opensource.org/licenses/lgpl-3.0.html.
+The Open Source version of UnifiedViews - Debian packages - is released under the terms of GPLv3 or later http://www.gnu.org/licenses/gpl-3.0.html (or see license text below).
 
 As an additional permission to the GNU GPL version 3, you may distribute non-source (e.g., minimized or compacted) forms of the UnifiedViews source code without the copy of the GNU GPL normally required, provided you include this license notice and a URL through which recipients can access the Corresponding Source.
 

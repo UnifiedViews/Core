@@ -5,12 +5,13 @@
 	<parent>
 		<groupId>eu.unifiedviews</groupId>
 		<artifactId>uv-pom</artifactId>
-		<version>2.1.6-SNAPSHOT</version>
+		<version>2.1.8-SNAPSHOT</version>
+		<relativePath/>
 	</parent>
 
 	<groupId>eu.unifiedviews</groupId>
 	<artifactId>uv-core</artifactId>
-	<version>2.3.1-SNAPSHOT</version>
+	<version>2.3.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>UnifiedViews-Core</name>
 	<description />
@@ -24,18 +25,18 @@
 
 		<!-- TODO: update ussage as rdf/files-impls utilize project version, not this property -->
 		<uv-dpu-api.version>${unifiedviews.api.version}</uv-dpu-api.version>
-		<uv-dpu-api-helpers.version>2.1.6-SNAPSHOT</uv-dpu-api-helpers.version>		
+		<uv-dpu-api-helpers.version>2.1.8-SNAPSHOT</uv-dpu-api-helpers.version>		
 		<uv-dataunit-rdf.version>${unifiedviews.api.version}</uv-dataunit-rdf.version>
 		<uv-dataunit-files.version>${unifiedviews.api.version}</uv-dataunit-files.version>
 		<uv-dataunit-relational.version>${unifiedviews.api.version}</uv-dataunit-relational.version>
-		<uv-dataunit-helpers.version>2.1.6-SNAPSHOT</uv-dataunit-helpers.version>		
+		<uv-dataunit-helpers.version>2.1.8-SNAPSHOT</uv-dataunit-helpers.version>		
 
 		<dataunit.version>${project.version}</dataunit.version>
 
 		<!-- 3rd party libraries -->
 		<!-- Vaadin -->
 		<confirmdialog.version>2.1.3</confirmdialog.version>
-		<filteringtable.version>0.9.11.v7</filteringtable.version>
+		<filteringtable.version>0.9.13.v7</filteringtable.version>
 		<lazyquerycontainer.version>2.0.9</lazyquerycontainer.version>
 		<refresher.version>1.2.1.7</refresher.version>
 		<vaadin.spring.version>2.0.1</vaadin.spring.version>
@@ -51,8 +52,8 @@
 		<commons.lang.version>3.4</commons.lang.version>
 		<commons.validator.version>1.4.0</commons.validator.version>
 		<h2.version>1.4.182</h2.version>
-		<httpclient.osgi.version>4.5.1</httpclient.osgi.version>
-		<httpcore.osgi.version>4.4.4</httpcore.osgi.version>
+		<httpclient.osgi.version>4.5.2</httpclient.osgi.version>
+		<httpcore.osgi.version>4.4.5</httpcore.osgi.version>
 		<osgi.version>4.3.1</osgi.version>
 		<jsch.version>0.1.49_1</jsch.version>
 		<xml.apis.version>1.4.01</xml.apis.version>
@@ -105,22 +106,6 @@
 		<developerConnection />
 	</scm>
 
-	<developers>
-		<!-- <developer> <id></id> <name></name> <email></email> <roles> <role>developer</role> </roles> </developer> -->
-	</developers>
-
-	<contributors>
-		<contributor>
-			<name>Tomas Knap</name>
-			<email>knap@ksi.mff.cuni.cz</email>
-			<roles>
-				<role>project supervisor</role>
-			</roles>
-			<url>http://www.ksi.mff.cuni.cz/~knap</url>
-			<organization>Faculty of Mathematics and Physics, Charles University in Prague</organization>
-		</contributor>
-	</contributors>
-
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -137,12 +122,21 @@
 	</dependencyManagement>
 
 	<repositories>
+
+		<repository>
+            		<id>uv-releases</id>
+           		<url>http://repository.unifiedviews.eu/nexus/content/repositories/releases</url>
+       		</repository>
+		<repository>
+            		<id>uv-snapshots</id>
+			<url>http://repository.unifiedviews.eu/nexus/content/repositories/snapshots/</url>
+		</repository>
 		<repository>
 			<id>maven.eea.sk</id>
 			<name>maven.eea.sk-public</name>
 			<url>http://maven.eea.sk/artifactory/public/</url>
 		</repository>
-
+		
 		<repository> <!-- spring repositories -->
 			<id>com.springsource.repository.bundles.release</id>
 			<name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
@@ -189,14 +183,14 @@
 						<exclude>**/package-info.java</exclude>
 					</excludes>
 				</configuration>
-				<executions>
+				<!-- <executions>
 					<execution>
 						<phase>validate</phase>
 						<goals>
 							<goal>check</goal>
 						</goals>
 					</execution>
-				</executions>
+				</executions>-->
 			</plugin>
 
 			<!-- integration tests (*SysTest) are disabled by default; use SYSTESTS profile to enable it -->
@@ -355,13 +349,4 @@
 		</profile>
 	</profiles>
 
-	<!-- define license -->
-	<licenses>
-		<license>
-			<name>GNU General Public License, Version 3</name>
-			<url>https://www.gnu.org/licenses/gpl-3.0.txt</url>
-			<distribution>repo</distribution>
-			<!-- https://maven.apache.org/pom.html#Licenses -->
-		</license>
-	</licenses>
 </project>

@@ -1,19 +1,3 @@
-/**
- * This file is part of UnifiedViews.
- *
- * UnifiedViews is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * UnifiedViews is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
- */
 package cz.cuni.mff.xrg.odcs.frontend.container;
 
 import java.util.ArrayList;
@@ -344,7 +328,7 @@ public class ReadOnlyContainer<T extends DataObject> implements Container,
             return classAccessor.sortable();
         } else {
             if (!classAccessor.sortable().isEmpty()) {
-                LOG.warn("Container has non-filterable source but "
+                LOG.warn("Container has non sortable source but "
                         + "ClassAccess {} define sortable columns.",
                         classAccessor.getClass().getSimpleName());
             }
@@ -375,13 +359,13 @@ public class ReadOnlyContainer<T extends DataObject> implements Container,
 
     @Override
     public List<String> getFilterables() {
-        if (source instanceof ContainerSource.Sortable) {
+        if (source instanceof ContainerSource.Filterable) {
             // ok return list from accessor
             return classAccessor.filterable();
         } else {
-            if (!classAccessor.sortable().isEmpty()) {
-                LOG.warn("Container has non-filterable source but "
-                        + "ClassAccess {} define sortable columns.",
+            if (!classAccessor.filterable().isEmpty()) {
+                LOG.warn("Container has non filterable source but "
+                        + "ClassAccess {} define filterable columns.",
                         classAccessor.getClass().getSimpleName());
             }
             return new ArrayList<>(0);

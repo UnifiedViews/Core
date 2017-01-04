@@ -1,19 +1,3 @@
-/**
- * This file is part of UnifiedViews.
- *
- * UnifiedViews is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * UnifiedViews is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with UnifiedViews.  If not, see <http://www.gnu.org/licenses/>.
- */
 package cz.cuni.mff.xrg.odcs.frontend.doa.container;
 
 import cz.cuni.mff.xrg.odcs.commons.app.dao.DataObject;
@@ -24,6 +8,7 @@ import java.util.List;
 public class ContainerSourceBase<T extends DataObject> implements ContainerSource<T> {
 
     private List<T> dataItems;
+
     private ClassAccessor<T> classAccessor;
 
     public ContainerSourceBase(List<T> dataItems, ClassAccessor<T> classAccessor) {
@@ -39,10 +24,11 @@ public class ContainerSourceBase<T extends DataObject> implements ContainerSourc
     @Override
     public T getObject(Long id) {
         for (T item : dataItems) {
-            if (item.getId().equals(id)) return item;
+            if (item.getId().equals(id))
+                return item;
         }
 
-        throw new IllegalArgumentException("Item with id " +id.toString()+ " not found");
+        throw new IllegalArgumentException("Item with id " + id.toString() + " not found");
     }
 
     @Override
@@ -54,7 +40,8 @@ public class ContainerSourceBase<T extends DataObject> implements ContainerSourc
     public int indexOfId(Long itemId) {
         int index = 0;
         for (T item : dataItems) {
-            if (item.getId().equals(itemId)) return index;
+            if (item.getId().equals(itemId))
+                return index;
             index++;
         }
 
@@ -66,8 +53,7 @@ public class ContainerSourceBase<T extends DataObject> implements ContainerSourc
         try {
             getObject(id);
             return true;
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             return false;
         }
     }
@@ -77,7 +63,8 @@ public class ContainerSourceBase<T extends DataObject> implements ContainerSourc
         List<Long> items = new ArrayList();
 
         for (int i = 0; i < dataItems.size(); i++) {
-            if (i >= startIndex && (i - startIndex < numberOfItems)) items.add(dataItems.get(i).getId());
+            if (i >= startIndex && (i - startIndex < numberOfItems))
+                items.add(dataItems.get(i).getId());
         }
 
         return items;
