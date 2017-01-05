@@ -1,20 +1,20 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution.server;
 
-import java.util.List;
-
-import javax.persistence.TypedQuery;
-
-import org.springframework.transaction.annotation.Transactional;
-
 import cz.cuni.mff.xrg.odcs.commons.app.ScheduledJobsPriority;
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccessBase;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.TypedQuery;
+import java.util.List;
 
 public class DbExecutionServerImpl extends DbAccessBase<ExecutionServer> implements DbExecutionServer {
 
     public DbExecutionServerImpl() {
         super(ExecutionServer.class);
     }
+
+    private String sqlDriverInfo;
 
     @Override
     public ExecutionServer getExecutionServer(String backendId) {
@@ -33,14 +33,16 @@ public class DbExecutionServerImpl extends DbAccessBase<ExecutionServer> impleme
     @Override
     @Transactional
     public int allocateQueuedExecutionsForBackendByPriority(String backendID, int limit) {
-	if ( 1 == 1 ) {
-	    // Version for Ms SQL Server 2014
+        String query = null;
+        if ( sqlDriverInfo.startsWith("com.microsoft.sqlserver.jdbc") ) {
+	    // Version for Ms SQL Server (with TOP instead of LIMIT)
+        // sqlDriverInfo is taken from config.properties, see: commons-app-context.xml
 	    final String queryStrMsSql = "UPDATE exec_pipeline SET backend_id = '%s'"
                 + " WHERE id IN (SELECT id FROM"
 	        + " (SELECT TOP %d e.id from exec_pipeline e WHERE e.backend_id IS NULL AND e.status = %d"
                 + " ORDER BY e.order_number ASC, e.id ASC) AS temp)";
 
-	    String query = String.format(queryStrMsSql,
+	    query = String.format(queryStrMsSql,
 					 backendID,
 					 limit,
 					 0 // = QUEUED
@@ -51,7 +53,7 @@ public class DbExecutionServerImpl extends DbAccessBase<ExecutionServer> impleme
                 + " WHERE id IN (SELECT id FROM"
 	        + " (SELECT e.id from exec_pipeline e WHERE e.backend_id IS NULL AND e.status = %d"
                 + "  ORDER BY e.order_number ASC, e.id ASC LIMIT %d) AS temp)";
-	    String query = String.format(queryStrDefault,
+	    query = String.format(queryStrDefault,
 					 backendID,
 					 0, // = QUEUED
 					 limit
@@ -75,4 +77,13 @@ public class DbExecutionServerImpl extends DbAccessBase<ExecutionServer> impleme
         return count;
     }
 
+    @Override
+    public void setSqlDriverInfo(String sqlDriverInfo) {
+        this.sqlDriverInfo = sqlDriverInfo;
+    }
+
+    @Override
+    public String getSqlDriverInfo() {
+        return sqlDriverInfo;
+    }
 }
