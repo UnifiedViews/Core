@@ -34,7 +34,7 @@ public class DbExecutionServerImpl extends DbAccessBase<ExecutionServer> impleme
     @Transactional
     public int allocateQueuedExecutionsForBackendByPriority(String backendID, int limit) {
         String query = null;
-        if ( sqlDriverInfo.startsWith("com.microsoft.sqlserver.jdbc") ) {
+        if ( sqlDriverInfo != null && sqlDriverInfo.startsWith("com.microsoft.sqlserver.jdbc") ) {
 	    // Version for Ms SQL Server (with TOP instead of LIMIT)
         // sqlDriverInfo is taken from config.properties, see: commons-app-context.xml
 	    final String queryStrMsSql = "UPDATE exec_pipeline SET backend_id = '%s'"
