@@ -69,6 +69,12 @@
             <artifactId>jetty-server</artifactId>
             <version>${jetty.server.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>sqljdbc4</artifactId>
+            <version>4.0</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 
     <build>
