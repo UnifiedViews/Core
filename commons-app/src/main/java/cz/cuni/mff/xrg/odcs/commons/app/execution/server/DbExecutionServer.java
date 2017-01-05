@@ -42,7 +42,16 @@ public interface DbExecutionServer extends DbAccess<ExecutionServer> {
      */
     long getCountOfUnallocatedQueuedExecutionsWithIgnorePriority();
 
+    /**
+     * To set sql driver information (e.g., by Spring from config.properties)
+     * @param sqlDriverInfo
+     */
     public void setSqlDriverInfo(String sqlDriverInfo);
+
+    /**
+     * To get sql driver information
+     * @return
+     */
     public String getSqlDriverInfo();
 
 }
