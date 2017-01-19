@@ -148,6 +148,20 @@
 			<name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
 			<url>http://repository.springsource.com/maven/bundles/external</url>
 		</repository>
+
+		<!--
+		<repository>
+			<id>stardog-public</id>
+			<url>http://maven.stardog.com</url>
+		</repository> -->
+
+		<repository>
+			<id>ontotex-public</id>
+			<url>http://maven.ontotext.com/content/groups/all-onto</url>
+		</repository>
+
+
+
 	</repositories>
 
 	<pluginRepositories>
@@ -162,6 +176,7 @@
 					<configuration>
 						<source>${project.java.source.version}</source>
 						<target>${project.java.target.version}</target>
+						<maxmem>1024m</maxmem>
 					</configuration>
 				</plugin>
 			</plugins>
@@ -260,7 +275,27 @@
 					<noDeploy>true</noDeploy>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.zeroturnaround</groupId>
+				<artifactId>jrebel-maven-plugin</artifactId>
+				<version>1.1.5</version>
+				<configuration>
+					<alwaysGenerate>true</alwaysGenerate>
+					<addResourcesDirToRebelXml>true</addResourcesDirToRebelXml>
+					<showGenerated>true</showGenerated>
+				</configuration>
+				<executions>
+					<execution>
+						<id>generate-rebel-xml</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
+
 	</build>
 
 	<profiles>
