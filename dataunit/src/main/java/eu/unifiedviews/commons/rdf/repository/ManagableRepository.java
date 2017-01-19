@@ -15,7 +15,8 @@ public interface ManagableRepository {
         LOCAL_RDF,
         INMEMORY_RDF,
         REMOTE_RDF,
-        VIRTUOSO
+        VIRTUOSO,
+        GRAPHDB
     }
 
     /**
