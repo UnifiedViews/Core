@@ -21,8 +21,10 @@ public class ExecutionServer implements Serializable, DataObject {
     @Column(name = "id")
     private Long id;
 
+    // TIMESTAMP won't work with MS SQL Server in this case, hence
+    // changed to DATETIME.
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "last_update", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Column(name = "last_update", nullable = false, columnDefinition = "DATETIME")
     private Date lastUpdate;
 
     @Column(name = "backend_id", unique = true, length = 128)

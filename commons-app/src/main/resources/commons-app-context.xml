@@ -89,7 +89,9 @@
     <bean id="dbUserActor" class="cz.cuni.mff.xrg.odcs.commons.app.user.DbUserActorImpl"/>
     <bean id="dbNamespacePrefix" class="cz.cuni.mff.xrg.odcs.commons.app.rdf.namespace.DbNamespacePrefixImpl"/>
     <bean id="dbRuntimeProperties" class="cz.cuni.mff.xrg.odcs.commons.app.properties.DbRuntimePropertiesImpl"/>
-    <bean id="dbExecutionServer" class="cz.cuni.mff.xrg.odcs.commons.app.execution.server.DbExecutionServerImpl"/>
+    <bean id="dbExecutionServer" class="cz.cuni.mff.xrg.odcs.commons.app.execution.server.DbExecutionServerImpl">
+        <property name="sqlDriverInfo" value="${database.sql.driver}"/>
+    </bean>
 
     <!-- authorizator required by dao -->
     <bean id="dbAuthorizator" class="cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAuthorizatorImpl"/>
