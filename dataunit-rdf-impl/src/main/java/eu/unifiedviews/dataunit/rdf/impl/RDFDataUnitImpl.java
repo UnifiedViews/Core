@@ -78,7 +78,7 @@ class RDFDataUnitImpl extends AbstractWritableMetadataDataUnit implements Manage
         if (connectionSource.isRetryOnFailure()) {
             return new RDFDataUnitIterationEager(this, connectionSource, faultTolerant);
         } else {
-            return new RDFDataUnitIterationLazy(this);
+            return new RDFDataUnitIterationEager(this, connectionSource, faultTolerant);
         }
     }
 
