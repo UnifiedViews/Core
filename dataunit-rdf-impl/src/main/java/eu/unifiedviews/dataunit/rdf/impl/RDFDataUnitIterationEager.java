@@ -1,22 +1,5 @@
 package eu.unifiedviews.dataunit.rdf.impl;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.openrdf.model.URI;
-import org.openrdf.model.impl.URIImpl;
-import org.openrdf.query.BindingSet;
-import org.openrdf.query.MalformedQueryException;
-import org.openrdf.query.QueryEvaluationException;
-import org.openrdf.query.QueryLanguage;
-import org.openrdf.query.TupleQuery;
-import org.openrdf.query.TupleQueryResult;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import eu.unifiedviews.commons.dataunit.core.ConnectionSource;
 import eu.unifiedviews.commons.dataunit.core.FaultTolerant;
 import eu.unifiedviews.dataunit.DataUnitException;
@@ -24,6 +7,17 @@ import eu.unifiedviews.dataunit.MetadataDataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit.Entry;
 import eu.unifiedviews.dataunit.rdf.impl.i18n.Messages;
+import org.openrdf.model.URI;
+import org.openrdf.model.impl.URIImpl;
+import org.openrdf.query.*;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Load list of graphs at once. This class does not need reliable repository, but it's not suitable
