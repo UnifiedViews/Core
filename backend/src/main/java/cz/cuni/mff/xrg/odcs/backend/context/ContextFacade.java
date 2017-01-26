@@ -87,19 +87,19 @@ public class ContextFacade {
     }
 
     /**
-     * Add data from left context to the right one based on given script. The
+     * Add data from source context to the target one based on given script. The
      * newly created {@link cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit} are cleaned by
      * calling {@link cz.cuni.mff.xrg.odcs.commons.data.ManagableDataUnit#clear()}.
      * So any previous data are safely deleted and do not contaminate the execution.
      * 
-     * @param left
-     * @param right
+     * @param target
+     * @param source
      * @param script
      * @throws ContextException
      */
-    public void merge(Context left, Context right, String script)
+    public void merge(Context target, Context source, String script)
             throws ContextException {
-        merger.merge(left, right, script);
+        merger.merge(target, source, script);
     }
 
 }
