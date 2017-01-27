@@ -30,7 +30,7 @@ public class FaultTolerantImpl implements FaultTolerant {
     private final int numberOfAttemps;
 
     public FaultTolerantImpl(ConnectionSource connectionSource, int waitTime, int numberOfAttemps) {
-        LOG.info("FaultTolerantImpl waitTime={} numberOfAttemps={}", waitTime, numberOfAttemps);
+        LOG.debug("FaultTolerantImpl waitTime={} numberOfAttemps={}", waitTime, numberOfAttemps);
         this.connectionSource = connectionSource;
         this.waitTime = waitTime;
         this.numberOfAttemps = numberOfAttemps;
