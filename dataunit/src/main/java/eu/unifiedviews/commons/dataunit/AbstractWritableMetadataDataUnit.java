@@ -108,6 +108,11 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
      */
     protected final FaultTolerant faultTolerant;
 
+    /**
+     * A flag to hold whether this data unit is consumed by multiple inputs (data units in the following DPUs)
+     */
+    private boolean consumedByMultipleInputs;
+
     public AbstractWritableMetadataDataUnit(String dataUnitName, String writeContextString,
             CoreServiceBus coreServices) {
         this.dataUnitName = dataUnitName;
@@ -120,6 +125,7 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
         // Load services.
         this.connectionSource = coreServices.getService(ConnectionSource.class);
         this.faultTolerant = coreServices.getService(FaultTolerant.class);
+        this.consumedByMultipleInputs = false;
     }
 
     // MetadataDataUnit interface
@@ -502,6 +508,16 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
         }
         throw new DataUnitException("No match in graph <" + graph.stringValue() +
                 "> for <" + subject.stringValue() + "> <" + predicate.stringValue() + "> ?o");
+    }
+
+    @Override
+    public void setConsumedByMultipleInputs(boolean status) {
+        this.consumedByMultipleInputs = status;
+    }
+
+    @Override
+    public boolean isConsumedByMultipleInputs() {
+        return consumedByMultipleInputs;
     }
 
 }

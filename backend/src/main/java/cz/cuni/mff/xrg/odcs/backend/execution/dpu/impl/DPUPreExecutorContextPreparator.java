@@ -1,27 +1,23 @@
 package cz.cuni.mff.xrg.odcs.backend.execution.dpu.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.stereotype.Component;
-
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.backend.context.ContextException;
 import cz.cuni.mff.xrg.odcs.backend.context.ContextFacade;
 import cz.cuni.mff.xrg.odcs.backend.dpu.event.DPUEvent;
 import cz.cuni.mff.xrg.odcs.backend.i18n.Messages;
+import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeInstructions;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.DPUExecutionState;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.DependencyGraph;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Edge;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
+import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Component;
+
+import java.util.*;
 
 /**
  * Examine the {@link DependencyGraph} for given {@link PipelineExecution}. Add
@@ -87,7 +83,7 @@ class DPUPreExecutorContextPreparator extends DPUPreExecutorBase {
         });
         for (Edge edge : edges) {
             if (edge.getTo() == node) {
-                // we are the target .. add data
+                // identify source
                 Node sourceNode = edge.getFrom();
                 Context sourceContext = contexts.get(sourceNode);
                 if (sourceContext == null) {
@@ -96,7 +92,48 @@ class DPUPreExecutorContextPreparator extends DPUPreExecutorBase {
                             DPUEvent.createPreExecutorFailed(context, this, Messages.getString("DPUPreExecutorContextPreparator.missing.context", sourceNode.getDpuInstance().getName())));
                     return false;
                 }
-                // else add data
+
+                //check other targets of the same source.
+                //TODO check that only once for the same source node - if there are more edges from the source (N), it is checked N-times
+                // If the source is producing data via data unit X to more then one DPU, then the data units consuming such data should not optimize.
+                // Step 1: Find all such edges
+                List<Edge> edgesOfNode = new ArrayList<>();
+
+                //TODO do it better, mark also such edges to the node, so that it is not necessary to always iterate over all edges
+                List<Edge> edges2 = new ArrayList<>(execution.getPipeline().getGraph().getEdges());
+                Collections.sort(edges2, new Comparator<Edge>() {
+                    @Override
+                    public int compare(Edge o1, Edge o2) {
+                        return o1.getId().compareTo(o2.getId());
+                    }
+                });
+                for (Edge ed : edges2) {
+                    if (ed.getFrom() == sourceNode) {
+                        edgesOfNode.add(ed);
+                    }
+                }
+
+                Set<String> dataUnitNamesWhichAreUsedMultipleTimes = new HashSet<>();
+                Set<String> dataUnitNamesWhichWereAlreadyUsed = new HashSet<>();
+                // Step 2: Examine the scripts. If at least two edges contain the same label as the source, then mark the data unit with that label somehow
+                for (Edge ed : edgesOfNode) {
+                    examineEdge(ed.getScript(), dataUnitNamesWhichWereAlreadyUsed, dataUnitNamesWhichAreUsedMultipleTimes);
+
+                }
+
+                //Step 3: For each data unit used more times, mark corresponding data unit with a flag
+                List<ManagableDataUnit> outputs = sourceContext.getOutputs();
+                for (String s : dataUnitNamesWhichAreUsedMultipleTimes) {
+                    for (ManagableDataUnit outDataUnit : outputs) {
+                        if (outDataUnit.getName().equals(s)) {
+                            // mark the output data unit with a flag
+                            outDataUnit.setConsumedByMultipleInputs(true);
+                            break;
+                        }
+                    }
+                }
+
+                // merge data
                 try {
                     contextFacade.merge(context, sourceContext, edge.getScript());
                 } catch (ContextException e) {
@@ -105,9 +142,32 @@ class DPUPreExecutorContextPreparator extends DPUPreExecutorBase {
                                     Messages.getString("DPUPreExecutorContextPreparator.merge.failed"), e));
                     return false;
                 }
+
             }
         }
         return true;
+    }
+
+    private void examineEdge(String script, Set<String> dataUnitNamesWhichWereAlreadyUsed, Set<String> dataUnitNamesWhichAreUsedMultipleTimes) {
+        //edge script sample
+        String[] rules = script.split(EdgeInstructions.Separator
+                .getValue());
+        for (String item : rules) {
+            String[] elements = item.split(" ", 2);
+            // test name ..
+            if (elements.length < 2) {
+                // not enough data .. skip
+            } else { // elements.length == 2
+                String outputDataUnitName = elements[0];
+                if (dataUnitNamesWhichWereAlreadyUsed.contains(outputDataUnitName)) {
+                    dataUnitNamesWhichAreUsedMultipleTimes.add(outputDataUnitName);
+                } else {
+                    dataUnitNamesWhichWereAlreadyUsed.add(outputDataUnitName);
+                }
+            }
+        }
+        return;
+
     }
 
 }

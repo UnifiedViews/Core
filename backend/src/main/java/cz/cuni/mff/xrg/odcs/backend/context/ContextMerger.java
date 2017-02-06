@@ -1,14 +1,13 @@
 package cz.cuni.mff.xrg.odcs.backend.context;
 
-import java.util.Iterator;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeInstructions;
 import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Provide functionality to merge (add) one {@link Context} into another.
@@ -31,7 +30,7 @@ class ContextMerger {
     public void merge(Context target, Context source, String instruction)
             throws ContextException {
         // merge dataUnits
-        merger(target.getInputsManager(), source.getOutputs(), instruction);
+        merger(target.getInputsManager(), source.getOutputs(), instruction, target);
     }
 
     /**
@@ -75,11 +74,13 @@ class ContextMerger {
      * @param sources
      *            Source of DataUnits, do not change!
      * @param instruction
-     *            Instruction for merger. See {@link cz.cuni.mff.xrg.odcs.commons.app.execution.DataUnitMergerInstructions}
+     *            Instruction for merger.
+     * @param targetContext
+     *            Context of the target DPU (so that the flags for optimistic mode may be prepared)
      * @throw ContextException
      */
     private void merger(DataUnitManager target, List<ManagableDataUnit> sources,
-            String instruction) throws ContextException {
+            String instruction, Context targetContext) throws ContextException {
         Iterator<ManagableDataUnit> iterSource = sources.iterator();
 
         // add the rest from source
@@ -156,6 +157,15 @@ class ContextMerger {
                         "Can't merge data units, type miss match.", e);
             } catch (Throwable t) {
                 throw new ContextException("Can't merge data units.", t);
+            }
+
+            // set up flag that the data unit can/cannot be optimized
+            if (source.isConsumedByMultipleInputs()) {
+                //set that the data unit can be optimalized
+                targetContext.addNonOptimalizableDataUnit(targetDataUnit);
+            } else {
+                //set that the data unit can be optimalized
+                //do nothing
             }
         }
     }
