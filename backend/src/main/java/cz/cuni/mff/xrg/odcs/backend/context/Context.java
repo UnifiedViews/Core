@@ -18,7 +18,9 @@ import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.properties.RuntimeProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
 import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
@@ -27,6 +29,9 @@ import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dpu.DPUContext;
 
 public class Context implements DPUContext {
+
+    @Autowired
+    private RuntimePropertiesFacade runtimePropertyFacade;
 
     /**
      * Name of directory for shared DPU's data.
@@ -403,9 +408,18 @@ public class Context implements DPUContext {
     @Override
     public Map<String, String> getEnvironment() {
         Map<String, String> result = new HashMap<>();
+
+        //get properties from config.properties
         for (Map.Entry<Object, Object> entry : appConfig.getProperties().entrySet()) {
             result.put((String) entry.getKey(), (String) entry.getValue());
         }
+
+        //get properties from runtime properties
+        //if the map already contains value for that from config.properties, it is overwritten
+        for (RuntimeProperty property : runtimePropertyFacade.getAllRuntimeProperties()) {
+            result.put((String) property.getName(), (String) property.getValue());
+        }
+
         return result;
     }
 
