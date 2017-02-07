@@ -1,14 +1,5 @@
 package cz.cuni.mff.xrg.odcs.backend.execution.pipeline.impl;
 
-import java.io.File;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.Ordered;
-import org.springframework.stereotype.Component;
-
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.backend.context.ContextFacade;
 import cz.cuni.mff.xrg.odcs.backend.execution.pipeline.PostExecutor;
@@ -23,6 +14,14 @@ import cz.cuni.mff.xrg.odcs.commons.app.rdf.RepositoryManager;
 import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
 import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
 import eu.unifiedviews.commons.rdf.repository.RDFException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.Ordered;
+import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.util.Map;
 
 /**
  * CleanUp data after execution.
