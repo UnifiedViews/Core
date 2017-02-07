@@ -108,7 +108,7 @@ public class Context implements DPUContext {
     }
 
     @Override
-    public boolean isOptimisticModeEnabled(DataUnit du) {
+    public boolean isPerformanceOptimizationEnabled(DataUnit du) {
         return !isDebugging() && !cannotBeOptimalized.contains(du);
     }
 
