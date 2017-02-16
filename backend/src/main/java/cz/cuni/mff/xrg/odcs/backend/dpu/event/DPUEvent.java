@@ -1,13 +1,5 @@
 package cz.cuni.mff.xrg.odcs.backend.dpu.event;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Date;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationEvent;
-
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.backend.execution.dpu.DPUPostExecutor;
 import cz.cuni.mff.xrg.odcs.backend.execution.dpu.DPUPreExecutor;
@@ -17,10 +9,17 @@ import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.message.MessageRecordType;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import eu.unifiedviews.dataunit.DataUnitException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEvent;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Date;
 
 /**
  * Base abstract class for the DPURecord event.
- * Also log the events into DataBase. All class that inherit from this
+ * Also log the events into Database. All class that inherit from this
  * should also log when created.
  * 
  * @author Petyr

@@ -199,7 +199,7 @@ public class AppEntry {
         lockKey.append(appConfig.getInteger(ConfigProperty.BACKEND_PORT));
         if (!AppLock.setLock(lockKey.toString())) {
             // another application is already running
-            LOG.info("Another instance of UnifiedViews is probably running.");
+            LOG.warn("Another instance of UnifiedViews is already running on this machine.");
             return;
         }
 

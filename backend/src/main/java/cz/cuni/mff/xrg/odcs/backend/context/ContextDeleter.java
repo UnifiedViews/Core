@@ -1,21 +1,20 @@
 package cz.cuni.mff.xrg.odcs.backend.context;
 
-import java.io.File;
-import java.io.IOException;
-
+import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
+import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
+import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
-import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
-import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
+import java.io.File;
+import java.io.IOException;
 
 /**
- * Delete and close data for given {@link Context} if data are not loaded then
- * load them first (use {@link ContextRestorer} and then delete them.
+ * Deletes and closes data for the given {@link Context}
+ * If data is not loaded then load them first (use {@link ContextRestorer} and then delete them.
  * Also delete related content from {@link ExecutionContextInfo}. The
  * context is in same state as if newly created (empty).
  * 
@@ -93,10 +92,10 @@ class ContextDeleter {
     /**
      * Delete data from given {@link ExecutionContextInfo}.
      * 
-     * @param conteInfo
+     * @param contextInfo
      */
-    private void deleteContextInfo(ExecutionContextInfo contexInfo) {
-        contexInfo.reset();
+    private void deleteContextInfo(ExecutionContextInfo contextInfo) {
+        contextInfo.reset();
     }
 
 }

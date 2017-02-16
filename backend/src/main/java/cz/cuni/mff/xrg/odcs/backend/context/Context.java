@@ -28,6 +28,9 @@ import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dpu.DPUContext;
 
+/**
+ * Main class holding context for the executed DPU
+ */
 public class Context implements DPUContext {
 
     @Autowired

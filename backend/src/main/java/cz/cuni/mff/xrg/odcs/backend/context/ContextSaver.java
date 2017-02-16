@@ -1,6 +1,8 @@
 package cz.cuni.mff.xrg.odcs.backend.context;
 
 /**
+ * Saves context
+ *
  * @author Petyr
  */
 public class ContextSaver {

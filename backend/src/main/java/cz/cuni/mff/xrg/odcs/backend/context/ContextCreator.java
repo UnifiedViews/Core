@@ -1,20 +1,19 @@
 package cz.cuni.mff.xrg.odcs.backend.context;
 
-import java.util.Date;
-
-import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.DataUnitFactory;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
 import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
 import eu.unifiedviews.dataunit.DataUnit;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Date;
 
 /**
  * Component that is used to create {@link Context} for {@link DPUInstanceRecord} and {@link ExecutionContextInfo}.
- * If context has some previous data ie. {@link ExecutionContextInfo} is not
- * empty data are not loaded. To load data use {@link ContextRestore}
+ * If context has some previous data ie. {@link ExecutionContextInfo} is not empty, data is not loaded.
+ * To load data use {@link ContextRestorer}
  * 
  * @author Petyr
  */
