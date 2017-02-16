@@ -9,9 +9,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.data.EdgeInstructions;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.DPUExecutionState;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.DependencyGraph;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Edge;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.*;
 import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -57,8 +55,8 @@ class DPUPreExecutorContextPreparator extends DPUPreExecutorBase {
      * In case of error log the error, publish message and the return false.
      */
     @Override
-    protected boolean execute(Node node,
-            Map<Node, Context> contexts,
+    protected boolean execute(ExecutedNode node,
+            Map<ExecutedNode, Context> contexts,
             Object dpuInstance,
             PipelineExecution execution,
             ProcessingUnitInfo unitInfo) {
@@ -66,62 +64,39 @@ class DPUPreExecutorContextPreparator extends DPUPreExecutorBase {
         Context context = contexts.get(node);
 
         // ! ! ! !
-        // the context can contains data from previous 
+        // the context can contain data from previous
         // PREPROCESSING phase that has been interrupted
         // so some DataUnit can already been created and may contains some
         // data .. we solve this in contextFacade.merge
         // which take care about this
 
-        // looks for edges that lead to our node
-        List<Edge> edges = new ArrayList<>(execution.getPipeline().getGraph().getEdges());
-        Collections.sort(edges, new Comparator<Edge>() {
+        // check all edges which have this not as the target node
+        for (ExecutedEdge edge : node.getIncomingEdges()) {
+            //iterate over all edges which has as target the examined node
 
-            @Override
-            public int compare(Edge o1, Edge o2) {
-                return o1.getId().compareTo(o2.getId());
+            // identify source
+            ExecutedNode sourceNode = edge.getFrom();
+            Context sourceContext = contexts.get(sourceNode);
+            if (sourceContext == null) {
+                // publish message
+                eventPublisher.publishEvent(
+                        DPUEvent.createPreExecutorFailed(context, this, Messages.getString("DPUPreExecutorContextPreparator.missing.context", sourceNode.getDpuInstance().getName())));
+                return false;
             }
-        });
-        for (Edge edge : edges) {
-            if (edge.getTo() == node) {
-                // identify source
-                Node sourceNode = edge.getFrom();
-                Context sourceContext = contexts.get(sourceNode);
-                if (sourceContext == null) {
-                    // publish message
-                    eventPublisher.publishEvent(
-                            DPUEvent.createPreExecutorFailed(context, this, Messages.getString("DPUPreExecutorContextPreparator.missing.context", sourceNode.getDpuInstance().getName())));
-                    return false;
-                }
 
-                //check other targets of the same source.
-                //TODO check that only once for the same source node - if there are more edges from the source (N), it is checked N-times
+            //if source node not analyzed, analyze
+            if (!sourceNode.isOutputsAnalysedWhetherConsumedByMultipleDPUs()) {
+
                 // If the source is producing data via data unit X to more then one DPU, then the data units consuming such data should not optimize.
-                // Step 1: Find all such edges
-                List<Edge> edgesOfNode = new ArrayList<>();
-
-                //TODO do it better, mark also such edges to the node, so that it is not necessary to always iterate over all edges
-                List<Edge> edges2 = new ArrayList<>(execution.getPipeline().getGraph().getEdges());
-                Collections.sort(edges2, new Comparator<Edge>() {
-                    @Override
-                    public int compare(Edge o1, Edge o2) {
-                        return o1.getId().compareTo(o2.getId());
-                    }
-                });
-                for (Edge ed : edges2) {
-                    if (ed.getFrom() == sourceNode) {
-                        edgesOfNode.add(ed);
-                    }
-                }
-
                 Set<String> dataUnitNamesWhichAreUsedMultipleTimes = new HashSet<>();
                 Set<String> dataUnitNamesWhichWereAlreadyUsed = new HashSet<>();
-                // Step 2: Examine the scripts. If at least two edges contain the same label as the source, then mark the data unit with that label somehow
-                for (Edge ed : edgesOfNode) {
-                    examineEdge(ed.getScript(), dataUnitNamesWhichWereAlreadyUsed, dataUnitNamesWhichAreUsedMultipleTimes);
+                //Examine the scripts. If at least two edges contain the same label as the source, then mark the data unit with that label somehow
+                for (ExecutedEdge ed : sourceNode.getOutgoingEdges()) {
+                    examineEdge(ed.getEdge().getScript(), dataUnitNamesWhichWereAlreadyUsed, dataUnitNamesWhichAreUsedMultipleTimes);
 
                 }
 
-                //Step 3: For each data unit used more times, mark corresponding data unit with a flag
+                //For each data unit used more times, mark corresponding data unit with a flag
                 List<ManagableDataUnit> outputs = sourceContext.getOutputs();
                 for (String s : dataUnitNamesWhichAreUsedMultipleTimes) {
                     for (ManagableDataUnit outDataUnit : outputs) {
@@ -132,18 +107,19 @@ class DPUPreExecutorContextPreparator extends DPUPreExecutorBase {
                         }
                     }
                 }
-
-                // merge data
-                try {
-                    contextFacade.merge(context, sourceContext, edge.getScript());
-                } catch (ContextException e) {
-                    eventPublisher.publishEvent(
-                            DPUEvent.createPreExecutorFailed(context, this,
-                                    Messages.getString("DPUPreExecutorContextPreparator.merge.failed"), e));
-                    return false;
-                }
-
+                sourceNode.setOutputsAnalysedWhetherConsumedByMultipleDPUs(true);
             }
+
+            // merge data
+            try {
+                contextFacade.merge(context, sourceContext, edge.getEdge().getScript());
+            } catch (ContextException e) {
+                eventPublisher.publishEvent(
+                        DPUEvent.createPreExecutorFailed(context, this,
+                                Messages.getString("DPUPreExecutorContextPreparator.merge.failed"), e));
+                return false;
+            }
+
         }
         return true;
     }

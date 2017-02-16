@@ -1,13 +1,5 @@
 package cz.cuni.mff.xrg.odcs.backend.execution.dpu.impl;
 
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.stereotype.Component;
-
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.backend.dpu.event.DPUEvent;
 import cz.cuni.mff.xrg.odcs.backend.execution.dpu.DPUPreExecutor;
@@ -15,9 +7,16 @@ import cz.cuni.mff.xrg.odcs.backend.i18n.Messages;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.ExecutedNode;
 import eu.unifiedviews.dpu.config.DPUConfigException;
 import eu.unifiedviews.dpu.config.DPUConfigurable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Component;
+
+import java.util.Map;
 
 /**
  * Load configuration into DPU.
@@ -45,8 +44,8 @@ class Configurator implements DPUPreExecutor {
     }
 
     @Override
-    public boolean preAction(Node node,
-            Map<Node, Context> contexts,
+    public boolean preAction(ExecutedNode node,
+            Map<ExecutedNode, Context> contexts,
             Object dpuInstance,
             PipelineExecution execution,
             ProcessingUnitInfo unitInfo,

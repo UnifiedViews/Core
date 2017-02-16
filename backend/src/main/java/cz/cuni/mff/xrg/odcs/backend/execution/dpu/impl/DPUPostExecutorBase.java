@@ -8,6 +8,7 @@ import cz.cuni.mff.xrg.odcs.backend.execution.dpu.DPUPostExecutor;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.DPUExecutionState;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.ExecutedNode;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 
 /**
@@ -34,8 +35,8 @@ abstract class DPUPostExecutorBase implements DPUPostExecutor {
     }
 
     @Override
-    public boolean postAction(Node node,
-            Map<Node, Context> contexts,
+    public boolean postAction(ExecutedNode node,
+            Map<ExecutedNode, Context> contexts,
             Object dpuInstance,
             PipelineExecution execution,
             ProcessingUnitInfo unitInfo) {
@@ -57,8 +58,8 @@ abstract class DPUPostExecutorBase implements DPUPostExecutor {
      * @param unitInfo
      * @return
      */
-    protected abstract boolean execute(Node node,
-            Map<Node, Context> contexts,
+    protected abstract boolean execute(ExecutedNode node,
+            Map<ExecutedNode, Context> contexts,
             Object dpuInstance,
             PipelineExecution execution,
             ProcessingUnitInfo unitInfo);

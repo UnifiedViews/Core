@@ -1,13 +1,12 @@
 package cz.cuni.mff.xrg.odcs.backend.execution.pipeline;
 
-import java.util.Map;
-
-import org.springframework.core.Ordered;
-
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.DependencyGraph;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.ExecutedNode;
+import org.springframework.core.Ordered;
+
+import java.util.Map;
 
 /**
  * Provide action that should be perform before starts the the pipeline
@@ -34,7 +33,7 @@ public interface PreExecutor extends Ordered {
      * @return False if the post-executor failed.
      */
     public boolean preAction(PipelineExecution execution,
-            Map<Node, Context> contexts,
+            Map<ExecutedNode, Context> contexts,
             DependencyGraph graph,
             boolean success);
 

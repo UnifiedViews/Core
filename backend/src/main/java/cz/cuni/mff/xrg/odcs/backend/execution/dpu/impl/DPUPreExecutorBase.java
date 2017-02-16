@@ -8,6 +8,7 @@ import cz.cuni.mff.xrg.odcs.backend.execution.dpu.DPUPreExecutor;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.DPUExecutionState;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.ExecutedNode;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 
 /**
@@ -34,8 +35,8 @@ public abstract class DPUPreExecutorBase implements DPUPreExecutor {
     }
 
     @Override
-    public boolean preAction(Node node,
-            Map<Node, Context> contexts,
+    public boolean preAction(ExecutedNode node,
+            Map<ExecutedNode, Context> contexts,
             Object dpuInstance,
             PipelineExecution execution,
             ProcessingUnitInfo unitInfo,
@@ -58,8 +59,8 @@ public abstract class DPUPreExecutorBase implements DPUPreExecutor {
      * @param unitInfo
      * @return False in case of failure.
      */
-    protected abstract boolean execute(Node node,
-            Map<Node, Context> contexts,
+    protected abstract boolean execute(ExecutedNode node,
+            Map<ExecutedNode, Context> contexts,
             Object dpuInstance,
             PipelineExecution execution,
             ProcessingUnitInfo unitInfo);

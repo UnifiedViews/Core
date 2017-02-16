@@ -9,7 +9,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dataunit.relational.RelationalRepository
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.DependencyGraph;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.ExecutedNode;
 import cz.cuni.mff.xrg.odcs.commons.app.rdf.RepositoryManager;
 import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
 import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
@@ -55,7 +55,7 @@ class CleanUp implements PostExecutor {
 
     @Override
     public boolean postAction(PipelineExecution execution,
-            Map<Node, Context> contexts,
+            Map<ExecutedNode, Context> contexts,
             DependencyGraph graph) {
         LOG.debug("CleanUp start .. ");
 
