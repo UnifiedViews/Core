@@ -1,31 +1,5 @@
 package eu.unifiedviews.commons.dataunit;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.openrdf.model.Literal;
-import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
-import org.openrdf.model.Value;
-import org.openrdf.model.ValueFactory;
-import org.openrdf.model.impl.URIImpl;
-import org.openrdf.query.BindingSet;
-import org.openrdf.query.MalformedQueryException;
-import org.openrdf.query.QueryEvaluationException;
-import org.openrdf.query.QueryLanguage;
-import org.openrdf.query.TupleQuery;
-import org.openrdf.query.TupleQueryResult;
-import org.openrdf.query.Update;
-import org.openrdf.query.UpdateExecutionException;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.RepositoryResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import eu.unifiedviews.commons.constants.Ontology;
 import eu.unifiedviews.commons.dataunit.core.ConnectionSource;
 import eu.unifiedviews.commons.dataunit.core.CoreServiceBus;
@@ -34,6 +8,20 @@ import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.MetadataDataUnit;
 import eu.unifiedviews.dataunit.WritableMetadataDataUnit;
+import org.openrdf.model.*;
+import org.openrdf.model.impl.URIImpl;
+import org.openrdf.query.*;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
+import org.openrdf.repository.RepositoryResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Base class for dealing with metadata of all data units - metadata for data units is saved in RDF store.
@@ -120,6 +108,11 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
      */
     protected final FaultTolerant faultTolerant;
 
+    /**
+     * A flag to hold whether this data unit is consumed by multiple inputs (data units in the following DPUs)
+     */
+    private boolean consumedByMultipleInputs;
+
     public AbstractWritableMetadataDataUnit(String dataUnitName, String writeContextString,
             CoreServiceBus coreServices) {
         this.dataUnitName = dataUnitName;
@@ -132,6 +125,7 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
         // Load services.
         this.connectionSource = coreServices.getService(ConnectionSource.class);
         this.faultTolerant = coreServices.getService(FaultTolerant.class);
+        this.consumedByMultipleInputs = false;
     }
 
     // MetadataDataUnit interface
@@ -256,7 +250,7 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
             throw new IllegalArgumentException("Incompatible DataUnit class. This DataUnit is of class " + this.getClass().getCanonicalName() + " and it cannot merge other DataUnit of class " + otherDataUnit.getClass().getCanonicalName() + ".");
         }
         final AbstractWritableMetadataDataUnit otherMetadata = (AbstractWritableMetadataDataUnit) otherDataUnit;
-        // What we need to do is just co replicate all symbolic names.
+        // What we need to do is just to replicate all symbolic names.
         final Set<URI> newReadSet = new HashSet<>(this.readContexts.size() + otherMetadata.readContexts.size());
         newReadSet.addAll(this.readContexts);
         newReadSet.addAll(otherMetadata.readContexts);
@@ -514,6 +508,16 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
         }
         throw new DataUnitException("No match in graph <" + graph.stringValue() +
                 "> for <" + subject.stringValue() + "> <" + predicate.stringValue() + "> ?o");
+    }
+
+    @Override
+    public void setConsumedByMultipleInputs(boolean status) {
+        this.consumedByMultipleInputs = status;
+    }
+
+    @Override
+    public boolean isConsumedByMultipleInputs() {
+        return consumedByMultipleInputs;
     }
 
 }

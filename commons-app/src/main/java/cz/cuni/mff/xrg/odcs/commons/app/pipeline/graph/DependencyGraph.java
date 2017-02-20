@@ -14,18 +14,18 @@ import java.util.Set;
  * 
  * @author Jan Vojt
  */
-public class DependencyGraph implements Iterable<Node> {
+public class DependencyGraph implements Iterable<ExecutedNode> {
 
     /**
      * Structure for building dependency graph mapping nodes to dependency
      * nodes.
      */
-    private Map<Node, DependencyNode> dGraph = new LinkedHashMap<>();
+    private Map<Node, ExecutedNode> dGraph = new LinkedHashMap<>();
 
     /**
      * List of Extractor nodes - nodes without dependencies
      */
-    private List<DependencyNode> starters = new ArrayList<>();
+    private List<ExecutedNode> starters = new ArrayList<>();
 
     /**
      * Cache used for fast searching of node ancestors. A {@link Node} with no
@@ -112,7 +112,7 @@ public class DependencyGraph implements Iterable<Node> {
     /**
      * @return the extractors without inputs = the nodes which may be run first
      */
-    public List<DependencyNode> getStarters() {
+    public List<ExecutedNode> getStarters() {
         return starters;
     }
 
@@ -133,7 +133,7 @@ public class DependencyGraph implements Iterable<Node> {
      */
     private void findStarters() {
         starters = new ArrayList<>();
-        for (DependencyNode node : dGraph.values()) {
+        for (ExecutedNode node : dGraph.values()) {
             // extractors have no dependencies
             if (node.getDependencies().isEmpty()) {
                 starters.add(node);
@@ -143,7 +143,7 @@ public class DependencyGraph implements Iterable<Node> {
 
     /**
      * Builds dependency graph consisting of mapping from {@link Node}s to
-     * their corresponding newly created {@link DependencyNode}s.
+     * their corresponding newly created {@link ExecutedNode}s.
      * 
      * @param graph
      *            to build dependencies from
@@ -165,7 +165,7 @@ public class DependencyGraph implements Iterable<Node> {
             }
         });
         for (Node node : nodes) {
-            dGraph.put(node, new DependencyNode(node));
+            dGraph.put(node, new ExecutedNode(node));
         }
 
         List<Edge> edges = new ArrayList<>(graph.getEdges());
@@ -181,10 +181,10 @@ public class DependencyGraph implements Iterable<Node> {
         for (Edge e : edges) {
 
             // find the target node in the dependency graph
-            DependencyNode tNode = dGraph.get(e.getTo());
+            ExecutedNode tNode = dGraph.get(e.getTo());
 
             // find the source node in the dependency graph
-            DependencyNode sNode = dGraph.get(e.getFrom());
+            ExecutedNode sNode = dGraph.get(e.getFrom());
 
             // add the dependency
             tNode.addDependency(sNode);
@@ -192,6 +192,10 @@ public class DependencyGraph implements Iterable<Node> {
 
             // cache ancestors
             cacheAncestor(e.getFrom(), e.getTo());
+
+            //mark also outgoing/incoming edges for a node
+            sNode.addOutgoingEdge(e, tNode);
+            tNode.addIncomingEdge(e, sNode);
         }
     }
 

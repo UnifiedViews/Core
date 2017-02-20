@@ -1,17 +1,5 @@
 package cz.cuni.mff.xrg.odcs.backend.context;
 
-import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
-
 import cz.cuni.mff.xrg.odcs.backend.dpu.event.DPUMessage;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
@@ -25,8 +13,16 @@ import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
 import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
+import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dpu.DPUContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.*;
 
 /**
  * Main class holding context for the executed DPU
@@ -110,6 +106,20 @@ public class Context implements DPUContext {
      */
     private boolean canceled;
 
+    /**
+     * To hold information which data units cannot be optimalized - because e.g. it consumes the output of the previous data unit together with other DU
+     */
+    private Set<DataUnit> cannotBeOptimalized;
+
+    public void addNonOptimalizableDataUnit(DataUnit du) {
+        cannotBeOptimalized.add(du);
+    }
+
+    @Override
+    public boolean isPerformanceOptimizationEnabled(DataUnit du) {
+        return !isDebugging() && !cannotBeOptimalized.contains(du);
+    }
+
     private Locale locale;
 
     /**
@@ -129,6 +139,7 @@ public class Context implements DPUContext {
         this.canceled = false;
         this.stopExecution = false;
         this.locale = null;
+        this.cannotBeOptimalized = new HashSet<>();
     }
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - //
@@ -185,8 +196,7 @@ public class Context implements DPUContext {
      * @return Created DataUni.
      * @throws eu.unifiedviews.dataunit.DataUnitException
      */
-    public ManagableDataUnit addOutputDataUnit(ManagableDataUnit.Type type, String name) throws DataUnitException
-    {
+    public ManagableDataUnit addOutputDataUnit(ManagableDataUnit.Type type, String name) throws DataUnitException {
         return outputsManager.addDataUnit(type, name);
     }
 

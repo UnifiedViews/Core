@@ -19,7 +19,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationContainer;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.annotation.AnnotationGetter;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.ExecutedNode;
 import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 import eu.unifiedviews.dataunit.DataUnit;
 
@@ -53,8 +53,8 @@ public class AnnotationsInput implements DPUPreExecutor {
     }
 
     @Override
-    public boolean preAction(Node node,
-            Map<Node, Context> contexts,
+    public boolean preAction(ExecutedNode node,
+            Map<ExecutedNode, Context> contexts,
             Object dpuInstance,
             PipelineExecution execution,
             ProcessingUnitInfo unitInfo,

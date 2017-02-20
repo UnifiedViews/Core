@@ -1,12 +1,5 @@
 package cz.cuni.mff.xrg.odcs.commons.app.dataunit;
 
-import java.io.File;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.relational.RelationalRepositoryManager;
 import cz.cuni.mff.xrg.odcs.commons.app.rdf.RepositoryManager;
 import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
@@ -20,6 +13,12 @@ import eu.unifiedviews.dataunit.files.impl.FilesDataUnitFactory;
 import eu.unifiedviews.dataunit.rdf.impl.RDFDataUnitFactory;
 import eu.unifiedviews.dataunit.relational.impl.RelationalDataUnitFactory;
 import eu.unifiedviews.dataunit.relational.repository.ManagableRelationalRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+
+import java.io.File;
 
 /**
  * @author Škoda Petr
@@ -48,7 +47,7 @@ class DataUnitFactoryImpl implements DataUnitFactory {
 
     @Override
     public ManagableDataUnit create(ManagableDataUnit.Type type, Long executionId, String dataUnitUri, String dataUnitName, File dataUnitDirectory) throws RDFException, DataUnitException {
-        LOG.info("create({}, {}, {}, {}, {})", type, executionId, dataUnitUri, dataUnitName, dataUnitDirectory);
+        LOG.debug("Creating data unit: ({}, {}, {}, {}, {})", type, executionId, dataUnitUri, dataUnitName, dataUnitDirectory);
         // Get repository.
         final ManagableRepository repository = repositoryManager.get(executionId);
 

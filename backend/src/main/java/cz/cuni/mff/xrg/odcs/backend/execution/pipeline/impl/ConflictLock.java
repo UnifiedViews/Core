@@ -1,21 +1,20 @@
 package cz.cuni.mff.xrg.odcs.backend.execution.pipeline.impl;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.core.Ordered;
-import org.springframework.stereotype.Component;
-
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.backend.execution.pipeline.PreExecutor;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.DependencyGraph;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.ExecutedNode;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.core.Ordered;
+import org.springframework.stereotype.Component;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * The main class for component that is used to lock pipelines. This
@@ -98,7 +97,7 @@ public class ConflictLock implements PreExecutor {
 
     @Override
     public boolean preAction(PipelineExecution execution,
-            Map<Node, Context> contexts,
+            Map<ExecutedNode, Context> contexts,
             DependencyGraph graph,
             boolean success) {
         if (success) {
