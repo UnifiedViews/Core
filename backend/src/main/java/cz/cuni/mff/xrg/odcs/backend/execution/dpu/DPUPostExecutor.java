@@ -1,13 +1,12 @@
 package cz.cuni.mff.xrg.odcs.backend.execution.dpu;
 
-import java.util.Map;
-
-import org.springframework.core.Ordered;
-
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.ExecutedNode;
+import org.springframework.core.Ordered;
+
+import java.util.Map;
 
 /**
  * Provide action that should be perform pipeline execution.
@@ -35,8 +34,8 @@ public interface DPUPostExecutor extends Ordered {
      *            DPU's ProcessingUnitInfo.
      * @return False if the post-executor failed.
      */
-    public boolean postAction(Node node,
-            Map<Node, Context> contexts,
+    public boolean postAction(ExecutedNode node,
+            Map<ExecutedNode, Context> contexts,
             Object dpuInstance,
             PipelineExecution execution,
             ProcessingUnitInfo unitInfo);

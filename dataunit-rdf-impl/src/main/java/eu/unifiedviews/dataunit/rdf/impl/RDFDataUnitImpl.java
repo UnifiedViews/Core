@@ -55,10 +55,10 @@ class RDFDataUnitImpl extends AbstractWritableMetadataDataUnit implements Manage
             + "}";
 
     public RDFDataUnitImpl(String dataUnitName, String workingDirectoryURI,
-            String writeContextString, CoreServiceBus coreServices) {
-        super(dataUnitName, writeContextString, coreServices);
+            String directoryUri, CoreServiceBus coreServices) {
+        super(dataUnitName, directoryUri, coreServices);
 
-        baseDataGraphURI = new URIImpl(writeContextString + "/user/");
+        baseDataGraphURI = new URIImpl(directoryUri + "/user/");
     }
 
     @Override
@@ -78,7 +78,7 @@ class RDFDataUnitImpl extends AbstractWritableMetadataDataUnit implements Manage
         if (connectionSource.isRetryOnFailure()) {
             return new RDFDataUnitIterationEager(this, connectionSource, faultTolerant);
         } else {
-            return new RDFDataUnitIterationLazy(this);
+            return new RDFDataUnitIterationEager(this, connectionSource, faultTolerant);
         }
     }
 

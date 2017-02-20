@@ -1,20 +1,5 @@
 package cz.cuni.mff.xrg.odcs.backend.execution.dpu;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-import javax.persistence.EntityNotFoundException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
-
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.backend.context.ContextException;
 import cz.cuni.mff.xrg.odcs.backend.context.ContextFacade;
@@ -30,15 +15,29 @@ import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.module.ModuleException;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.ExecutedNode;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
 import eu.unifiedviews.dpu.DPU;
 import eu.unifiedviews.dpu.DPUException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+
+import javax.annotation.PostConstruct;
+import javax.persistence.EntityNotFoundException;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Execute a single {@link DPUInstanceRecord} from {@link PipelineExecution}.
  * Take care about calling appropriate {@link DPUPreExecutor}s and {@link DPUPostExecutor}.
  * The {@link DPUExecutor} must be bind to the given {@link PipelineExecution} and {@link DPUInstanceRecord} by calling
- * {@link #bind(Node, Map, PipelineExecution, Date)} method before use.
+ * {@link #bind(ExecutedNode, Map, PipelineExecution, Date)} method before use.
  * 
  * @author Petyr
  */
@@ -84,12 +83,12 @@ public final class DPUExecutor implements Runnable {
     /**
      * Node to execute.
      */
-    private Node node;
+    private ExecutedNode node;
 
     /**
      * Contexts.
      */
-    private Map<Node, Context> contexts;
+    private Map<ExecutedNode, Context> contexts;
 
     /**
      * Our pipeline execution.
@@ -136,8 +135,8 @@ public final class DPUExecutor implements Runnable {
      *            Time of last successful execution. Can be null.
      * @throws cz.cuni.mff.xrg.odcs.backend.context.ContextException
      */
-    public void bind(Node node,
-            Map<Node, Context> contexts,
+    public void bind(ExecutedNode node,
+            Map<ExecutedNode, Context> contexts,
             PipelineExecution execution,
             Date lastExecutionTime) throws ContextException {
         this.node = node;

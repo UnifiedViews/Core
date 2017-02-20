@@ -69,8 +69,8 @@ final class DataUnitManager {
      * @param dpuInstance
      * @param dataUnitFactory
      * @param context
-     * @param appConfig
-     * @return resourceManager
+     * @param resourceManager
+     * @return DataUnitManager
      */
     public static DataUnitManager createInputManager(DPUInstanceRecord dpuInstance,
             DataUnitFactory dataUnitFactory,
@@ -210,9 +210,11 @@ final class DataUnitManager {
     }
 
     /**
-     * Request creating a new DataUnit of given type. If the requested {@link DataUnit} can't be created from any reason the {@link DataUnitException} is
-     * thrown.
-     * The DataUnit's name can be further changed. If the {@link DataUnit} witch given name and type alredy exist then is returned.
+     * Requests creation of a new DataUnit of given type and with the given name
+     * If the requested {@link DataUnit} can't be created from any reason the {@link DataUnitException} is
+     * thrown. The DataUnit's name can be further changed.
+     *
+     * If the {@link DataUnit} with the given name and type already exists then it is returned.
      * 
      * @param type
      *            Type of DataUnit.
@@ -226,13 +228,13 @@ final class DataUnitManager {
         for (ManagableDataUnit du : dataUnits) {
             if ((du.getType() == type || du.getType() == type) &&
                     du.getName().compareTo(name) == 0) {
-                // the DPU already exist .. 
+                // the DU already exist ..
                 LOG.trace("dataUnit with name: {} type: {} already exist", name, type.toString());
                 return du;
             }
         }
         LOG.trace("new dataUnit with name: {} type: {} has been created", name, type.toString());
-        // gather information for new DataUnit
+        // gather information for new DataUnit, create record for that unit in relational database "exec_dataunit_info"
         Integer index;
         if (isInput) {
             index = context.createInput(dpuInstance, name, type);

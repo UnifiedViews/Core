@@ -1,14 +1,13 @@
 package cz.cuni.mff.xrg.odcs.backend.execution.dpu;
 
-import java.util.Map;
-
-import org.springframework.core.Ordered;
-
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.DPUExecutionState;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ProcessingUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.ExecutedNode;
+import org.springframework.core.Ordered;
+
+import java.util.Map;
 
 /**
  * Provide action that should be perform before every DPU execution. Must not
@@ -44,8 +43,8 @@ public interface DPUPreExecutor extends Ordered {
      *            False it the DPU will not be executed.
      * @return False if the pre-executor failed.
      */
-    public boolean preAction(Node node,
-            Map<Node, Context> contexts,
+    public boolean preAction(ExecutedNode node,
+            Map<ExecutedNode, Context> contexts,
             Object dpuInstance,
             PipelineExecution execution,
             ProcessingUnitInfo unitInfo,
