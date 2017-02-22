@@ -3,12 +3,9 @@ package eu.unifiedviews.commons.rdf.repository;
 import eu.unifiedviews.commons.dataunit.core.ConnectionSource;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.manager.RemoteRepositoryManager;
-import org.openrdf.repository.manager.RepositoryManager;
+import org.openrdf.repository.http.HTTPRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Collection;
 
 /**
  * Created by tomasknap on 09/01/17.
@@ -22,6 +19,8 @@ public class GraphDB implements ManagableRepository {
 
     public GraphDB(String url, String user, String password) throws RDFException {
 
+        log.info("Graph db is being initialized, url: {}", url);
+
 //        String port = url.substring(url.lastIndexOf(":")+1);
 //        int portNumber = Integer.valueOf(port);
 //        log.info("Port number: {}", portNumber);
@@ -31,24 +30,7 @@ public class GraphDB implements ManagableRepository {
 
 //        Repository repository = new StardogRepository(ConnectionConfiguration.to("uv").credentials(user, password));
 
-        // Instantiate a local repository manager and initialize it
-        RepositoryManager repositoryManager = new RemoteRepositoryManager(url);
-        try {
-            repositoryManager.initialize();
-
-            Collection<Repository> allRepositories = repositoryManager.getAllRepositories();
-
-            this.repository = repositoryManager.getRepository("uv");
-
-//            Repository repository = new HTTPRepository(url, "uv");
-
-        } catch (RepositoryException ex) {
-            throw new RDFException("Could not initialize repository", ex);
-        } catch (Exception e) {
-            log.error(e.getLocalizedMessage(),e);
-        }
-
-
+          this.repository = new HTTPRepository(url);
 
         try {
             repository.initialize();
