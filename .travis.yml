@@ -2,5 +2,5 @@
 
 language: java
 
-script: 
+install: 
   - mvn clean install -B -V
