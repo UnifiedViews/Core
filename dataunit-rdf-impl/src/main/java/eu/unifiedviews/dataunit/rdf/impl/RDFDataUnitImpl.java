@@ -217,7 +217,6 @@ class RDFDataUnitImpl extends AbstractWritableMetadataDataUnit implements Manage
 
                         // Delete graph with entries.
                         connection.clear(dataGraphToBeDeletedResource);
-                        //connection.prepareUpdate(QueryLanguage.SPARQL, "CLEAR SILENT GRAPH <" + dataGraphToBeDeleted.toString() + "> ").execute();
                     }
 
                 } catch (QueryEvaluationException ex) {

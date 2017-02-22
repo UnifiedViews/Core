@@ -286,7 +286,7 @@ public class Executor implements Runnable {
      * Run the execution.
      */
     private void execute() {
-        LOG.info("execute() start of # {}", this.execution.getId());
+        LOG.debug("execute() start of # {}", this.execution.getId());
         // get dependency graph
         DependencyGraph dependencyGraph = prepareDependencyGraph();
 
@@ -331,7 +331,7 @@ public class Executor implements Runnable {
                 break;
             }
 
-            LOG.info("Starting execution of dpu {} = {}", node.getDpuInstance()
+            LOG.debug("Starting execution of dpu {} = {}", node.getDpuInstance()
                     .getId(), node.getDpuInstance().getName());
 
             final String threadName = "dpu: " + node.getDpuInstance().getName();
