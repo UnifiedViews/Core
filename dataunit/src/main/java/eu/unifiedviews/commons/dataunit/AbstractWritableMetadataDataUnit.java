@@ -17,8 +17,6 @@ import org.openrdf.repository.RepositoryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -84,11 +82,6 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
     private final Set<RepositoryConnection> requestedConnections;
 
     /**
-     * Thread that creates this data unit.
-     */
-    private final Thread ownerThread;
-
-    /**
      * Used to generate new entry URIs.
      */
     final AtomicInteger entryCounter = new AtomicInteger(0);
@@ -120,7 +113,6 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
         this.readContexts = new HashSet<>();
         this.readContexts.add(this.writeContext);
         this.requestedConnections = new HashSet<>();
-        this.ownerThread = Thread.currentThread();
         this.coreServices = coreServices;
         // Load services.
         this.connectionSource = coreServices.getService(ConnectionSource.class);
@@ -131,18 +123,13 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
     // MetadataDataUnit interface
     @Override
     public RepositoryConnection getConnection() throws DataUnitException {
-        checkForMultithreadAccess();
 
         try {
             // Get connection.
             final RepositoryConnection connection = connectionSource.getConnection();
-            // And prepare the stack-trace.
-            final StringWriter stringWriter = new StringWriter();
-            final PrintWriter printWriter = new PrintWriter(stringWriter);
-            new Exception("Stack trace").printStackTrace(printWriter);
 
-            // TODO: In debug mode we should add this here to watch if the connection has been properly closed.
-            //requestedConnections.add(connection);
+            // To watch if the connection has been properly closed.
+            requestedConnections.add(connection);
 
             return connection;
         } catch (RepositoryException ex) {
@@ -165,7 +152,6 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
     //WritableMetadataDataUnit
     @Override
     public void addEntry(final String symbolicName) throws DataUnitException {
-        checkForMultithreadAccess();
 
         final URI entrySubject = creatEntitySubject();
         try {
@@ -195,32 +181,46 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
          * That is the reason why we cannot obtain connection using this.getConnection(), it would throw an
          * Exception. This connection has to be obtained directly from repository and we take care to close it
          * properly.
+         * No issues, getConnection() returns new connection
          */
+        RepositoryConnection connection = null;
+
         try {
-            faultTolerant.execute(new FaultTolerant.Code() {
+            connection = this.getConnection();
+            connection.begin();
 
-                @Override
-                public void execute(RepositoryConnection connection) throws RepositoryException, DataUnitException {
+            // Delete graph with entries.
+            connection.clear(writeContext);
+            // Delete records from Ontology.GRAPH_METADATA graph.
+            Update query;
+            try {
+                query = connection.prepareUpdate(QueryLanguage.SPARQL, CLEAR_QUERY);
+            } catch (MalformedQueryException ex) {
+                throw new DataUnitException(ex);
+            }
+            query.setBinding(WRITE_CONTEXT_BINDING, writeContext);
+            try {
+                query.execute();
+            } catch (UpdateExecutionException ex) {
+                throw new DataUnitException(ex);
+            }
+            connection.commit();
 
-                    // Delete graph with entries.
-                    connection.clear(writeContext);
-                    // Delete records from Ontology.GRAPH_METADATA graph.
-                    Update query;
-                    try {
-                        query = connection.prepareUpdate(QueryLanguage.SPARQL, CLEAR_QUERY);
-                    } catch (MalformedQueryException ex) {
-                        throw new DataUnitException(ex);
-                    }
-                    query.setBinding(WRITE_CONTEXT_BINDING, writeContext);
-                    try {
-                        query.execute();
-                    } catch (UpdateExecutionException ex) {
-                        throw new DataUnitException(ex);
-                    }
-                }
-            });
         } catch (RepositoryException ex) {
+            try {
+                connection.rollback();
+            } catch (RepositoryException e) {
+                throw new DataUnitException(e);
+            }
             throw new DataUnitException("Could not clear metadata.", ex);
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (RepositoryException ex) {
+                LOG.warn("Error when closing connection.", ex);
+            }
         }
     }
 
@@ -319,6 +319,9 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
                         Statement contextStatement = result.next();
                         readContexts.add(valueFactory.createURI(contextStatement.getObject().stringValue()));
                     }
+                    if (result != null) {
+                        result.close();
+                    }
                     // Get read context - this a little bit strange as we already use this context
                     // to read this data, but nothing bad should happen.
                     final Value writeContextValue = getSingleObject(connection,
@@ -383,15 +386,6 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
     }
 
     /**
-     * Check if current thread is different from {@link #ownerThread} and if yes then log info message.
-     */
-    protected void checkForMultithreadAccess() {
-        if (!ownerThread.equals(Thread.currentThread())) {
-            LOG.info("More than more thread is accessing this data unit, owner: {} current: {}", ownerThread.getName(), Thread.currentThread().getName());
-        }
-    }
-
-    /**
      * Close connection that were not closed by the data unit user.
      */
     private void closeOpenedConnection() {
@@ -401,6 +395,13 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
                 if (connection.isOpen()) {
                     count++;
                     //LOG.error("Connection: is not closed connection opened on:\n{}", requestedConnections.get(connection));
+                    try {
+                        connection.close();
+                        LOG.debug("Connection {} was closed automatically.", connection);
+                    } catch (RepositoryException ex1) {
+                        LOG.warn("Error when closing connection", ex1);
+                    }
+
                 }
             } catch (RepositoryException ex) {
                 try {
@@ -412,7 +413,7 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
         }
 
         if (count > 0) {
-            LOG.error("{} connections remained opened after DPU execution, dataUnitName '{}'.", count, this.getName());
+            LOG.info("{} connections remained opened after DPU execution, dataUnitName '{}'. They were closed automatically after the DPU's execution.", count, this.getName());
         }
     }
 
@@ -505,6 +506,9 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
                         "> for <" + subject.stringValue() + "> <" + predicate.stringValue() + "> ?o");
             }
             return object;
+        }
+        if (result != null) {
+            result.close();
         }
         throw new DataUnitException("No match in graph <" + graph.stringValue() +
                 "> for <" + subject.stringValue() + "> <" + predicate.stringValue() + "> ?o");
