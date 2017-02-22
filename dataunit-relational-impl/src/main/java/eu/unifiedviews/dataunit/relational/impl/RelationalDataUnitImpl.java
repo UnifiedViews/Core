@@ -1,14 +1,13 @@
 package eu.unifiedviews.dataunit.relational.impl;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
-
+import eu.unifiedviews.commons.dataunit.AbstractWritableMetadataDataUnit;
+import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
+import eu.unifiedviews.commons.dataunit.core.CoreServiceBus;
+import eu.unifiedviews.commons.dataunit.core.FaultTolerant;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.MetadataDataUnit;
+import eu.unifiedviews.dataunit.relational.RelationalDataUnit;
+import eu.unifiedviews.dataunit.relational.db.DataUnitDatabaseConnectionProvider;
 import org.openrdf.model.Literal;
 import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
@@ -22,14 +21,10 @@ import org.openrdf.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.unifiedviews.commons.dataunit.AbstractWritableMetadataDataUnit;
-import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
-import eu.unifiedviews.commons.dataunit.core.CoreServiceBus;
-import eu.unifiedviews.commons.dataunit.core.FaultTolerant;
-import eu.unifiedviews.dataunit.DataUnitException;
-import eu.unifiedviews.dataunit.MetadataDataUnit;
-import eu.unifiedviews.dataunit.relational.RelationalDataUnit;
-import eu.unifiedviews.dataunit.relational.db.DataUnitDatabaseConnectionProvider;
+import java.sql.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class RelationalDataUnitImpl extends AbstractWritableMetadataDataUnit implements ManageableWritableRelationalDataUnit {
 
@@ -65,7 +60,6 @@ public class RelationalDataUnitImpl extends AbstractWritableMetadataDataUnit imp
 
     @Override
     public void addExistingDatabaseTable(final String symbolicName, final String dbTableName) throws DataUnitException {
-        checkForMultithreadAccess();
         if (!checkTableExists(dbTableName)) {
             throw new DataUnitException("Database table " + dbTableName + " does not exist!");
         }
@@ -75,8 +69,7 @@ public class RelationalDataUnitImpl extends AbstractWritableMetadataDataUnit imp
 
     @Override
     public String addNewDatabaseTable(String symbolicName) throws DataUnitException {
-        checkForMultithreadAccess();
-        // to ensure that both table name and symbolic name are unique for the pipeline, we use the same 
+        // to ensure that both table name and symbolic name are unique for the pipeline, we use the same
         // string for table name and symbolic name which is checked against the database
         String tableName = generateTableName(symbolicName);
         String newSymbolicName = tableName;
@@ -141,7 +134,7 @@ public class RelationalDataUnitImpl extends AbstractWritableMetadataDataUnit imp
 
     @Override
     public void updateExistingTableName(String symbolicName, String newDbTableName) throws DataUnitException {
-        checkForMultithreadAccess();
+       // checkForMultithreadAccess();
 
         RepositoryConnection connection = null;
 
@@ -181,7 +174,7 @@ public class RelationalDataUnitImpl extends AbstractWritableMetadataDataUnit imp
 
     @Override
     public RelationalDataUnit.Iteration getIteration() throws DataUnitException {
-        checkForMultithreadAccess();
+       // checkForMultithreadAccess();
         if (this.connectionSource.isRetryOnFailure()) {
             return new RelationalDataUnitIterationEager(this, this.connectionSource, this.faultTolerant);
         } else {

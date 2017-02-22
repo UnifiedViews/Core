@@ -1,11 +1,12 @@
 package eu.unifiedviews.dataunit.files.impl;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
+import eu.unifiedviews.commons.dataunit.AbstractWritableMetadataDataUnit;
+import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
+import eu.unifiedviews.commons.dataunit.core.CoreServiceBus;
+import eu.unifiedviews.commons.dataunit.core.FaultTolerant;
+import eu.unifiedviews.dataunit.DataUnitException;
+import eu.unifiedviews.dataunit.MetadataDataUnit;
+import eu.unifiedviews.dataunit.files.FilesDataUnit;
 import org.apache.commons.io.FileUtils;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Statement;
@@ -22,13 +23,11 @@ import org.openrdf.repository.RepositoryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.unifiedviews.commons.dataunit.AbstractWritableMetadataDataUnit;
-import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
-import eu.unifiedviews.commons.dataunit.core.CoreServiceBus;
-import eu.unifiedviews.commons.dataunit.core.FaultTolerant;
-import eu.unifiedviews.dataunit.DataUnitException;
-import eu.unifiedviews.dataunit.MetadataDataUnit;
-import eu.unifiedviews.dataunit.files.FilesDataUnit;
+import java.io.File;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * Implementation of {@link ManageableWritableFilesDataUnit} on local repository with utilisation of
@@ -90,7 +89,6 @@ class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit implements M
     //FilesDataUnit interface
     @Override
     public FilesDataUnit.Iteration getIteration() throws DataUnitException {
-        checkForMultithreadAccess();
         if (connectionSource.isRetryOnFailure()) {
             // Is not safe.
             return new WritableFileIterationEager(this, connectionSource, faultTolerant);
@@ -108,7 +106,6 @@ class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit implements M
     //WritableFilesDataUnit interface
     @Override
     public void addExistingFile(final String symbolicName, final String existingFileURI) throws DataUnitException {
-        checkForMultithreadAccess();
         final File existingFile = new File(java.net.URI.create(existingFileURI));
         if (!existingFile.exists()) {
             throw new DataUnitException("File does not exist: " + existingFileURI + ". File must exists prior being added.");
@@ -173,8 +170,6 @@ class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit implements M
 
     @Override
     public void updateExistingFileURI(String symbolicName, String newFileURIString) throws DataUnitException {
-        checkForMultithreadAccess();
-
         RepositoryConnection connection = null;
         RepositoryResult<Statement> result = null;
         try {
