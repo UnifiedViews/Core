@@ -39,7 +39,7 @@ public class DependencyTest {
         // check correct order
         for (int i = 0; i < 5; i++) {
             assertTrue(iter.hasNext());
-            assertSame(nodes[i], iter.next());
+            assertSame(nodes[i], iter.next().getNode());
         }
 
         // no more nodes
@@ -80,11 +80,11 @@ public class DependencyTest {
 
         // fourth is always T2
         n = iter.next();
-        assertSame(nodes[2], n);
+        assertSame(nodes[2], n.getNode());
 
         // last is always L3
         n = iter.next();
-        assertSame(nodes[3], n);
+        assertSame(nodes[3], n.getNode());
 
         // no more nodes
         assertFalse(iter.hasNext());
@@ -111,7 +111,7 @@ public class DependencyTest {
 
         // first node is not in the circle
         assertTrue(iter.hasNext());
-        assertSame(nodes[0], iter.next());
+        assertSame(nodes[0], iter.next().getNode());
 
         // second node is in the circle
         // graph still says to have more nodes and so return true for hasNext,
@@ -136,7 +136,7 @@ public class DependencyTest {
         GraphIterator iter = dGraph.iterator();
 
         assertTrue(iter.hasNext());
-        assertEquals(nodes[0], iter.next());
+        assertEquals(nodes[0], iter.next().getNode());
 
         assertFalse(iter.hasNext());
         assertNull(iter.next());
@@ -170,7 +170,7 @@ public class DependencyTest {
 
         for (int i = 0; i < 4; i++) {
             assertTrue(iter.hasNext());
-            assertTrue(nodesToRun.contains(iter.next()));
+            assertTrue(nodesToRun.contains(iter.next().getNode()));
         }
 
         assertFalse(iter.hasNext());
