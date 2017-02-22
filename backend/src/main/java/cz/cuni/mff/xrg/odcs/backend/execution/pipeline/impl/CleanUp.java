@@ -4,9 +4,7 @@ import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.backend.context.ContextFacade;
 import cz.cuni.mff.xrg.odcs.backend.execution.pipeline.PostExecutor;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.relational.RelationalRepositoryManager;
-import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.DependencyGraph;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.ExecutedNode;
@@ -20,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.util.Map;
 
 /**
@@ -59,13 +56,14 @@ class CleanUp implements PostExecutor {
             DependencyGraph graph) {
         LOG.debug("CleanUp start .. ");
 
+        //Step 0: releases any initialized working relational databases (for RelationalDataUnits)
         try {
             this.relationalRepositoryManager.release(execution.getContext().getExecutionId());
         } catch (Exception e) {
             LOG.error("Failed to release relational repository", e);
         }
 
-        // first release contexts
+        // Step 1: Release/delete contexts - RDF metadata + also data graphs for RDF based stores
         for (Context item : contexts.values()) {
             if (execution.isDebugging()) {
                 // close the data unit
@@ -79,17 +77,15 @@ class CleanUp implements PostExecutor {
                 contextFacade.delete(item, true);
             }
         }
-        if (execution.isDebugging()) {
-//            rdfDataUnitFactory.release(execution.getContext().generatePipelineId());
 
+        // Step 2: Release RDF working repository
+        if (execution.isDebugging()) {
             try {
                 repositoryManager.release(execution.getContext().getExecutionId());
             } catch (RDFException ex) {
                 LOG.error("Can't release repository.", ex);
             }
         } else {
-//            rdfDataUnitFactory.clean(execution.getContext().generatePipelineId());
-
             try {
                 repositoryManager.delete(execution.getContext().getExecutionId());
             } catch (RDFException ex) {
@@ -97,13 +93,7 @@ class CleanUp implements PostExecutor {
             }
         }
 
-        // prepare execution root
-        File rootDir = new File(
-                appConfig.getString(ConfigProperty.GENERAL_WORKINGDIR));
-
-        // get access to the infromation in execution context
-        ExecutionInfo info = new ExecutionInfo(execution.getContext());
-
+        // Step 3: Delete working directory - the execution dir is removed only when run in non-debug mode
         if (!execution.isDebugging()) {
             // delete working directory the sub directories should be already deleted by DPU's.
             try {

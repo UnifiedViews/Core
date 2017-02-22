@@ -36,7 +36,7 @@ public class RepositoryFactory {
      * @param executionId
      * @param type
      * @param directory DataUnit's directory.
-     * @return
+     * @return Repository created
      * @throws RDFException
      */
     public ManagableRepository create(Long executionId, ManagableRepository.Type type, String directory) throws RDFException {

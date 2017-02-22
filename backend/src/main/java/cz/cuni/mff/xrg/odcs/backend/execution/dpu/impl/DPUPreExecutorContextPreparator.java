@@ -70,7 +70,7 @@ class DPUPreExecutorContextPreparator extends DPUPreExecutorBase {
         // data .. we solve this in contextFacade.merge
         // which take care about this
 
-        // check all edges which have this not as the target node
+        // check all edges which have this node as the target node
         for (ExecutedEdge edge : node.getIncomingEdges()) {
             //iterate over all edges which has as target the examined node
 
