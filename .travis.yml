@@ -1,3 +1,6 @@
 ## UnifiedViews Core travis build file
 
 language: java
+
+script: 
+  - mvn clean install -B -V
