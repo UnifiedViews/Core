@@ -3,6 +3,7 @@ package eu.unifiedviews.commons.dataunit.core;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
+import eu.unifiedviews.commons.rdf.repository.ManagableRepository;
 
 /**
  * Provides access to connections into working rdf repository.
@@ -29,5 +30,11 @@ public interface ConnectionSource {
      * @return Value factory for working repository.
      */
     ValueFactory getValueFactory();
+
+    /**
+     * To get the type of the RDF working repository - e.g. localRDF, graphdb, ..
+     * @return Type of repository - e.g. localRDF or graphdb
+     */
+    ManagableRepository.Type getRepositoryType();
 
 }

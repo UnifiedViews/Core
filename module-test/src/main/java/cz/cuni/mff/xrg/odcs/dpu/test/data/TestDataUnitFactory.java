@@ -18,6 +18,7 @@ import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
 import eu.unifiedviews.commons.dataunit.core.ConnectionSource;
 import eu.unifiedviews.commons.dataunit.core.CoreServiceBus;
 import eu.unifiedviews.commons.dataunit.core.FaultTolerant;
+import eu.unifiedviews.commons.rdf.repository.ManagableRepository;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.impl.FilesDataUnitFactory;
 import eu.unifiedviews.dataunit.files.impl.ManageableWritableFilesDataUnit;
@@ -226,6 +227,11 @@ public class TestDataUnitFactory {
             @Override
             public ValueFactory getValueFactory() {
                 return repository.getValueFactory();
+            }
+
+            @Override
+            public ManagableRepository.Type getRepositoryType() {
+                return ManagableRepository.Type.LOCAL_RDF;
             }
 
         };

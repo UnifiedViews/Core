@@ -74,7 +74,7 @@ class RemoteRDF implements ManagableRepository{
 
     @Override
     public ConnectionSource getConnectionSource() {
-        return new ConnectionSourceImpl(repository, false);
+        return new ConnectionSourceImpl(repository, false, Type.REMOTE_RDF);
     }
 
     @Override
@@ -112,6 +112,11 @@ class RemoteRDF implements ManagableRepository{
         } catch (RepositoryConfigException | RepositoryException ex) {
             throw new RDFException("Can't get repository provider.", ex);
         }
+    }
+
+    @Override
+    public Type getRepositoryType() {
+        return Type.REMOTE_RDF;
     }
 
 }

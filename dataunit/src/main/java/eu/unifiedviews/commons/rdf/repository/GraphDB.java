@@ -58,22 +58,22 @@ public class GraphDB implements ManagableRepository {
     }
 
     @Override
+    public Type getRepositoryType() {
+        return Type.GRAPHDB;
+    }
+
+    @Override
     public ConnectionSource getConnectionSource() {
-        return new ConnectionSourceImpl(repository, false);
+        return new ConnectionSourceImpl(repository, false, Type.GRAPHDB);
     }
 
     @Override
     public void release() throws RDFException {
-        try {
-            repository.shutDown();
-    } catch (RepositoryException ex) {
-         throw new RDFException("Can't shutDown repository.", ex);
-    }
-
+        //do nothing as the repo is not being shutDown at the end of single pipeline exec
     }
 
     @Override
     public void delete() throws RDFException {
-        // Do nothing here.
+        //graphs for the execution already deleted in CleanUp, as part of context cleansing
     }
 }

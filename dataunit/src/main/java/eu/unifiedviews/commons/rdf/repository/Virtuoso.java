@@ -1,39 +1,19 @@
 package eu.unifiedviews.commons.rdf.repository;
 
+import eu.unifiedviews.commons.dataunit.core.ConnectionSource;
+import info.aduna.iteration.Iteration;
+import org.openrdf.IsolationLevel;
+import org.openrdf.model.*;
+import org.openrdf.query.*;
+import org.openrdf.repository.*;
+import org.openrdf.rio.*;
+import virtuoso.sesame2.driver.VirtuosoRepository;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.URL;
-
-import org.openrdf.IsolationLevel;
-import org.openrdf.model.Namespace;
-import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
-import org.openrdf.model.Value;
-import org.openrdf.model.ValueFactory;
-import org.openrdf.query.BooleanQuery;
-import org.openrdf.query.GraphQuery;
-import org.openrdf.query.MalformedQueryException;
-import org.openrdf.query.Query;
-import org.openrdf.query.QueryLanguage;
-import org.openrdf.query.TupleQuery;
-import org.openrdf.query.Update;
-import org.openrdf.repository.Repository;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.RepositoryResult;
-import org.openrdf.repository.UnknownTransactionStateException;
-import org.openrdf.rio.ParserConfig;
-import org.openrdf.rio.RDFFormat;
-import org.openrdf.rio.RDFHandler;
-import org.openrdf.rio.RDFHandlerException;
-import org.openrdf.rio.RDFParseException;
-
-import eu.unifiedviews.commons.dataunit.core.ConnectionSource;
-import info.aduna.iteration.Iteration;
-import virtuoso.sesame2.driver.VirtuosoRepository;
 
 /**
  *
@@ -321,7 +301,7 @@ class Virtuoso implements ManagableRepository {
     private class ConnectionSourceWrap extends ConnectionSourceImpl {
 
         public ConnectionSourceWrap(Repository repository) {
-            super(repository, true);
+            super(repository, true, Type.VIRTUOSO);
         }
 
         @Override
@@ -356,6 +336,11 @@ class Virtuoso implements ManagableRepository {
     @Override
     public void delete() throws RDFException {
         // Do nothing here.
+    }
+
+    @Override
+    public Type getRepositoryType() {
+        return Type.VIRTUOSO;
     }
 
 }

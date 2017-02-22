@@ -1,6 +1,7 @@
 package eu.unifiedviews.commons.rdf.repository;
 
-import java.io.File;
+import eu.unifiedviews.commons.dataunit.core.ConnectionSource;
+import eu.unifiedviews.dataunit.DataUnitException;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.config.RepositoryConfig;
@@ -10,8 +11,7 @@ import org.openrdf.repository.manager.RepositoryProvider;
 import org.openrdf.repository.sail.config.SailRepositoryConfig;
 import org.openrdf.sail.memory.config.MemoryStoreConfig;
 
-import eu.unifiedviews.commons.dataunit.core.ConnectionSource;
-import eu.unifiedviews.dataunit.DataUnitException;
+import java.io.File;
 
 /**
  * 
@@ -53,7 +53,7 @@ class InMemoryRDF implements ManagableRepository {
 
     @Override
     public ConnectionSource getConnectionSource() {
-        return new ConnectionSourceImpl(repository, false);
+        return new ConnectionSourceImpl(repository, false, Type.INMEMORY_RDF);
     }
 
     @Override
@@ -64,6 +64,11 @@ class InMemoryRDF implements ManagableRepository {
     @Override
     public void delete() throws RDFException {
         // Do nothing here.
+    }
+
+    @Override
+    public Type getRepositoryType() {
+        return Type.INMEMORY_RDF;
     }
 
 }
