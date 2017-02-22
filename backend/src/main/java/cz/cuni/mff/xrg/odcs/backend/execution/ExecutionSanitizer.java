@@ -1,17 +1,5 @@
 package cz.cuni.mff.xrg.odcs.backend.execution;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
-
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineRestart;
 import cz.cuni.mff.xrg.odcs.backend.pipeline.event.PipelineSanitized;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
@@ -30,6 +18,17 @@ import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
 import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 import eu.unifiedviews.commons.rdf.repository.RDFException;
 import eu.unifiedviews.dataunit.DataUnitException;
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Delete context of given execution that has been interrupted by backend
@@ -72,7 +71,7 @@ class ExecutionSanitizer {
                 sanitizeCancellingRunning(execution);
                 return;
             case RUNNING:
-                boolean restartRunning = true;
+                boolean restartRunning = false;
                 try {
                     restartRunning = this.appConfig.getBoolean(ConfigProperty.BACKEND_STARTUP_RESTART_RUNNING);
                 } catch (MissingConfigPropertyException ignore) {
