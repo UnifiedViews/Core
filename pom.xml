@@ -17,8 +17,8 @@
 	<description />
 
 	<properties>
-		<project.java.source.version>1.7</project.java.source.version>
-		<project.java.target.version>1.7</project.java.target.version>
+		<project.java.source.version>1.8</project.java.source.version>
+		<project.java.target.version>1.8</project.java.target.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
@@ -342,6 +342,13 @@
 				</plugins>
 			</build>
 		</profile>
+		<!-- Profile for compilation with Java 7. -->
+       	 	<profile>
+            		<id>java7</id>
+			<properties>
+                		<project.java.target.version>1.7</project.java.target.version>
+            		</properties>
+        	</profile>
 		<!-- profile to enable integration (system) tests -->
 		<profile>
 			<id>SYSTESTS</id>
