@@ -88,6 +88,7 @@ class ContextMerger {
             ManagableDataUnit source = iterSource.next();
             String sourceDataUnitName = source.getName();
             String expectedTargetDataUnitName;
+
             // STEP 1: Get the mapping command from the EDGE (e.g. that "output123" is mapped to "input123"
             String cmd = this.findRule(sourceDataUnitName, instruction);
             if (cmd.isEmpty()) {

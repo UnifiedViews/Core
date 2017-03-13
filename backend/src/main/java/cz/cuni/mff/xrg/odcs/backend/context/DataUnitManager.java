@@ -37,7 +37,7 @@ final class DataUnitManager {
     private final List<ManagableDataUnit> dataUnits;
 
     /**
-     * Mapping from {@link outputs} to indexes.
+     * Mapping from data units to indexes.
      */
     private final Map<ManagableDataUnit, Integer> indexes;
 
