@@ -11,13 +11,13 @@ import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.ManagableRdfDataUnit;
 import cz.cuni.mff.xrg.odcs.commons.app.dataunit.rdf.localrdf.LocalRDFDataUnit;
 import org.junit.Before;
 import org.junit.Test;
-import org.openrdf.model.Resource;
-import org.openrdf.model.URI;
-import org.openrdf.model.Value;
-import org.openrdf.model.ValueFactory;
-import org.openrdf.query.impl.DatasetImpl;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.query.impl.DatasetImpl;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,8 +94,8 @@ public class RepositoryFrontendHelperSysTest {
 
         RepositoryConnection connection = rdfRepo.getConnection();
         ValueFactory factory = connection.getValueFactory();
-        Resource subject = factory.createURI(namespace + subjectName);
-        URI predicate = factory.createURI(namespace + predicateName);
+        Resource subject = factory.createIRI(namespace + subjectName);
+        IRI predicate = factory.createIRI(namespace + predicateName);
         Value object = factory.createLiteral(objectName);
 
         String updateQuery = "DELETE { ?who ?what 'Dalas_Stars' }"
@@ -133,7 +133,7 @@ public class RepositoryFrontendHelperSysTest {
 
     private void BigTransformQuery1() throws RepositoryException {
 
-        // Dotaz nahrazuje vsechny objekty jejich spravnymi URI
+        // Dotaz nahrazuje vsechny objekty jejich spravnymi IRI
 
         String updateQuery = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
                 + "PREFIX dcterms: <http://purl.org/dc/terms/> "
@@ -166,7 +166,7 @@ public class RepositoryFrontendHelperSysTest {
 
     private void BigTransformQuery2() throws RepositoryException {
 
-        // Dotaz nahrazuje vsechny subjekty jejich spravnymi URI
+        // Dotaz nahrazuje vsechny subjekty jejich spravnymi IRI
 
         String updateQuery = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
                 + "PREFIX dcterms: <http://purl.org/dc/terms/> "

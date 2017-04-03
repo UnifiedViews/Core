@@ -1,8 +1,8 @@
 package eu.unifiedviews.commons.dataunit.core;
 
-import org.openrdf.model.ValueFactory;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryException;
 import eu.unifiedviews.commons.rdf.repository.ManagableRepository;
 
 /**

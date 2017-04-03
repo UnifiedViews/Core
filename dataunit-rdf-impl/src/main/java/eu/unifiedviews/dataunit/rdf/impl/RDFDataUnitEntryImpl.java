@@ -1,6 +1,6 @@
 package eu.unifiedviews.dataunit.rdf.impl;
 
-import org.openrdf.model.URI;
+import org.eclipse.rdf4j.model.IRI;
 
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
@@ -14,9 +14,9 @@ public class RDFDataUnitEntryImpl implements RDFDataUnit.Entry {
     
     private final String symbolicName;
 
-    private final URI dataGraphURI;
+    private final IRI dataGraphURI;
 
-    public RDFDataUnitEntryImpl(String symbolicName, URI dataGraphURI) {
+    public RDFDataUnitEntryImpl(String symbolicName, IRI dataGraphURI) {
         this.symbolicName = symbolicName;
         this.dataGraphURI = dataGraphURI;
     }
@@ -27,7 +27,7 @@ public class RDFDataUnitEntryImpl implements RDFDataUnit.Entry {
     }
 
     @Override
-    public URI getDataGraphURI() throws DataUnitException {
+    public IRI getDataGraphURI() throws DataUnitException {
         return dataGraphURI;
     }
     

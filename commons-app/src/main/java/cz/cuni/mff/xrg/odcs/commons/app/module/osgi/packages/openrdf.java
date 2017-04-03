@@ -3,10 +3,10 @@ package cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages;
 /**
  * Contains list of org.openrdf packages that will be exported from frontend and
  * backend.
- * 
- * @author Petyr
- * @author Jiri Tomes
+ *
+ * Provided for compatibility reasons, so that UV DPUs 2.X can be used.
  */
+@Deprecated
 public final class openrdf {
 
     /**

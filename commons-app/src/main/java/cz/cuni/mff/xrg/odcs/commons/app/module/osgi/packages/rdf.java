@@ -1,7 +1,7 @@
 package cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages;
 
 /**
- * Packages for RDF, without sesame.
+ * Packages for RDF, without rdf4j.
  * 
  * @author Petyr
  */
