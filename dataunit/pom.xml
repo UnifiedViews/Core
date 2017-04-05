@@ -3,11 +3,11 @@
 	<parent>
 		<groupId>eu.unifiedviews</groupId>
 		<artifactId>uv-core</artifactId>
-		<version>2.3.3-SNAPSHOT</version>
+		<version>3.0.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>dataunit</artifactId>
-	<version>2.3.3-SNAPSHOT</version>
+	<version>3.0.0-SNAPSHOT</version>
         <description>Base project for new DataUnit's implementations.</description>
 	<packaging>jar</packaging>	
 
@@ -278,6 +278,7 @@
 		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-model</artifactId>
+			<version>${sesame.version}</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>
@@ -349,6 +350,7 @@
 		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-repository-api</artifactId>
+			<version>${sesame.version}</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>

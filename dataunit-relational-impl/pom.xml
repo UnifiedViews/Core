@@ -3,13 +3,13 @@
 	<parent>
 		<artifactId>uv-core</artifactId>
 		<groupId>eu.unifiedviews</groupId>
-		<version>2.3.3-SNAPSHOT</version>
+		<version>3.0.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<groupId>eu.unifiedviews</groupId>
 	<artifactId>dataunit-relational-impl</artifactId>
-        <version>2.3.3-SNAPSHOT</version>
+        <version>3.0.0-SNAPSHOT</version>
 	<name>dataunit-relational-impl</name>
 
 	<dependencies>
