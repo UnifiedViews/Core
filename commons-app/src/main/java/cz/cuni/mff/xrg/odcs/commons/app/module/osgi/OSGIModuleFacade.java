@@ -570,7 +570,7 @@ class OSGIModuleFacade implements ModuleFacade {
         try {
             bundle = context.installBundle(uri);
         } catch (org.osgi.framework.BundleException e) {
-            LOG.error("Failed to load libary from: {}", uri, e);
+            LOG.error("Failed to load library from: {}", uri, e);
             return null;
         }
 
