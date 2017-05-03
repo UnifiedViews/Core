@@ -94,7 +94,7 @@ public class AppEntry extends com.vaadin.ui.UI {
                         okCaption,
                         cancelCaption, notOkCaption);
                 d.setCloseShortcut(KeyCode.ESCAPE);
-                LOG.info("Dialog info: w:{} {} h:{} {} cap:{}", d.getWidth(),
+                LOG.debug("Dialog info: w:{} {} h:{} {} cap:{}", d.getWidth(),
                         d.getWidthUnits(), d.getHeight(), d.getHeightUnits(),
                         caption != null ? caption.length() : 0);
 

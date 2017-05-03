@@ -93,15 +93,15 @@ public class ODCSApplicationServlet extends SpringVaadinServlet {
         // Do the business.
         Date start = new Date();
         int serviceId = serviceCounter++;
-        LOG.info("Request ({}) received", serviceId);
+        LOG.debug("Request ({}) received", serviceId);
 
         super.service(request, response);
 
         Date end = new Date();
         if (end.getTime() - start.getTime() > 1000) {
-            LOG.warn("Request ({}) finished processing in: {} ms - LONG RESPONSE", serviceId, end.getTime() - start.getTime());
+            LOG.warn("Request ({}) finished processing in: {} ms - LONG RESPONSE", request.getRequestURI(), end.getTime() - start.getTime());
         } else {
-            LOG.info("Request ({}) finished processing in: {} ms", serviceId, end.getTime() - start.getTime());
+            LOG.debug("Request ({}) finished processing in: {} ms", serviceId, end.getTime() - start.getTime());
         }
         if (LOG.isDebugEnabled()) {
             LOG.debug("Request ({}) URI", request.getRequestURI());
