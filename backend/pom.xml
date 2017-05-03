@@ -97,45 +97,42 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.4</version>
+                <version>3.0.2</version>
                 <configuration>
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <mainClass>cz.cuni.mff.xrg.odcs.backend.AppEntry</mainClass>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <classpathLayoutType>custom</classpathLayoutType>
-                            <customClasspathLayout>$${artifact.artifactId}-$${artifact.version}$${dashClassifier?}-$${artifact.extension}/</customClasspathLayout>
+                            <!-- so that manifest does not contain e.g. commons-app-3.0.0-20170503.092434-10.jar but rather commons-app-3.0.0-SNAPSHOT -->
+                            <useUniqueVersions>false</useUniqueVersions>
+                </manifest>
+            </archive>
+        </configuration>
+    </plugin>
 
-                        </manifest>
-                    </archive>
-                </configuration>
+    <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.0.0</version>
+        <executions>
+            <execution>
+                <id>copy-dependencies</id>
+                <phase>package</phase>
+                <goals>
+                    <goal>copy-dependencies</goal>
+                </goals>
+                <configuration>
+                    <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                    <!-- the two lines below tell Maven not to include
+                        test scoped dependencies -->
+                            <includeScope>runtime</includeScope>
+                            <excludeScope>provided</excludeScope>
+                            <excludes>**\/*.SF,**\/*.DSA,**\/*.RSA</excludes>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
-
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <version>2.9</version>
-            <executions>
-                <execution>
-                    <!-- Dependencies are not just copied, but also unpacked - this is a workaround to solve the eclipselink lazy loading issue, see https://github.com/UnifiedViews/Core/pull/555: 
-                     the eclipselink core packages are signed which causes the backend to fail on start because on backend packaging it copies all the dependencies which somehow messes up the signatures. 
-                     The solution proposed in the web is to  filter the *.SF and *.RSA files from META-INF to remove the signature information when preparing the jar -->
-                    <id>unpack-dependencies</id>
-                    <phase>package</phase>
-                    <goals>
-                        <goal>unpack-dependencies</goal>
-                    </goals>
-                    <configuration>
-                        <excludes>**\/*.SF,**\/*.DSA,**\/*.RSA</excludes>
-                        <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                        <includeScope>runtime</includeScope>
-                        <excludeScope>provided</excludeScope>
-                        <useSubDirectoryPerArtifact>true</useSubDirectoryPerArtifact>
-                    </configuration>
-                </execution>
-            </executions>
-        </plugin>
 
         </plugins>
 
