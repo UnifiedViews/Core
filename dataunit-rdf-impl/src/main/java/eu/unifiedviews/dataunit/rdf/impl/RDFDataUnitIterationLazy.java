@@ -2,12 +2,12 @@ package eu.unifiedviews.dataunit.rdf.impl;
 
 import java.util.NoSuchElementException;
 
-import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
-import org.openrdf.model.impl.URIImpl;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.RepositoryResult;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.RepositoryResult;
 
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.MetadataDataUnit;
@@ -41,7 +41,7 @@ class RDFDataUnitIterationLazy implements RDFDataUnit.Iteration {
         RepositoryResult<Statement> result2 = null;
         try {
             Statement statement = result.next();
-            result2 = connection2.getStatements(statement.getSubject(), connection.getValueFactory().createURI(RDFDataUnit.PREDICATE_DATAGRAPH_URI), null, false, backingStore.getMetadataGraphnames().toArray(new URI[0]));
+            result2 = connection2.getStatements(statement.getSubject(), connection.getValueFactory().createIRI(RDFDataUnit.PREDICATE_DATAGRAPH_URI), null, false, backingStore.getMetadataGraphnames().toArray(new IRI[0]));
             Statement rdfDataGraphURIStatement = result2.next();
             return new RDFDataUnitEntryImpl(statement.getObject().stringValue(), new URIImpl(rdfDataGraphURIStatement.getObject().stringValue()));
         } catch (RepositoryException ex) {
@@ -105,7 +105,7 @@ class RDFDataUnitIterationLazy implements RDFDataUnit.Iteration {
                 connection2 = backingStore.getConnection();
             }
             try {
-                result = connection.getStatements(null, connection.getValueFactory().createURI(MetadataDataUnit.PREDICATE_SYMBOLIC_NAME), null, false, backingStore.getMetadataGraphnames().toArray(new URI[0]));
+                result = connection.getStatements(null, connection.getValueFactory().createIRI(MetadataDataUnit.PREDICATE_SYMBOLIC_NAME), null, false, backingStore.getMetadataGraphnames().toArray(new IRI[0]));
             } catch (RepositoryException ex) {
                 throw new DataUnitException(Messages.getString("RDFDataUnitIterationLazy.obtaining.entryList.error"), ex);
             }

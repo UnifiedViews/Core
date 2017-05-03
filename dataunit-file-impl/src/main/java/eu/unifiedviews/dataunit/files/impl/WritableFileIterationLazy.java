@@ -2,11 +2,11 @@ package eu.unifiedviews.dataunit.files.impl;
 
 import java.util.NoSuchElementException;
 
-import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.RepositoryResult;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.RepositoryResult;
 
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.MetadataDataUnit;
@@ -40,8 +40,8 @@ class WritableFileIterationLazy implements FilesDataUnit.Iteration {
         try {
             Statement statement = result.next();
             result2 = connection2.getStatements(statement.getSubject(),
-                    connection.getValueFactory().createURI(FilesDataUnit.PREDICATE_FILE_URI),
-                    null, false, backingStore.getMetadataGraphnames().toArray(new URI[0]));
+                    connection.getValueFactory().createIRI(FilesDataUnit.PREDICATE_FILE_URI),
+                    null, false, backingStore.getMetadataGraphnames().toArray(new IRI[0]));
             Statement filesytemURIStatement = result2.next();
             return new FilesDataUnitEntryImpl(statement.getObject().stringValue(), filesytemURIStatement.getObject().stringValue());
         } catch (RepositoryException ex) {
@@ -105,7 +105,7 @@ class WritableFileIterationLazy implements FilesDataUnit.Iteration {
                 connection2 = backingStore.getConnection();
             }
             try {
-                result = connection.getStatements(null, connection.getValueFactory().createURI(FilesDataUnit.PREDICATE_SYMBOLIC_NAME), null, false, backingStore.getMetadataGraphnames().toArray(new URI[0]));
+                result = connection.getStatements(null, connection.getValueFactory().createIRI(FilesDataUnit.PREDICATE_SYMBOLIC_NAME), null, false, backingStore.getMetadataGraphnames().toArray(new IRI[0]));
             } catch (RepositoryException ex) {
                 throw new DataUnitException("Error obtaining file list.", ex);
             }

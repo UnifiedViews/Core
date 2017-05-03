@@ -2,11 +2,11 @@ package eu.unifiedviews.dataunit.relational.impl;
 
 import java.util.NoSuchElementException;
 
-import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.RepositoryResult;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.RepositoryResult;
 
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.MetadataDataUnit;
@@ -39,7 +39,7 @@ public class RelationalDataUnitIterationLazy implements RelationalDataUnit.Itera
                 this.connection2 = this.backingStore.getConnection();
             }
             try {
-                this.result = this.connection.getStatements(null, this.connection.getValueFactory().createURI(RelationalDataUnit.PREDICATE_SYMBOLIC_NAME), null, false, this.backingStore.getMetadataGraphnames().toArray(new URI[0]));
+                this.result = this.connection.getStatements(null, this.connection.getValueFactory().createIRI(RelationalDataUnit.PREDICATE_SYMBOLIC_NAME), null, false, this.backingStore.getMetadataGraphnames().toArray(new IRI[0]));
             } catch (RepositoryException e) {
                 throw new DataUnitException("Error obtaining file list.", e);
             }
@@ -91,8 +91,8 @@ public class RelationalDataUnitIterationLazy implements RelationalDataUnit.Itera
         try {
             Statement statement = this.result.next();
             result2 = this.connection2.getStatements(statement.getSubject(),
-                    this.connection.getValueFactory().createURI(RelationalDataUnit.PREDICATE_DB_TABLE_NAME),
-                    null, false, this.backingStore.getMetadataGraphnames().toArray(new URI[0]));
+                    this.connection.getValueFactory().createIRI(RelationalDataUnit.PREDICATE_DB_TABLE_NAME),
+                    null, false, this.backingStore.getMetadataGraphnames().toArray(new IRI[0]));
             Statement tableNameStatement = result2.next();
             return new RelationalDataUnitEntryImpl(statement.getObject().stringValue(), tableNameStatement.getObject().stringValue());
         } catch (RepositoryException e) {

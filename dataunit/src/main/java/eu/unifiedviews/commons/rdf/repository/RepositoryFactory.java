@@ -1,7 +1,7 @@
 package eu.unifiedviews.commons.rdf.repository;
 
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,8 +53,9 @@ public class RepositoryFactory {
                 repository = new RemoteRDF(uri, user, password, executionId);
                 break;
             case VIRTUOSO:
-                repository = new Virtuoso(uri, user, password);
-                break;
+                throw new RDFException("Virtuoso repository type not supported: " + type.toString());
+                //repository = new Virtuoso(uri, user, password);
+                //break;
             case GRAPHDB:
                 repository = new GraphDB(uri, user, password);
                 break;

@@ -10,10 +10,10 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.openrdf.model.URI;
-import org.openrdf.model.ValueFactory;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryException;
 
 import eu.unifiedviews.commons.dataunit.core.ConnectionSource;
 import eu.unifiedviews.commons.dataunit.core.CoreServiceBus;
@@ -81,7 +81,7 @@ public class WritableMetadataDataUnitImplTest {
             return false;
         }
 
-        public void addReadContext(URI uri) {
+        public void addReadContext(IRI uri) {
             readContexts.add(uri);
         }
 
@@ -125,7 +125,7 @@ public class WritableMetadataDataUnitImplTest {
         ValueFactory valueFactory = repository.getConnectionSource().getValueFactory();
         // Prepare data.
         String writeContextString = "http://unifiedviews.eu/test/write";
-        URI readUri = valueFactory.createURI("http://unifiedviews.eu/test/read");
+        IRI readUri = valueFactory.createIRI("http://unifiedviews.eu/test/read");
         // Create writable MedataDataUnit and put some data in.
         TestWritableMetadataDataUnit dataUnit = new TestWritableMetadataDataUnit("test", writeContextString, repository.getConnectionSource());
         dataUnit.addEntry("New entry");
@@ -147,7 +147,7 @@ public class WritableMetadataDataUnitImplTest {
         ValueFactory valueFactory = repository.getConnectionSource().getValueFactory();
         // Prepare data.
         String writeContextString = "http://unifiedviews.eu/test/write";
-        URI readUri = valueFactory.createURI("http://unifiedviews.eu/test/read");
+        IRI readUri = valueFactory.createIRI("http://unifiedviews.eu/test/read");
         // Create writable MedataDataUnit and put some data in.
         TestWritableMetadataDataUnit dataUnit = new TestWritableMetadataDataUnit("test", writeContextString, repository.getConnectionSource());
         dataUnit.addEntry("New entry");

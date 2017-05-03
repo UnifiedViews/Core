@@ -8,16 +8,16 @@ import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.MetadataDataUnit;
 import eu.unifiedviews.dataunit.relational.RelationalDataUnit;
 import eu.unifiedviews.dataunit.relational.db.DataUnitDatabaseConnectionProvider;
-import org.openrdf.model.Literal;
-import org.openrdf.model.URI;
-import org.openrdf.model.ValueFactory;
-import org.openrdf.query.MalformedQueryException;
-import org.openrdf.query.QueryLanguage;
-import org.openrdf.query.Update;
-import org.openrdf.query.UpdateExecutionException;
-import org.openrdf.query.impl.DatasetImpl;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
+import org.eclipse.rdf4j.model.Literal;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.query.MalformedQueryException;
+import org.eclipse.rdf4j.query.QueryLanguage;
+import org.eclipse.rdf4j.query.Update;
+import org.eclipse.rdf4j.query.UpdateExecutionException;
+import org.eclipse.rdf4j.query.impl.DatasetImpl;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,7 +81,7 @@ public class RelationalDataUnitImpl extends AbstractWritableMetadataDataUnit imp
     }
 
     private void saveTableInRepository(final String symbolicName, final String dbTableName) throws DataUnitException {
-        final URI entrySubject = this.creatEntitySubject();
+        final IRI entrySubject = this.creatEntitySubject();
         try {
             this.faultTolerant.execute(new FaultTolerant.Code() {
 
@@ -91,7 +91,7 @@ public class RelationalDataUnitImpl extends AbstractWritableMetadataDataUnit imp
                     final ValueFactory valueFactory = connection.getValueFactory();
                     connection.add(
                             entrySubject,
-                            valueFactory.createURI(RelationalDataUnitImpl.PREDICATE_DB_TABLE_NAME),
+                            valueFactory.createIRI(RelationalDataUnitImpl.PREDICATE_DB_TABLE_NAME),
                             valueFactory.createLiteral(dbTableName),
                             getMetadataWriteGraphname()
                             );

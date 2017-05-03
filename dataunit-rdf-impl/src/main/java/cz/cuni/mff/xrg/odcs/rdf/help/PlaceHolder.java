@@ -32,7 +32,7 @@ public class PlaceHolder {
      * Set Graph mapping to DPU.
      * 
      * @param graphName
-     *            URI representation of graph for DPU defined by DPU name.
+     *            IRI representation of graph for DPU defined by DPU name.
      */
     public void setGraphName(String graphName) {
         this.graphName = graphName;
@@ -51,7 +51,7 @@ public class PlaceHolder {
      * Returns name of graph for DPU. If graph has not been set, the
      * tempGraphName is returned.
      * 
-     * @return String value of URI representation of graph set for this DPU
+     * @return String value of IRI representation of graph set for this DPU
      *         name.
      */
     public String getGraphName() {

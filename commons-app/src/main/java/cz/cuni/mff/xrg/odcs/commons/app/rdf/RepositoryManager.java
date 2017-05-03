@@ -5,7 +5,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
 import eu.unifiedviews.commons.rdf.repository.ManagableRepository;
 import eu.unifiedviews.commons.rdf.repository.RDFException;
 import eu.unifiedviews.commons.rdf.repository.RepositoryFactory;
-import org.openrdf.repository.Repository;
+import org.eclipse.rdf4j.repository.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

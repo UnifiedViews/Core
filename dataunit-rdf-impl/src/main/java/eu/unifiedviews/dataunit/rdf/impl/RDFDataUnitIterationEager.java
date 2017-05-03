@@ -7,11 +7,11 @@ import eu.unifiedviews.dataunit.MetadataDataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit.Entry;
 import eu.unifiedviews.dataunit.rdf.impl.i18n.Messages;
-import org.openrdf.model.URI;
-import org.openrdf.model.impl.URIImpl;
-import org.openrdf.query.*;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.query.*;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +46,7 @@ class RDFDataUnitIterationEager implements RDFDataUnit.Iteration {
     public RDFDataUnitIterationEager(MetadataDataUnit metadataDataUnit, ConnectionSource connectionSource, FaultTolerant faultTolerant) throws DataUnitException {
         // We can select from multiple graphs.
         final StringBuilder fromPart = new StringBuilder();
-        for (URI graph : metadataDataUnit.getMetadataGraphnames()) {
+        for (IRI graph : metadataDataUnit.getMetadataGraphnames()) {
             fromPart.append("FROM <");
             fromPart.append(graph.stringValue());
             fromPart.append("> ");

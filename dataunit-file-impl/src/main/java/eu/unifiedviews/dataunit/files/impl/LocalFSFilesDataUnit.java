@@ -8,18 +8,18 @@ import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.MetadataDataUnit;
 import eu.unifiedviews.dataunit.files.FilesDataUnit;
 import org.apache.commons.io.FileUtils;
-import org.openrdf.model.Literal;
-import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
-import org.openrdf.model.ValueFactory;
-import org.openrdf.query.MalformedQueryException;
-import org.openrdf.query.QueryLanguage;
-import org.openrdf.query.Update;
-import org.openrdf.query.UpdateExecutionException;
-import org.openrdf.query.impl.DatasetImpl;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.RepositoryResult;
+import org.eclipse.rdf4j.model.Literal;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.query.MalformedQueryException;
+import org.eclipse.rdf4j.query.QueryLanguage;
+import org.eclipse.rdf4j.query.Update;
+import org.eclipse.rdf4j.query.UpdateExecutionException;
+import org.eclipse.rdf4j.query.impl.DatasetImpl;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.RepositoryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -114,7 +114,7 @@ class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit implements M
             throw new DataUnitException("Only files are permitted to be added. File " + existingFileURI + " is not a proper file.");
         }
         // Create subject and insert data.
-        final URI entrySubject = this.creatEntitySubject();
+        final IRI entrySubject = this.creatEntitySubject();
         try {
             faultTolerant.execute(new FaultTolerant.Code() {
 
@@ -125,7 +125,7 @@ class LocalFSFilesDataUnit extends AbstractWritableMetadataDataUnit implements M
                     // Add file uri.
                     connection.add(
                             entrySubject,
-                            valueFactory.createURI(FilesDataUnit.PREDICATE_FILE_URI),
+                            valueFactory.createIRI(FilesDataUnit.PREDICATE_FILE_URI),
                             valueFactory.createLiteral(existingFile.toURI().toASCIIString()),
                             getMetadataWriteGraphname()
                     );
