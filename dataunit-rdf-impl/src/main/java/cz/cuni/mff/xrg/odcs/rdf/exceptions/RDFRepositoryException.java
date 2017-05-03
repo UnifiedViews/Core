@@ -1,6 +1,6 @@
 package cz.cuni.mff.xrg.odcs.rdf.exceptions;
 
-import org.openrdf.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.RepositoryException;
 
 /**
  * Custom replacement for {@link RepositoryException} with identical behavior

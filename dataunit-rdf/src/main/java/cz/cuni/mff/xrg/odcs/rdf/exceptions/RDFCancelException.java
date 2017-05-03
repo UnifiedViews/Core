@@ -1,7 +1,7 @@
 package cz.cuni.mff.xrg.odcs.rdf.exceptions;
 
-import org.openrdf.rio.RDFHandlerException;
-import org.openrdf.rio.RDFParser;
+import org.eclipse.rdf4j.rio.RDFHandlerException;
+import org.eclipse.rdf4j.rio.RDFParser;
 
 /**
  * Exception is thrown when during {@link RDFParser#parse(java.io.InputStream, java.lang.String)} method is the

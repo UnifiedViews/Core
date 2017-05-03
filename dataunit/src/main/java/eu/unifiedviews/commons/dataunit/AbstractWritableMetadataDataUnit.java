@@ -8,12 +8,12 @@ import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.MetadataDataUnit;
 import eu.unifiedviews.dataunit.WritableMetadataDataUnit;
-import org.openrdf.model.*;
-import org.openrdf.model.impl.URIImpl;
-import org.openrdf.query.*;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.RepositoryResult;
+import org.eclipse.rdf4j.model.*;
+import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.query.*;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.RepositoryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +49,7 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
             + "FILTER ( ?subject1 != ?subject2 ) }";
 
     /**
-     * First %s stands for write graph URI.
+     * First %s stands for write graph IRI.
      */
     protected static final String ADD_METADATA_QUERY = "INSERT INTO <%s> { ?s ?" + PREDICATE_BINDING + " ?" + OBJECT_BINDING + " } "
             + "WHERE { "
@@ -69,12 +69,12 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
     /**
      * Name of assigned main graph. This graph is used to store information about entries.
      */
-    protected URI writeContext;
+    protected IRI writeContext;
 
     /**
      * Names of read graphs.
      */
-    protected Set<URI> readContexts;
+    protected Set<IRI> readContexts;
 
     /**
      * List of all requested connection.
@@ -139,13 +139,13 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
 
     // MetadataDataUnit interface
     @Override
-    public Set<URI> getMetadataGraphnames() throws DataUnitException {
+    public Set<IRI> getMetadataGraphnames() throws DataUnitException {
         return readContexts;
     }
 
     //WritableMetadataDataUnit
     @Override
-    public URI getMetadataWriteGraphname() throws DataUnitException {
+    public IRI getMetadataWriteGraphname() throws DataUnitException {
         return writeContext;
     }
 
@@ -153,7 +153,7 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
     @Override
     public void addEntry(final String symbolicName) throws DataUnitException {
 
-        final URI entrySubject = creatEntitySubject();
+        final IRI entrySubject = creatEntitySubject();
         try {
             faultTolerant.execute(new FaultTolerant.Code() {
 
@@ -251,7 +251,7 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
         }
         final AbstractWritableMetadataDataUnit otherMetadata = (AbstractWritableMetadataDataUnit) otherDataUnit;
         // What we need to do is just to replicate all symbolic names.
-        final Set<URI> newReadSet = new HashSet<>(this.readContexts.size() + otherMetadata.readContexts.size());
+        final Set<IRI> newReadSet = new HashSet<>(this.readContexts.size() + otherMetadata.readContexts.size());
         newReadSet.addAll(this.readContexts);
         newReadSet.addAll(otherMetadata.readContexts);
         checkForDuplicitEntries(newReadSet);
@@ -269,25 +269,25 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
                 @Override
                 public void execute(RepositoryConnection connection) throws RepositoryException, DataUnitException {
                     final ValueFactory valueFactory = connection.getValueFactory();
-                    for (URI context : readContexts) {
+                    for (IRI context : readContexts) {
                         connection.add(
                                 writeContext,
-                                valueFactory.createURI(Ontology.PREDICATE_METADATA_CONTEXT_READ),
+                                valueFactory.createIRI(Ontology.PREDICATE_METADATA_CONTEXT_READ),
                                 context,
-                                valueFactory.createURI(Ontology.GRAPH_METADATA));
+                                valueFactory.createIRI(Ontology.GRAPH_METADATA));
                     }
                     // Just one write context.
                     connection.add(
                             writeContext,
-                            valueFactory.createURI(Ontology.PREDICATE_METADATA_CONTEXT_WRITE),
+                            valueFactory.createIRI(Ontology.PREDICATE_METADATA_CONTEXT_WRITE),
                             writeContext,
-                            valueFactory.createURI(Ontology.GRAPH_METADATA));
+                            valueFactory.createIRI(Ontology.GRAPH_METADATA));
                     // And entry counter.
                     connection.add(
                             writeContext,
-                            valueFactory.createURI(Ontology.PREDICATE_METADATA_ENTRY_COUNTER),
+                            valueFactory.createIRI(Ontology.PREDICATE_METADATA_ENTRY_COUNTER),
                             valueFactory.createLiteral(entryCounter.intValue()),
-                            valueFactory.createURI(Ontology.GRAPH_METADATA));
+                            valueFactory.createIRI(Ontology.GRAPH_METADATA));
                 }
             });
         } catch (RepositoryException ex) {
@@ -299,7 +299,7 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
     @Override
     public void load() throws DataUnitException {
         // Read context - read and write.
-        final URI metadataSourceGraph = getMetadataWriteGraphname();
+        final IRI metadataSourceGraph = getMetadataWriteGraphname();
         try {
             faultTolerant.execute(new FaultTolerant.Code() {
 
@@ -311,13 +311,13 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
                     final ValueFactory valueFactory = connection.getValueFactory();
                     final RepositoryResult<Statement> result = connection.getStatements(
                             metadataSourceGraph,
-                            valueFactory.createURI(Ontology.PREDICATE_METADATA_CONTEXT_READ),
+                            valueFactory.createIRI(Ontology.PREDICATE_METADATA_CONTEXT_READ),
                             null,
                             false,
-                            valueFactory.createURI(Ontology.GRAPH_METADATA));
+                            valueFactory.createIRI(Ontology.GRAPH_METADATA));
                     while (result.hasNext()) {
                         Statement contextStatement = result.next();
-                        readContexts.add(valueFactory.createURI(contextStatement.getObject().stringValue()));
+                        readContexts.add(valueFactory.createIRI(contextStatement.getObject().stringValue()));
                     }
                     if (result != null) {
                         result.close();
@@ -326,18 +326,18 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
                     // to read this data, but nothing bad should happen.
                     final Value writeContextValue = getSingleObject(connection,
                             metadataSourceGraph,
-                            valueFactory.createURI(Ontology.PREDICATE_METADATA_CONTEXT_WRITE),
-                            valueFactory.createURI(Ontology.GRAPH_METADATA));
-                    if (writeContextValue instanceof URI) {
-                        writeContext = (URI) writeContextValue;
+                            valueFactory.createIRI(Ontology.PREDICATE_METADATA_CONTEXT_WRITE),
+                            valueFactory.createIRI(Ontology.GRAPH_METADATA));
+                    if (writeContextValue instanceof IRI) {
+                        writeContext = (IRI) writeContextValue;
                     } else {
-                        throw new DataUnitException("Write context must be a URI!");
+                        throw new DataUnitException("Write context must be a IRI!");
                     }
                     // Get entry counter.
                     final Value entryValue = getSingleObject(connection,
                             metadataSourceGraph,
-                            valueFactory.createURI(Ontology.PREDICATE_METADATA_ENTRY_COUNTER),
-                            valueFactory.createURI(Ontology.GRAPH_METADATA));
+                            valueFactory.createIRI(Ontology.PREDICATE_METADATA_ENTRY_COUNTER),
+                            valueFactory.createIRI(Ontology.GRAPH_METADATA));
                     if (entryValue instanceof Literal) {
                         final Literal entryLiteral = (Literal) entryValue;
                         try {
@@ -356,10 +356,10 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
     }
 
     /**
-     * @return New unique URI for an entry.
+     * @return New unique IRI for an entry.
      */
-    protected URI creatEntitySubject() {
-        return connectionSource.getValueFactory().createURI(
+    protected IRI creatEntitySubject() {
+        return connectionSource.getValueFactory().createIRI(
                 writeContext
                         + "/entry/"
                         + Integer.toString(entryCounter.incrementAndGet()));
@@ -376,10 +376,10 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
      * @throws org.openrdf.repository.RepositoryException
      * @throws DataUnitException
      */
-    protected URI addEntry(URI entrySubject, String symbolicName, RepositoryConnection connection) throws RepositoryException, DataUnitException {
+    protected IRI addEntry(IRI entrySubject, String symbolicName, RepositoryConnection connection) throws RepositoryException, DataUnitException {
         final ValueFactory valueFactory = connection.getValueFactory();
         connection.add(entrySubject,
-                valueFactory.createURI(MetadataDataUnit.PREDICATE_SYMBOLIC_NAME),
+                valueFactory.createIRI(MetadataDataUnit.PREDICATE_SYMBOLIC_NAME),
                 valueFactory.createLiteral(symbolicName),
                 getMetadataWriteGraphname());
         return entrySubject;
@@ -422,10 +422,10 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
      * 
      * @param graphs
      */
-    private void checkForDuplicitEntries(Set<URI> graphs) throws DataUnitException {
+    private void checkForDuplicitEntries(Set<IRI> graphs) throws DataUnitException {
         // Prepare query.
         final StringBuilder fromClause = new StringBuilder(graphs.size() * 15);
-        for (URI graph : graphs) {
+        for (IRI graph : graphs) {
             fromClause.append("FROM <");
             fromClause.append(graph.stringValue());
             fromClause.append(">");
@@ -489,7 +489,7 @@ public abstract class AbstractWritableMetadataDataUnit implements WritableMetada
      * @throws DataUnitException
      *             In case that there is more than one object.
      */
-    private Value getSingleObject(RepositoryConnection connection, URI subject, URI predicate, URI graph)
+    private Value getSingleObject(RepositoryConnection connection, IRI subject, IRI predicate, IRI graph)
             throws RepositoryException, DataUnitException {
         final RepositoryResult<Statement> result = connection.getStatements(
                 subject,

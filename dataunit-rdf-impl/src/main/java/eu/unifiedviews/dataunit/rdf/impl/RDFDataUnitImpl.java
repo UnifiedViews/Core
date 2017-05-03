@@ -1,12 +1,12 @@
 package eu.unifiedviews.dataunit.rdf.impl;
 
-import org.openrdf.model.*;
-import org.openrdf.model.impl.URIImpl;
-import org.openrdf.query.*;
-import org.openrdf.query.impl.DatasetImpl;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.RepositoryResult;
+import org.eclipse.rdf4j.model.*;
+import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.query.*;
+import org.eclipse.rdf4j.query.impl.DatasetImpl;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.RepositoryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,9 +48,9 @@ class RDFDataUnitImpl extends AbstractWritableMetadataDataUnit implements Manage
             + "}";
 
     /**
-     * Base URI available to the user.
+     * Base IRI available to the user.
      */
-    private final URI baseDataGraphURI;
+    private final IRI baseDataGraphURI;
 
     public RDFDataUnitImpl(String dataUnitName, String workingDirectoryURI,
             String directoryUri, CoreServiceBus coreServices) {
@@ -79,13 +79,13 @@ class RDFDataUnitImpl extends AbstractWritableMetadataDataUnit implements Manage
     }
 
     @Override
-    public URI getBaseDataGraphURI() throws DataUnitException {
+    public IRI getBaseDataGraphURI() throws DataUnitException {
         return baseDataGraphURI;
     }
 
     @Override
-    public void addExistingDataGraph(final String symbolicName, final URI existingDataGraphURI) throws DataUnitException {
-        final URI entrySubject = this.creatEntitySubject();
+    public void addExistingDataGraph(final String symbolicName, final IRI existingDataGraphURI) throws DataUnitException {
+        final IRI entrySubject = this.creatEntitySubject();
         try {
             faultTolerant.execute(new FaultTolerant.Code() {
 
@@ -94,10 +94,10 @@ class RDFDataUnitImpl extends AbstractWritableMetadataDataUnit implements Manage
                     //adds triple with symbolic name
                     addEntry(entrySubject, symbolicName, connection);
                     final ValueFactory valueFactory = connection.getValueFactory();
-                    //adds triple with data graph URI
+                    //adds triple with data graph IRI
                     connection.add(
                             entrySubject,
-                            valueFactory.createURI(RDFDataUnitImpl.PREDICATE_DATAGRAPH_URI),
+                            valueFactory.createIRI(RDFDataUnitImpl.PREDICATE_DATAGRAPH_URI),
                             existingDataGraphURI,
                             getMetadataWriteGraphname()
                             );
@@ -109,8 +109,8 @@ class RDFDataUnitImpl extends AbstractWritableMetadataDataUnit implements Manage
     }
 
     @Override
-    public URI addNewDataGraph(final String symbolicName) throws DataUnitException {
-        final URI entrySubject = this.creatEntitySubject();
+    public IRI addNewDataGraph(final String symbolicName) throws DataUnitException {
+        final IRI entrySubject = this.creatEntitySubject();
         try {
             faultTolerant.execute(new FaultTolerant.Code() {
 
@@ -119,10 +119,10 @@ class RDFDataUnitImpl extends AbstractWritableMetadataDataUnit implements Manage
                     //adds triple with symbolic name
                     addEntry(entrySubject, symbolicName, connection);
                     final ValueFactory valueFactory = connection.getValueFactory();
-                    //adds triple with data graph URI
+                    //adds triple with data graph IRI
                     connection.add(
                             entrySubject,
-                            valueFactory.createURI(RDFDataUnitImpl.PREDICATE_DATAGRAPH_URI),
+                            valueFactory.createIRI(RDFDataUnitImpl.PREDICATE_DATAGRAPH_URI),
                             entrySubject,
                             getMetadataWriteGraphname()
                             );
@@ -135,7 +135,7 @@ class RDFDataUnitImpl extends AbstractWritableMetadataDataUnit implements Manage
     }
 
     @Override
-    public void updateExistingDataGraph(String symbolicName, URI newDataGraphURI) throws DataUnitException {
+    public void updateExistingDataGraph(String symbolicName, IRI newDataGraphURI) throws DataUnitException {
         RepositoryConnection connection = null;
         RepositoryResult<Statement> result = null;
         try {

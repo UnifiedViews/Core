@@ -1,6 +1,6 @@
 package cz.cuni.mff.xrg.odcs.rdf.help;
 
-import org.openrdf.model.Statement;
+import org.eclipse.rdf4j.model.Statement;
 
 import cz.cuni.mff.xrg.odcs.rdf.enums.ParsingConfictType;
 

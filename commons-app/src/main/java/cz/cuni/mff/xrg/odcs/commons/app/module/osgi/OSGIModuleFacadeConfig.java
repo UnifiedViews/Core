@@ -16,13 +16,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.Application;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
-import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.commons;
-import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.commons_module;
-import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.commons_web;
-import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.openrdf;
-import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.rdf;
-import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.relational;
-import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.vaadin;
+import cz.cuni.mff.xrg.odcs.commons.app.module.osgi.packages.*;
 
 /**
  * Contains settings for OSGIModuleFacade;
@@ -122,6 +116,8 @@ class OSGIModuleFacadeConfig {
             LOG.info("com.vaadin version: {}", vaadin.VERSION);
         }
 
+        // in every case add org.seasame packages
+        appendPackages(packageList, Rdf4jPackages.PACKAGES);
         // in every case add org.seasame packages
         appendPackages(packageList, openrdf.PACKAGES);
         // and system packages
