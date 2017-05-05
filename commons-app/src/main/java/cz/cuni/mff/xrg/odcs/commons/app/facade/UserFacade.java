@@ -1,11 +1,11 @@
 package cz.cuni.mff.xrg.odcs.commons.app.facade;
 
-import java.util.List;
-
 import cz.cuni.mff.xrg.odcs.commons.app.user.EmailAddress;
 import cz.cuni.mff.xrg.odcs.commons.app.user.RoleEntity;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
+
+import java.util.List;
 
 /**
  * Facade for managing persisted User entities.
@@ -111,7 +111,7 @@ public interface UserFacade extends Facade {
     /**
      * Deletes role from database.
      * 
-     * @param user
+     * @param role
      */
     void delete(RoleEntity role);
 

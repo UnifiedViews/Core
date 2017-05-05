@@ -49,7 +49,7 @@ class UserFacadeImpl implements UserFacade {
      * @return new user instance
      */
     @Override
-    public User createUser(String username, String plainPassword,
+    public User createuser(String username, String plainPassword,
             EmailAddress email) {
 
         User user = new User();
