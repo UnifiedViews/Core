@@ -47,7 +47,7 @@ public class PipelineExecution implements OwnedEntity, DataObject {
     /**
      * Pipeline being executed.
      */
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pipeline_id")
     private Pipeline pipeline;
 
