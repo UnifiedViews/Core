@@ -373,7 +373,7 @@ public class RDFQueryView extends QueryView {
         try {
             runQuery();
         } catch (InvalidQueryException ex) {
-            LOG.error(ex.getLocalizedMessage(), ex.getStackTrace()ß);
+            LOG.error(ex.getLocalizedMessage(), ex.getStackTrace());
         }
     }
 
