@@ -309,8 +309,6 @@ public class RDFQueryView extends QueryView {
     /**
      * Execute query on selected graph.
      *
-     * @param isBrowse
-     *            Is it browse query?
      * @throws InvalidQueryException
      *             If the query is badly formatted.
      */
@@ -371,11 +369,11 @@ public class RDFQueryView extends QueryView {
 
     @Override
     public void browseDataUnit() {
-        queryText.setValue("CONSTRUCT {?s ?p ?o} WHERE {?s ?p ?o} LIMIT 1000");
+        queryText.setValue("SELECT ?s ?p ?o WHERE {?s ?p ?o} LIMIT 1000");
         try {
             runQuery();
         } catch (InvalidQueryException ex) {
-            //Should not happen
+            LOG.error(ex.getLocalizedMessage(), ex.getStackTrace()ß);
         }
     }
 
