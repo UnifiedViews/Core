@@ -128,7 +128,6 @@
                         test scoped dependencies -->
                             <includeScope>runtime</includeScope>
                             <excludeScope>provided</excludeScope>
-                            <excludes>**\/*.SF,**\/*.DSA,**\/*.RSA</excludes>
                         </configuration>
                     </execution>
                 </executions>
