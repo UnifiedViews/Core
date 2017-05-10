@@ -13,7 +13,6 @@
 
 	<!-- Shared version number properties -->
 	<properties>
-		<logback.version>1.0.13</logback.version>
 		<aspectj.version>1.8.7</aspectj.version>
 		<eclipselink.version>2.5.2</eclipselink.version>
 		<maven.artifact.version>3.3.3</maven.artifact.version>

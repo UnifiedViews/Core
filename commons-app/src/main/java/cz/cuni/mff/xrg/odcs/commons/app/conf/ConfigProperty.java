@@ -15,6 +15,7 @@ public enum ConfigProperty {
     BACKEND_HTTP_PROBE_PORT("backend.probe.http.port"),
     BACKEND_LOG_DIR("backend.log.directory"),
     BACKEND_LOG_KEEP("backend.log.keepDays"),
+    BACKEND_LOG_MAX_SIZE("backend.log.maxSize"),
     BACKEND_DEFAULTRDF("backend.defaultRdf"),
     BACKEND_LIMIT_OF_SCHEDULED_PIPELINES("backend.scheduledPipelines.limit"),
     BACKEND_ALIVE_LIMIT("backend.alive.limit"),
