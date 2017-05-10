@@ -41,7 +41,6 @@
             <!-- restrict each file with size 10MB  -->
             <maxFileSize>10MB</maxFileSize>
             <totalSizeCap>${frontend.log.maxSize}</totalSizeCap>
-
         </rollingPolicy>
         <encoder>
             <pattern>%d [%thread] %-5level %logger{50} - %msg%n</pattern>
