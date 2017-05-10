@@ -68,7 +68,7 @@ public class AppEntry {
             rollingPolicy.setFileNamePattern(logDirectory + logFile + ".%d{yyyy-MM-dd}.%i.log");
             rollingPolicy.setMaxHistory(logHistory);
             rollingPolicy.setTotalSizeCap(FileSize.valueOf(logMaxSize));
-            rollingPolicy.setMaxFileSize(FileSize.valueOf("10 mb"));
+            rollingPolicy.setMaxFileSize(FileSize.valueOf("10MB"));
 
             rfAppender.setRollingPolicy(rollingPolicy);
 
@@ -123,7 +123,7 @@ public class AppEntry {
 
 
         //check if there is any preferred max size for logs
-        String logMaxSize = "1 gb";
+        String logMaxSize = "1GB";
         // we try to load values from configuration
         try {
             logMaxSize = appConfig.getString(ConfigProperty.BACKEND_LOG_MAX_SIZE);
