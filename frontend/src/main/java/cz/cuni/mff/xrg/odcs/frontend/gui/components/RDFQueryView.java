@@ -411,12 +411,12 @@ public class RDFQueryView extends QueryView {
             if (isSelectQuery != (format.getClass() == SelectFormatType.class)) {
 
                 if (isSelectQuery) {
-                    Notification.show(Messages.getString("RDFQueryView.select.not.supported"),
+                    Notification.show(Messages.getString("RDFQueryView.select.not.supported", format.toString()),
                             Messages.getString("RDFQueryView.format.not.supported.construct"),
                             Notification.Type.ERROR_MESSAGE);
                 } else {
                     Notification.show(
-                            Messages.getString("RDFQueryView.consctuct.not.supported"),
+                            Messages.getString("RDFQueryView.consctuct.not.supported", format.toString()),
                             Messages.getString("RDFQueryView.consctuct.not.supported.description"),
                             Notification.Type.ERROR_MESSAGE);
                 }
