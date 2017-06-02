@@ -17,6 +17,8 @@ import eu.unifiedviews.master.model.ApiException;
 import eu.unifiedviews.master.model.PipelineExecutionDTO;
 import eu.unifiedviews.master.model.PipelineExecutionEventDTO;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,8 +28,6 @@ import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Component
 @Path("/pipelines")
@@ -189,7 +189,7 @@ public class ExecutionResource {
 
         UserActor actor = this.userFacade.getUserActorByExternalId(newExecution.getUserActorExternalId());
 
-        final PipelineExecution execution = pipelineFacade.createExecution(pipeline);
+        final PipelineExecution execution =  new PipelineExecution(pipeline);
         execution.setOwner(user);
         if (actor != null) {
             log.info("Obtained actor ID: {}, external ID {}", actor.getId(), actor.getExternalId());
