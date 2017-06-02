@@ -90,20 +90,28 @@ public class Initial extends ViewComponent {
         final ClassLoader classLoader = this.getClass().getClassLoader();
         final Locale locale = LocaleHolder.getLocale();
 
+        String customInitialFile = "";
         try {
-            String customInitialFile = this.appConfig.getString(ConfigProperty.FRONTEND_INITIAL_PAGE);
+            customInitialFile = this.appConfig.getString(ConfigProperty.FRONTEND_INITIAL_PAGE);
             LOG.debug("Using custom initial HTML file from {}", customInitialFile);
             if (customInitialFile != null) {
-                File initialFile = new File(customInitialFile);
-                if (initialFile != null && initialFile.exists()) {
-                    LOG.debug("Custom file found, loading text");
-                    return loadStringFromFile(initialFile);
+                final String result = loadStringFromResource(classLoader, customInitialFile);
+                if (result != null && !result.isEmpty() ) {
+                    LOG.debug("Custom file found, text loaded");
+                    return result;
                 } else {
                     LOG.warn("Custom initial page {} not found, using default one from resources", customInitialFile);
                 }
+//                File initialFile = new File(customInitialFile);
+//                if (initialFile != null &&  initialFile.exists()) {
+//                    LOG.debug("Custom file found, loading text");
+//                    return loadStringFromFile(initialFile);
+//                } else {
+//                    LOG.warn("Custom initial page {} not found, using default one from resources", customInitialFile);
+//                }
             }
         } catch (Exception e) {
-            LOG.warn("Failed to load initial page custom text from external resource, using default text");
+            LOG.warn("Failed to load initial custom page {}, using default one from resources", customInitialFile);
         }
 
         String resourceFileName = INITIAL_TEXT_RESOURCE_PREFIX + locale.toLanguageTag() + INITIAL_TEXT_RESOURCE_POSTFIX;
