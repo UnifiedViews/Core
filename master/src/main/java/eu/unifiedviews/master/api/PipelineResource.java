@@ -1,33 +1,6 @@
 package eu.unifiedviews.master.api;
 
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import cz.cuni.mff.xrg.odcs.commons.app.constants.LenghtLimits;
-import eu.unifiedviews.master.i18n.Messages;
-import org.apache.commons.lang3.StringUtils;
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
-import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import cz.cuni.mff.xrg.odcs.commons.app.facade.PipelineFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
@@ -38,8 +11,27 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
 import eu.unifiedviews.master.authentication.AuthenticationRequired;
 import eu.unifiedviews.master.converter.ConvertUtils;
 import eu.unifiedviews.master.converter.PipelineDTOConverter;
+import eu.unifiedviews.master.i18n.Messages;
 import eu.unifiedviews.master.model.ApiException;
 import eu.unifiedviews.master.model.PipelineDTO;
+import org.apache.commons.lang3.StringUtils;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 @Component
 @Path("/pipelines")
@@ -215,13 +207,21 @@ public class PipelineResource {
     @Path("/import")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public PipelineDTO importPipeline(@FormDataParam("file") InputStream inputStream, @FormDataParam("file") FormDataContentDisposition contentDispositionHeader, @FormDataParam("importUserData") boolean importUserData, @FormDataParam("importSchedule") boolean importSchedule) {
+    public PipelineDTO importPipeline(@FormDataParam("file") InputStream inputStream, @FormDataParam("file") FormDataContentDisposition contentDispositionHeader, @FormDataParam("userExternalId") String username, @FormDataParam("importUserData") boolean importUserData, @FormDataParam("importSchedule") boolean importSchedule) {
         // parse input steam to file, located in temporary directory
         File pipelineFile;
         Pipeline importedPipeline;
         try {
             pipelineFile = ConvertUtils.inputStreamToFile(inputStream, contentDispositionHeader.getFileName());
-            importedPipeline = importService.importPipeline(pipelineFile, importUserData, importSchedule);
+
+            if (username == null || username.isEmpty()) {
+                throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, Messages.getString("pipeline.import.general.error"), "Please specify name of the user who is the pipeline creator");
+            }
+            User user = userFacade.getUserByUsername(username);
+            if (user == null) {
+                throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, Messages.getString("pipeline.import.general.error"), "User with the given username does not exist");
+            }
+            importedPipeline = importService.importPipelineApi(pipelineFile, user, importUserData, importSchedule);
         } catch (IOException | ImportException e) {
             LOG.error("Exception at importing pipeline", e);
             throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, Messages.getString("pipeline.import.general.error"), e.getMessage());
