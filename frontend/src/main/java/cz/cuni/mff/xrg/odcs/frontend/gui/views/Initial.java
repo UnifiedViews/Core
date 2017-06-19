@@ -1,14 +1,16 @@
 package cz.cuni.mff.xrg.odcs.frontend.gui.views;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.util.Locale;
-
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.ThemeResource;
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Embedded;
+import com.vaadin.ui.Label;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
+import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
+import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,18 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Embedded;
-import com.vaadin.ui.Label;
-
-import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
-import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
-import cz.cuni.mff.xrg.odcs.commons.app.i18n.LocaleHolder;
-import cz.cuni.mff.xrg.odcs.frontend.gui.ViewComponent;
-import cz.cuni.mff.xrg.odcs.frontend.navigation.Address;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.util.Locale;
 
 /**
  * Initial view with short description of the tool.
@@ -97,20 +90,28 @@ public class Initial extends ViewComponent {
         final ClassLoader classLoader = this.getClass().getClassLoader();
         final Locale locale = LocaleHolder.getLocale();
 
+        String customInitialFile = "";
         try {
-            String customInitialFile = this.appConfig.getString(ConfigProperty.FRONTEND_INITIAL_PAGE);
+            customInitialFile = this.appConfig.getString(ConfigProperty.FRONTEND_INITIAL_PAGE);
             LOG.debug("Using custom initial HTML file from {}", customInitialFile);
             if (customInitialFile != null) {
-                File initialFile = new File(customInitialFile);
-                if (initialFile != null && initialFile.exists()) {
-                    LOG.debug("Custom file found, loading text");
-                    return loadStringFromFile(initialFile);
+                final String result = loadStringFromResource(classLoader, customInitialFile);
+                if (result != null && !result.isEmpty() ) {
+                    LOG.debug("Custom file found, text loaded");
+                    return result;
                 } else {
-                    LOG.debug("Custom file not found, using default text from resources");
+                    LOG.warn("Custom initial page {} not found, using default one from resources", customInitialFile);
                 }
+//                File initialFile = new File(customInitialFile);
+//                if (initialFile != null &&  initialFile.exists()) {
+//                    LOG.debug("Custom file found, loading text");
+//                    return loadStringFromFile(initialFile);
+//                } else {
+//                    LOG.warn("Custom initial page {} not found, using default one from resources", customInitialFile);
+//                }
             }
         } catch (Exception e) {
-            LOG.warn("Failed to load initial page custom text from external resource, using default text");
+            LOG.warn("Failed to load initial custom page {}, using default one from resources", customInitialFile);
         }
 
         String resourceFileName = INITIAL_TEXT_RESOURCE_PREFIX + locale.toLanguageTag() + INITIAL_TEXT_RESOURCE_POSTFIX;

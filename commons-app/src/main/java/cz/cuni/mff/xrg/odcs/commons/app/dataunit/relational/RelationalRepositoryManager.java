@@ -90,7 +90,7 @@ public class RelationalRepositoryManager {
                 this.repositoryType = ManagableRelationalRepository.Type.FILE;
                 break;
             default:
-                LOG.info("Unknown repository type, using default file mode");
+                LOG.info("Unknown repository type for relational data unit, using default file mode");
                 this.repositoryType = ManagableRelationalRepository.Type.FILE;
         }
     }

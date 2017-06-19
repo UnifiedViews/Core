@@ -5,13 +5,13 @@
     <parent>
         <groupId>eu.unifiedviews</groupId>
         <artifactId>uv-core</artifactId>
-        <version>2.3.2</version>
+        <version>3.0.0</version>
 	<relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>eu.unifiedviews.packages</groupId>
     <artifactId>unifiedviews-packages</artifactId>
-    <version>2.3.3-SNAPSHOT</version>
+    <version>3.0.0</version>
     <name>unifiedviews-packages</name>
     <packaging>pom</packaging>
     <description />
@@ -30,8 +30,8 @@
     </modules>
 
     <properties>
-        <backend-version>2.3.3-SNAPSHOT</backend-version>
-        <debian-package-version>2.3.2-SNAPSHOT</debian-package-version>
+        <backend-version>3.0.0</backend-version>
+        <debian-package-version>3.0.0</debian-package-version>
         <debian-package-name>${project.build.directory}/${project.artifactId}-${debian-package-version}_all.deb</debian-package-name>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>

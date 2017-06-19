@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,30 +72,24 @@ public class ImportService {
     @Autowired
     private AppConfig appConfig;
 
+    @Autowired
+    private UserFacade userFacade;
+
     @PreAuthorize("hasRole('pipeline.import') and hasRole('pipeline.create')")
-    public Pipeline importPipeline(File zipFile, boolean importUserDataFile, boolean importScheduleFile) 
+    public Pipeline importPipelineApi(File zipFile, User user, boolean importUserDataFile, boolean importScheduleFile)
             throws ImportException, IOException {
-        return importPipeline(zipFile, importUserDataFile, importScheduleFile, new HashMap<String, ImportStrategy>(0));
+        return importPipelineInternal(zipFile, user, importUserDataFile, importScheduleFile, new HashMap<String, ImportStrategy>(0));
     }
-    
+
+
+    /**
+     * Called from frontend, when importing manually
+     */
     @PreAuthorize("hasRole('pipeline.import') and hasRole('pipeline.create')")
     public Pipeline importPipeline(File zipFile, boolean importUserDataFile, boolean importScheduleFile,
             Map<String, ImportStrategy> choosenStrategies) throws ImportException, IOException {
-        final File tempDir;
-        try {
-            tempDir = resourceManager.getNewImportTempDir();
-        } catch (MissingResourceException ex) {
-            throw new ImportException(Messages.getString("ImportService.pipeline.temp.dir.fail"), ex);
-        }
-        return importPipeline(zipFile, tempDir, importUserDataFile, importScheduleFile, choosenStrategies);
-    }
 
-    @PreAuthorize("hasRole('pipeline.import') and hasRole('pipeline.create')")
-    public Pipeline importPipeline(File zipFile, File tempDirectory, boolean importUserDataFile, boolean importScheduleFile,
-            Map<String, ImportStrategy> choosenStrategies) throws ImportException, IOException {
-        // delete tempDirectory
-        ResourceManager.cleanupQuietly(tempDirectory);
-
+        //get the user
         if (authCtx == null) {
             throw new ImportException(Messages.getString("ImportService.pipeline.authenticationContext.null"));
         }
@@ -102,7 +97,34 @@ public class ImportService {
         if (user == null) {
             throw new ImportException(Messages.getString("ImportService.pipeline.unknown.user"));
         }
-        final UserActor actor = this.authCtx.getUser().getUserActor();
+
+        return importPipelineInternal(zipFile, user, importUserDataFile, importScheduleFile, choosenStrategies);
+    }
+
+    @PreAuthorize("hasRole('pipeline.import') and hasRole('pipeline.create')")
+    public Pipeline importPipelineInternal(File zipFile, User user, boolean importUserDataFile, boolean importScheduleFile,
+            Map<String, ImportStrategy> choosenStrategies) throws ImportException, IOException {
+        final File tempDirectory;
+        try {
+            tempDirectory = resourceManager.getNewImportTempDir();
+        } catch (MissingResourceException ex) {
+            throw new ImportException(Messages.getString("ImportService.pipeline.temp.dir.fail"), ex);
+        }
+
+        // delete tempDirectory
+        ResourceManager.cleanupQuietly(tempDirectory);
+
+//        final User user = userFacade.getUserByUsername("admin");
+//        final UserActor actor = user.getUserActor();
+
+//        if (authCtx == null) {
+//            throw new ImportException(Messages.getString("ImportService.pipeline.authenticationContext.null"));
+//        }
+//        final User user = authCtx.getUser();
+//        if (user == null) {
+//            throw new ImportException(Messages.getString("ImportService.pipeline.unknown.user"));
+//        }
+        final UserActor actor = user.getUserActor();
         // unpack
         Pipeline pipe;
         try {
