@@ -113,6 +113,11 @@
 									<artifactId>org.apache.servicemix.bundles.xmlresolver</artifactId>
 									<version>1.2_5</version>
 								</dependency>
+								<dependency>
+									<groupId>eu.unifiedviews</groupId>
+									<artifactId>dpu-v2-compatibility-package</artifactId>
+									<version>1.0.0</version>
+								</dependency>
 							</artifactItems>
 						</configuration>
 					</execution>
