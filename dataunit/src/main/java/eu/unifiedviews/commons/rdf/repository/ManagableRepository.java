@@ -4,6 +4,8 @@ import eu.unifiedviews.commons.dataunit.core.ConnectionSource;
 
 /**
  *
+ * Handler to RDF Working repository
+ *
  * @author Škoda Petr
  */
 public interface ManagableRepository {
@@ -15,8 +17,15 @@ public interface ManagableRepository {
         LOCAL_RDF,
         INMEMORY_RDF,
         REMOTE_RDF,
-        VIRTUOSO
+        VIRTUOSO,
+        GRAPHDB
     }
+
+    /**
+     * Returns the type of the repository (see @link #Type)
+     * @return Type of the repository
+     */
+    public Type getRepositoryType();
 
     /**
      *
@@ -33,6 +42,7 @@ public interface ManagableRepository {
 
     /**
      * Delete repository. Can not be called after {@link #release()}
+     * Should call release() inside.
      * 
      * @throws eu.unifiedviews.commons.rdf.repository.RDFException
      */

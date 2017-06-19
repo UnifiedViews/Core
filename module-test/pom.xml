@@ -3,11 +3,11 @@
 	<parent>
 		<groupId>eu.unifiedviews</groupId>
 		<artifactId>uv-core</artifactId>
-		<version>2.3.2</version>
+		<version>3.0.0</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>module-test</artifactId>
-        <version>2.3.2</version>
+        <version>3.0.0</version>
 	<description>Contains classes for test support.</description>
 
 	<dependencies>

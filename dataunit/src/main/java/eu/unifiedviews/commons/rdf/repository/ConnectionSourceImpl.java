@@ -1,9 +1,9 @@
 package eu.unifiedviews.commons.rdf.repository;
 
-import org.openrdf.model.ValueFactory;
-import org.openrdf.repository.Repository;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.repository.Repository;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryException;
 
 import eu.unifiedviews.commons.dataunit.core.ConnectionSource;
 
@@ -26,14 +26,21 @@ class ConnectionSourceImpl implements ConnectionSource {
     private final boolean retryOnFailure;
 
     /**
+     * To hold type of the RDF repository - local, graphdb, etc.
+     */
+    private ManagableRepository.Type repositoryType;
+
+
+    /**
      * Used repository.
      *
      * @param repository
      * @param retryOnFailure
      */
-    public ConnectionSourceImpl(Repository repository, boolean retryOnFailure) {
+    public ConnectionSourceImpl(Repository repository, boolean retryOnFailure, ManagableRepository.Type type) {
         this.repository = repository;
         this.retryOnFailure = retryOnFailure;
+        this.repositoryType = type;
     }
 
     @Override
@@ -49,6 +56,11 @@ class ConnectionSourceImpl implements ConnectionSource {
     @Override
     public ValueFactory getValueFactory() {
         return repository.getValueFactory();
+    }
+
+    @Override
+    public ManagableRepository.Type getRepositoryType() {
+        return repositoryType;
     }
 
 }

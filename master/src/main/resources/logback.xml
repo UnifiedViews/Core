@@ -8,27 +8,27 @@
         <resetJUL>true</resetJUL>
     </contextListener>
 
+    <!--
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{26} - %msg%n</pattern>
         </encoder>
     </appender>
+    -->
 
     <appender name="FILE_ALL" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${frontend.log.directory}/master.log</file>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>INFO</level>
         </filter>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!-- daily rollover -->
             <fileNamePattern>${frontend.log.directory}/master.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <!-- how long should we keep the history -->
             <maxHistory>${frontend.log.keepDays}</maxHistory>
-            <!-- restrict with size 10MB  -->
-            <timeBasedFileNamingAndTriggeringPolicy
-                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>10MB</maxFileSize>
-            </timeBasedFileNamingAndTriggeringPolicy>
+            <!-- restrict each file with size 10MB  -->
+            <maxFileSize>10MB</maxFileSize>
+            <totalSizeCap>${frontend.log.maxSize}</totalSizeCap>
         </rollingPolicy>
         <encoder>
             <pattern>%d [%thread] %-5level %logger{50} - %msg%n</pattern>
@@ -40,16 +40,14 @@
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>ERROR</level>
         </filter>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!-- daily rollover -->
             <fileNamePattern>${frontend.log.directory}/master_err.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <!-- how long should we keep the history -->
             <maxHistory>${frontend.log.keepDays}</maxHistory>
-            <!-- restrict with size 10MB  -->
-            <timeBasedFileNamingAndTriggeringPolicy
-                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>10MB</maxFileSize>
-            </timeBasedFileNamingAndTriggeringPolicy>
+            <!-- restrict each file with size 10MB  -->
+            <maxFileSize>10MB</maxFileSize>
+            <totalSizeCap>${frontend.log.maxSize}</totalSizeCap>
         </rollingPolicy>
         <encoder>
             <pattern>%d [%thread] %-5level %logger{50} - %msg%n</pattern>

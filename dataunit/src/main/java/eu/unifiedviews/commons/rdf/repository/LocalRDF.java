@@ -1,15 +1,14 @@
 package eu.unifiedviews.commons.rdf.repository;
 
-import java.io.File;
-
-import org.apache.commons.io.FileUtils;
-import org.openrdf.repository.Repository;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.sail.SailRepository;
-import org.openrdf.sail.nativerdf.NativeStore;
-
 import eu.unifiedviews.commons.dataunit.core.ConnectionSource;
 import eu.unifiedviews.dataunit.DataUnitException;
+import org.apache.commons.io.FileUtils;
+import org.eclipse.rdf4j.repository.Repository;
+import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.sail.SailRepository;
+import org.eclipse.rdf4j.sail.nativerdf.NativeStore;
+
+import java.io.File;
 
 /**
  *
@@ -41,7 +40,7 @@ class LocalRDF implements ManagableRepository {
 
     @Override
     public ConnectionSource getConnectionSource() {
-        return new ConnectionSourceImpl(repository, false);
+        return new ConnectionSourceImpl(repository, false, Type.LOCAL_RDF);
     }
 
     @Override
@@ -58,6 +57,11 @@ class LocalRDF implements ManagableRepository {
         release();
         // Delete storage data directory.
         FileUtils.deleteQuietly(repositoryDirectory);
+    }
+
+    @Override
+    public Type getRepositoryType() {
+        return Type.LOCAL_RDF;
     }
 
 }

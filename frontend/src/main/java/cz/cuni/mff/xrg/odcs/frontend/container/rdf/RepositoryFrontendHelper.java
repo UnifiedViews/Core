@@ -1,40 +1,7 @@
 package cz.cuni.mff.xrg.odcs.frontend.container.rdf;
 
-import info.aduna.iteration.Iterations;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.openrdf.model.Graph;
-import org.openrdf.model.Resource;
-import org.openrdf.model.URI;
-import org.openrdf.model.Value;
-import org.openrdf.model.impl.URIImpl;
-import org.openrdf.query.*;
-import org.openrdf.query.resultio.TupleQueryResultWriter;
-import org.openrdf.query.resultio.sparqljson.SPARQLResultsJSONWriter;
-import org.openrdf.query.resultio.sparqlxml.SPARQLResultsXMLWriter;
-import org.openrdf.query.resultio.text.csv.SPARQLResultsCSVWriter;
-import org.openrdf.query.resultio.text.tsv.SPARQLResultsTSVWriter;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.rio.RDFHandlerException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.vaadin.data.Container;
 import com.vaadin.ui.UI;
-
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.DataUnitInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionInfo;
@@ -51,6 +18,30 @@ import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
 import cz.cuni.mff.xrg.odcs.rdf.repositories.MyRDFHandler;
 import eu.unifiedviews.dataunit.rdf.impl.ManageableWritableRDFDataUnit;
 import eu.unifiedviews.helpers.dataunit.dataset.DatasetBuilder;
+import org.eclipse.rdf4j.common.iteration.Iterations;
+import org.eclipse.rdf4j.model.Graph;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.query.*;
+import org.eclipse.rdf4j.query.resultio.TupleQueryResultWriter;
+import org.eclipse.rdf4j.query.resultio.sparqljson.SPARQLResultsJSONWriter;
+import org.eclipse.rdf4j.query.resultio.sparqlxml.SPARQLResultsXMLWriter;
+import org.eclipse.rdf4j.query.resultio.text.csv.SPARQLResultsCSVWriter;
+import org.eclipse.rdf4j.query.resultio.text.tsv.SPARQLResultsTSVWriter;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.rio.RDFHandlerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class RepositoryFrontendHelper {
 
@@ -113,7 +104,7 @@ public class RepositoryFrontendHelper {
     }
 
     public static File executeSelectQuery(RepositoryConnection connection, String selectQuery, String filePath,
-            SelectFormatType selectType, Set<URI> dataGraph) throws InvalidQueryException {
+            SelectFormatType selectType, Set<IRI> dataGraph) throws InvalidQueryException {
         try {
 
             TupleQuery tupleQuery = connection.prepareTupleQuery(
@@ -186,7 +177,7 @@ public class RepositoryFrontendHelper {
      *             when query is not valid.
      */
     public static Map<String, List<String>> executeSelectQuery(RepositoryConnection connection,
-            String selectQuery, Set<URI> dataGraph)
+            String selectQuery, Set<IRI> dataGraph)
             throws InvalidQueryException {
 
         Map<String, List<String>> map = new LinkedHashMap<>();
@@ -254,7 +245,7 @@ public class RepositoryFrontendHelper {
      *             when query is not valid.
      */
     public static TupleQueryResult executeSelectQueryAsTuples(RepositoryConnection connection,
-            String selectQuery, Set<URI> dataGraph)
+            String selectQuery, Set<IRI> dataGraph)
             throws InvalidQueryException {
 
         try {
@@ -305,9 +296,9 @@ public class RepositoryFrontendHelper {
      *             BlankNode, some type of Literal (in object
      *             case))
      */
-    public static Graph describeURI(RepositoryConnection connection, Set<URI> dataGraph, Resource uriResource) throws InvalidQueryException {
+    public static Graph describeURI(RepositoryConnection connection, Set<IRI> dataGraph, Resource uriResource) throws InvalidQueryException {
 
-        if (uriResource instanceof URI) {
+        if (uriResource instanceof IRI) {
             String describeQuery = String.format("DESCRIBE <%s>", uriResource
                     .toString());
 
@@ -386,7 +377,7 @@ public class RepositoryFrontendHelper {
      *             when query is not valid or creating file
      *             fail.
      */
-    public static File executeConstructQuery(RepositoryConnection connection, Set<URI> dataGraph, String constructQuery,
+    public static File executeConstructQuery(RepositoryConnection connection, Set<IRI> dataGraph, String constructQuery,
             RDFFormatType formatType, String filePath) throws InvalidQueryException {
 
         try {
@@ -460,7 +451,7 @@ public class RepositoryFrontendHelper {
      * @throws cz.cuni.mff.xrg.odcs.rdf.exceptions.RDFException
      *             when transformation fault.
      */
-    public static void executeSPARQLUpdateQuery(RepositoryConnection connection, String updateQuery, URI dataGraph, Dataset dataset)
+    public static void executeSPARQLUpdateQuery(RepositoryConnection connection, String updateQuery, IRI dataGraph, Dataset dataset)
             throws RDFException {
 
         try {
@@ -505,7 +496,7 @@ public class RepositoryFrontendHelper {
      * @return String extension of given update query works with set repository
      *         GRAPH.
      */
-    public static String AddGraphToUpdateQuery(String updateQuery, URI dataGraph) {
+    public static String AddGraphToUpdateQuery(String updateQuery, IRI dataGraph) {
 
         String regex = "(insert|delete)\\s\\{";
         Pattern pattern = Pattern.compile(regex);
@@ -567,7 +558,7 @@ public class RepositoryFrontendHelper {
      * 
      * @return Info string message about removing application graphs.
      */
-    public static String deleteApplicationGraphs(RepositoryConnection connection, Set<URI> dataGraph) {
+    public static String deleteApplicationGraphs(RepositoryConnection connection, Set<IRI> dataGraph) {
 
         List<String> graphs = getApplicationGraphs(connection, dataGraph);
 
@@ -606,7 +597,7 @@ public class RepositoryFrontendHelper {
      *         of Virtuoso repository. When is used local repository as storage,
      *         this method return an empty list.
      */
-    public static List<String> getApplicationGraphs(RepositoryConnection connection, Set<URI> dataGraph) {
+    public static List<String> getApplicationGraphs(RepositoryConnection connection, Set<IRI> dataGraph) {
         List<String> result = new ArrayList<>();
 
         try {

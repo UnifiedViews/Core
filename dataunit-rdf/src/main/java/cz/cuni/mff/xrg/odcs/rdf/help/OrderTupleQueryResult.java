@@ -1,8 +1,8 @@
 package cz.cuni.mff.xrg.odcs.rdf.help;
 
-import org.openrdf.query.BindingSet;
-import org.openrdf.query.QueryEvaluationException;
-import org.openrdf.query.TupleQueryResult;
+import org.eclipse.rdf4j.query.BindingSet;
+import org.eclipse.rdf4j.query.QueryEvaluationException;
+import org.eclipse.rdf4j.query.TupleQueryResult;
 
 /**
  * Define behavior of result ordered SPARQL SELECT queries as iterator over {@link TupleQueryResult}.

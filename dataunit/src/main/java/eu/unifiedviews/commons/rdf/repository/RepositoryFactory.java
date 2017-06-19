@@ -1,7 +1,7 @@
 package eu.unifiedviews.commons.rdf.repository;
 
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +36,7 @@ public class RepositoryFactory {
      * @param executionId
      * @param type
      * @param directory DataUnit's directory.
-     * @return
+     * @return Repository created
      * @throws RDFException
      */
     public ManagableRepository create(Long executionId, ManagableRepository.Type type, String directory) throws RDFException {
@@ -53,7 +53,11 @@ public class RepositoryFactory {
                 repository = new RemoteRDF(uri, user, password, executionId);
                 break;
             case VIRTUOSO:
-                repository = new Virtuoso(uri, user, password);
+                throw new RDFException("Virtuoso repository type not supported: " + type.toString());
+                //repository = new Virtuoso(uri, user, password);
+                //break;
+            case GRAPHDB:
+                repository = new GraphDB(uri, user, password);
                 break;
             default:
                 throw new RDFException("Unknown repository type: " + type.toString());

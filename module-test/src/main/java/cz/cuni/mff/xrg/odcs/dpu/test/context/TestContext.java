@@ -1,15 +1,15 @@
 package cz.cuni.mff.xrg.odcs.dpu.test.context;
 
+import eu.unifiedviews.dataunit.DataUnit;
+import eu.unifiedviews.dpu.DPUContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import eu.unifiedviews.dpu.DPUContext;
 
 /**
  * Special implementation of {@link DPUContext} that enables testing.
@@ -172,6 +172,11 @@ public class TestContext implements DPUContext {
     }
 
     @Override
+    public boolean isPerformanceOptimizationEnabled(DataUnit dataunit) {
+        return false;
+    }
+
+    @Override
     public boolean canceled() {
         return false;
     }
@@ -184,6 +189,14 @@ public class TestContext implements DPUContext {
         } else {
             return new File(jarPath);
         }
+    }
+
+    /**
+     * @param jarPath
+     *            Path to the jar file.
+     */
+    public void setJarPath(String jarPath) {
+        this.jarPath = jarPath;
     }
 
     @Override
@@ -211,14 +224,6 @@ public class TestContext implements DPUContext {
      */
     public void setLastExecution(Date lastExecution) {
         this.lastExecution = lastExecution;
-    }
-
-    /**
-     * @param jarPath
-     *            Path to the jar file.
-     */
-    public void setJarPath(String jarPath) {
-        this.jarPath = jarPath;
     }
 
     @Override

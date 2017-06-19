@@ -7,7 +7,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import org.openrdf.repository.Repository;
+import org.eclipse.rdf4j.repository.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -90,7 +90,7 @@ public class RelationalRepositoryManager {
                 this.repositoryType = ManagableRelationalRepository.Type.FILE;
                 break;
             default:
-                LOG.info("Unknown repository type, using default file mode");
+                LOG.info("Unknown repository type for relational data unit, using default file mode");
                 this.repositoryType = ManagableRelationalRepository.Type.FILE;
         }
     }

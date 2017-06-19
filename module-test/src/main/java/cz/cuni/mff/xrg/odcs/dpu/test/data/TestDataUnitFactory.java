@@ -1,23 +1,10 @@
 package cz.cuni.mff.xrg.odcs.dpu.test.data;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.openrdf.model.ValueFactory;
-import org.openrdf.repository.Repository;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.sail.SailRepository;
-import org.openrdf.sail.nativerdf.NativeStore;
-
 import cz.cuni.mff.xrg.odcs.rdf.repositories.GraphUrl;
 import eu.unifiedviews.commons.dataunit.core.ConnectionSource;
 import eu.unifiedviews.commons.dataunit.core.CoreServiceBus;
 import eu.unifiedviews.commons.dataunit.core.FaultTolerant;
+import eu.unifiedviews.commons.rdf.repository.ManagableRepository;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.files.impl.FilesDataUnitFactory;
 import eu.unifiedviews.dataunit.files.impl.ManageableWritableFilesDataUnit;
@@ -28,6 +15,19 @@ import eu.unifiedviews.dataunit.relational.impl.ManageableWritableRelationalData
 import eu.unifiedviews.dataunit.relational.impl.RelationalDataUnitFactory;
 import eu.unifiedviews.dataunit.relational.repository.InMemoryRelationalDatabase;
 import eu.unifiedviews.dataunit.relational.repository.ManagableRelationalRepository;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.repository.Repository;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.sail.SailRepository;
+import org.eclipse.rdf4j.sail.nativerdf.NativeStore;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Create {@link cz.cuni.mff.xrg.odcs.commons.data.DataUnit}s that can be used
@@ -226,6 +226,11 @@ public class TestDataUnitFactory {
             @Override
             public ValueFactory getValueFactory() {
                 return repository.getValueFactory();
+            }
+
+            @Override
+            public ManagableRepository.Type getRepositoryType() {
+                return ManagableRepository.Type.LOCAL_RDF;
             }
 
         };

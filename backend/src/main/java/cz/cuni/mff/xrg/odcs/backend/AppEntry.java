@@ -5,8 +5,8 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.filter.ThresholdFilter;
 import ch.qos.logback.core.rolling.RollingFileAppender;
-import ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP;
-import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
+import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
+import ch.qos.logback.core.util.FileSize;
 import cz.cuni.mff.xrg.odcs.backend.auxiliaries.AppLock;
 import cz.cuni.mff.xrg.odcs.backend.auxiliaries.DatabaseInitializer;
 import cz.cuni.mff.xrg.odcs.backend.communication.EmbeddedHttpServer;
@@ -15,6 +15,7 @@ import cz.cuni.mff.xrg.odcs.backend.logback.MdcFilter;
 import cz.cuni.mff.xrg.odcs.backend.logback.SqlAppender;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.conf.MissingConfigPropertyException;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.log.Log;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
 import org.h2.store.fs.FileUtils;
@@ -54,39 +55,25 @@ public class AppEntry {
     private EmbeddedHttpServer httpProbeServer;
 
     private RollingFileAppender createAppender(LoggerContext loggerContext,
-            String logDirectory, String logFile, int logHistory) {
+            String logDirectory, String logFile, int logHistory, String logMaxSize) {
         final RollingFileAppender rfAppender = new RollingFileAppender();
         rfAppender.setContext(loggerContext);
         rfAppender.setFile(logDirectory + logFile + ".log");
         {
-            TimeBasedRollingPolicy rollingPolicy = new TimeBasedRollingPolicy();
+            SizeAndTimeBasedRollingPolicy rollingPolicy = new SizeAndTimeBasedRollingPolicy();
             rollingPolicy.setContext(loggerContext);
             // rolling policies need to know their parent
             // it's one of the rare cases, where a sub-component knows about its parent
             rollingPolicy.setParent(rfAppender);
             rollingPolicy.setFileNamePattern(logDirectory + logFile + ".%d{yyyy-MM-dd}.%i.log");
-            //rollingPolicy.setTimeBasedFileNamingAndTriggeringPolicy(timeBasedTriggeringPolicy);
             rollingPolicy.setMaxHistory(logHistory);
+            rollingPolicy.setTotalSizeCap(FileSize.valueOf(logMaxSize));
+            rollingPolicy.setMaxFileSize(FileSize.valueOf("10MB"));
 
             rfAppender.setRollingPolicy(rollingPolicy);
 
-            SizeAndTimeBasedFNATP triggeringPolicy;
-            {
-                // triger for name changing	
-                triggeringPolicy = new SizeAndTimeBasedFNATP();
-                triggeringPolicy.setMaxFileSize("10MB");
-                triggeringPolicy.setTimeBasedRollingPolicy(rollingPolicy);
-                rfAppender.setTriggeringPolicy(triggeringPolicy);
-            }
-
-            rollingPolicy.setTimeBasedFileNamingAndTriggeringPolicy(triggeringPolicy);
             rollingPolicy.start();
 
-            {
-                // we need TimeBasedRollingPolicy to have the 
-                // FileNamePattern pattern initialized which is done in rollingPolicy.start();
-                triggeringPolicy.start();
-            }
         }
         PatternLayoutEncoder encoder = new PatternLayoutEncoder();
         encoder.setContext(loggerContext);
@@ -112,11 +99,13 @@ public class AppEntry {
                 logDirectory = logDirectory + File.separator;
             }
         } catch (Exception e) {
+            //not logging exception, default value is used in this case
         }
 
         try {
             logHistory = appConfig.getInteger(ConfigProperty.BACKEND_LOG_KEEP);
         } catch (Exception e) {
+            //not logging exception, default value is used in this case
         }
 
         // check existance of directory
@@ -132,16 +121,27 @@ public class AppEntry {
             }
         }
 
+
+        //check if there is any preferred max size for logs
+        String logMaxSize = "1GB";
+        // we try to load values from configuration
+        try {
+            logMaxSize = appConfig.getString(ConfigProperty.BACKEND_LOG_MAX_SIZE);
+            // user set path, ensure that it end's on file separator
+        } catch (MissingConfigPropertyException e) {
+            //not logging exception, default value is used in this case
+        }
+
         // now prepare the logger 
 
         final LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
 
         RollingFileAppender allLog = createAppender(loggerContext, logDirectory,
-                "backend", logHistory);
+                "backend", logHistory, logMaxSize);
         allLog.start();
 
         RollingFileAppender errorLog = createAppender(loggerContext, logDirectory,
-                "backend_err", logHistory);
+                "backend_err", logHistory, logMaxSize);
         {
             // add filter
             ThresholdFilter levelFilter = new ThresholdFilter();
@@ -199,7 +199,7 @@ public class AppEntry {
         lockKey.append(appConfig.getInteger(ConfigProperty.BACKEND_PORT));
         if (!AppLock.setLock(lockKey.toString())) {
             // another application is already running
-            LOG.info("Another instance of UnifiedViews is probably running.");
+            LOG.warn("Another instance of UnifiedViews is already running on this machine.");
             return;
         }
 

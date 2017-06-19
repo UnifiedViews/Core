@@ -12,7 +12,7 @@ import eu.unifiedviews.dataunit.rdf.impl.i18n.Messages;
 public class GraphNotEmptyException extends DataUnitException {
 
     /**
-     * Create a new instance of {@link GraphNotEmptyException} with {@link #defaultMessage}.
+     * Create a new instance of {@link GraphNotEmptyException}.
      */
     public GraphNotEmptyException() {
         super(Messages.getString("GraphNotEmptyException.default.messages"));

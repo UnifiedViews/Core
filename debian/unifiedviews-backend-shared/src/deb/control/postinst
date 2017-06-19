@@ -21,13 +21,13 @@ set -e
 set_java() {
  JAVA_VERSION=`java -version 2>&1 | grep "java version" | awk '{print $3}' | tr -d \" | awk '{split($0, array, ".")} END{print array[2]}'`
  echo -n "check java version"
- if [ ! $JAVA_VERSION -eq 7 ]; then
-     JAVA_NAME=`update-java-alternatives  -l | grep 7 | cut -d' ' -f1`
+ if [ ! $JAVA_VERSION -eq 8 ]; then
+     JAVA_NAME=`update-java-alternatives  -l | grep 8 | cut -d' ' -f1`
      if [ -n $JAVA_NAME ] ; then
          /usr/sbin/update-java-alternatives --jre-headless --set $JAVA_NAME
-     echo " - Java version is set to 1.7"
+     echo " - Java version is set to 1.8"
      else
-        echo " ERROR: java 7 is not installed"
+        echo " ERROR: java 8 is not installed"
      fi
  else
     echo  " - ok"

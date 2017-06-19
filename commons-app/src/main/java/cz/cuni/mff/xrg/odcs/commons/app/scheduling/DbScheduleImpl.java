@@ -84,8 +84,7 @@ public class DbScheduleImpl extends DbAccessBase<Schedule>
                 + " SELECT s1.id FROM exec_schedule s1"
                 + " LEFT JOIN exec_pipeline e"
                 + " ON e.id = s1.pipeline_id WHERE e.status IN (%d, %d))"
-                + " ORDER BY s.id ASC"
-                + " FOR UPDATE";
+    	        + " ORDER BY s.id ASC" ;
 
         String query = String.format(queryStr, 1, 0, 1);
         return this.em.createNativeQuery(query, Schedule.class).getResultList();

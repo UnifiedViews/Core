@@ -1,15 +1,14 @@
 package eu.unifiedviews.commons.rdf.repository;
 
+import eu.unifiedviews.dataunit.DataUnitException;
+import org.apache.commons.io.FileUtils;
+import org.junit.Assert;
+import org.junit.Test;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
-import org.apache.commons.io.FileUtils;
-import org.junit.Test;
-
-import eu.unifiedviews.dataunit.DataUnitException;
-import junit.framework.Assert;
 
 /**
  *

@@ -1,18 +1,16 @@
 package cz.cuni.mff.xrg.odcs.backend.auxiliaries;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
- * The Class AppLock taken from
- * http://nerdydevel.blogspot.com/2012/07/run-only-single-java-application-instance.html
- * 
- * @author rumatoest
+ * Ensures that only single instance of UnifiedViews runs on a single machine.
+ * Inspired by: https://github.com/javaplugs/javaplugs/blob/master/src/main/java/com/github/javaplugs/app/AppLock.java
  */
 public class AppLock {
 

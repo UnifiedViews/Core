@@ -8,9 +8,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.openrdf.model.impl.URIImpl;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
+import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tepi.filtertable.FilterGenerator;
@@ -309,8 +309,6 @@ public class RDFQueryView extends QueryView {
     /**
      * Execute query on selected graph.
      *
-     * @param isBrowse
-     *            Is it browse query?
      * @throws InvalidQueryException
      *             If the query is badly formatted.
      */
@@ -371,11 +369,11 @@ public class RDFQueryView extends QueryView {
 
     @Override
     public void browseDataUnit() {
-        queryText.setValue("CONSTRUCT {?s ?p ?o} WHERE {?s ?p ?o} LIMIT 1000");
+        queryText.setValue("SELECT ?s ?p ?o WHERE {?s ?p ?o} LIMIT 1000");
         try {
             runQuery();
         } catch (InvalidQueryException ex) {
-            //Should not happen
+            LOG.error(ex.getLocalizedMessage(), ex.getStackTrace());
         }
     }
 
@@ -413,12 +411,12 @@ public class RDFQueryView extends QueryView {
             if (isSelectQuery != (format.getClass() == SelectFormatType.class)) {
 
                 if (isSelectQuery) {
-                    Notification.show(Messages.getString("RDFQueryView.select.not.supported"),
+                    Notification.show(Messages.getString("RDFQueryView.select.not.supported", format.toString()),
                             Messages.getString("RDFQueryView.format.not.supported.construct"),
                             Notification.Type.ERROR_MESSAGE);
                 } else {
                     Notification.show(
-                            Messages.getString("RDFQueryView.consctuct.not.supported"),
+                            Messages.getString("RDFQueryView.consctuct.not.supported", format.toString()),
                             Messages.getString("RDFQueryView.consctuct.not.supported.description"),
                             Notification.Type.ERROR_MESSAGE);
                 }

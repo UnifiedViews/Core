@@ -1,22 +1,5 @@
 package cz.cuni.mff.xrg.odcs.backend.execution.pipeline;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-import javax.persistence.EntityNotFoundException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
-
 import ch.qos.logback.classic.Level;
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.backend.context.ContextException;
@@ -37,7 +20,18 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.Pipeline;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecutionStatus;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.DependencyGraph;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.ExecutedNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+
+import javax.annotation.PostConstruct;
+import javax.persistence.EntityNotFoundException;
+import java.util.*;
 
 /**
  * Execute given pipeline. The {@link Executor} must be bind to the certain {@link PipelineExecution} by calling {@link #bind(PipelineExecution)} before
@@ -104,7 +98,7 @@ public class Executor implements Runnable {
     /**
      * Store context related to Nodes (DPUs).
      */
-    private Map<Node, Context> contexts = new HashMap<>();
+    private Map<ExecutedNode, Context> contexts = new HashMap<>();
 
     /**
      * End time of last successful pipeline execution.
@@ -292,7 +286,7 @@ public class Executor implements Runnable {
      * Run the execution.
      */
     private void execute() {
-        LOG.info("execute() start of # {}", this.execution.getId());
+        LOG.debug("execute() start of # {}", this.execution.getId());
         // get dependency graph
         DependencyGraph dependencyGraph = prepareDependencyGraph();
 
@@ -311,7 +305,7 @@ public class Executor implements Runnable {
         boolean userAbortRequest = false;
 
         // execute each node
-        for (Node node : dependencyGraph) {
+        for (ExecutedNode node : dependencyGraph) {
 
             // check for the end of the execution
             // this test has to be here .. as the pre executors
@@ -337,7 +331,7 @@ public class Executor implements Runnable {
                 break;
             }
 
-            LOG.info("Starting execution of dpu {} = {}", node.getDpuInstance()
+            LOG.debug("Starting execution of dpu {} = {}", node.getDpuInstance()
                     .getId(), node.getDpuInstance().getName());
 
             final String threadName = "dpu: " + node.getDpuInstance().getName();

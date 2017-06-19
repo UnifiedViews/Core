@@ -22,9 +22,9 @@
 
     <!-- we use annotations to run tasks -->
     <task:annotation-driven executor="taskExecutor" scheduler="taskScheduler"/>
-    <!-- Used for asynch calls even for scheduled functions. -->
+    <!-- Used for @Async tasks even for scheduled functions. -->
     <task:executor id="taskExecutor" pool-size="8"/>
-    <!-- Used for Scheduled tasks.-->
+    <!-- Used for @Scheduled tasks.-->
     <bean id="taskScheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
         <property name="poolSize" value="8" />
         <property name="waitForTasksToCompleteOnShutdown" value="false" />
@@ -76,7 +76,6 @@
     <!-- HTTP probe --> 
     <bean class="cz.cuni.mff.xrg.odcs.backend.communication.EmbeddedHttpServer"/>
     <bean class="cz.cuni.mff.xrg.odcs.backend.communication.ProbeHandler"/>
-    
 
     <!-- store events into database -->
     <bean class="cz.cuni.mff.xrg.odcs.backend.EventListenerDatabase"/>

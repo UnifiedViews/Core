@@ -1,8 +1,8 @@
 package cz.cuni.mff.xrg.odcs.rdf.validators;
 
-import org.openrdf.query.MalformedQueryException;
-import org.openrdf.query.QueryLanguage;
-import org.openrdf.query.parser.QueryParserUtil;
+import org.eclipse.rdf4j.query.MalformedQueryException;
+import org.eclipse.rdf4j.query.QueryLanguage;
+import org.eclipse.rdf4j.query.parser.QueryParserUtil;
 
 import cz.cuni.mff.xrg.odcs.rdf.enums.SPARQLQueryType;
 import cz.cuni.mff.xrg.odcs.rdf.interfaces.QueryValidator;

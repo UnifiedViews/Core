@@ -5,31 +5,31 @@
 	<parent>
 		<groupId>eu.unifiedviews</groupId>
 		<artifactId>uv-pom</artifactId>
-		<version>2.1.7</version>
+		<version>3.0.0</version>
 		<relativePath/>
 	</parent>
 
 	<groupId>eu.unifiedviews</groupId>
 	<artifactId>uv-core</artifactId>
-	<version>2.3.2</version>
+	<version>3.0.0</version>
 	<packaging>pom</packaging>
 	<name>UnifiedViews-Core</name>
 	<description />
 
 	<properties>
-		<project.java.source.version>1.7</project.java.source.version>
-		<project.java.target.version>1.7</project.java.target.version>
+		<project.java.source.version>1.8</project.java.source.version>
+		<project.java.target.version>1.8</project.java.target.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 
 		<!-- TODO: update ussage as rdf/files-impls utilize project version, not this property -->
 		<uv-dpu-api.version>${unifiedviews.api.version}</uv-dpu-api.version>
-		<uv-dpu-api-helpers.version>2.1.7</uv-dpu-api-helpers.version>		
+		<uv-dpu-api-helpers.version>3.0.0</uv-dpu-api-helpers.version>		
 		<uv-dataunit-rdf.version>${unifiedviews.api.version}</uv-dataunit-rdf.version>
 		<uv-dataunit-files.version>${unifiedviews.api.version}</uv-dataunit-files.version>
 		<uv-dataunit-relational.version>${unifiedviews.api.version}</uv-dataunit-relational.version>
-		<uv-dataunit-helpers.version>2.1.7</uv-dataunit-helpers.version>		
+		<uv-dataunit-helpers.version>3.0.0</uv-dataunit-helpers.version>		
 
 		<dataunit.version>${project.version}</dataunit.version>
 
@@ -148,6 +148,20 @@
 			<name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
 			<url>http://repository.springsource.com/maven/bundles/external</url>
 		</repository>
+
+		<!--
+		<repository>
+			<id>stardog-public</id>
+			<url>http://maven.stardog.com</url>
+		</repository> -->
+
+		<repository>
+			<id>ontotex-public</id>
+			<url>http://maven.ontotext.com/content/groups/all-onto</url>
+		</repository>
+
+
+
 	</repositories>
 
 	<pluginRepositories>
@@ -162,6 +176,7 @@
 					<configuration>
 						<source>${project.java.source.version}</source>
 						<target>${project.java.target.version}</target>
+						<maxmem>1024m</maxmem>
 					</configuration>
 				</plugin>
 			</plugins>
@@ -260,7 +275,28 @@
 					<noDeploy>true</noDeploy>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.zeroturnaround</groupId>
+				<artifactId>jrebel-maven-plugin</artifactId>
+				<version>1.1.7</version>
+				<configuration>
+					<alwaysGenerate>true</alwaysGenerate>
+					<addResourcesDirToRebelXml>true</addResourcesDirToRebelXml>
+					<showGenerated>true</showGenerated>
+				</configuration>
+				<executions>
+					<execution>
+						<id>generate-rebel-xml</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
 		</plugins>
+
 	</build>
 
 	<profiles>
@@ -289,7 +325,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
-						<version>2.9.1</version>
+						<version>2.10.1</version>
 						<executions>
 							<execution>
 								<id>attach-javadocs</id>
@@ -306,6 +342,14 @@
 				</plugins>
 			</build>
 		</profile>
+		<!-- Profile for compilation with Java 7. -->
+       	 	<profile>
+            		<id>java7</id>
+			<properties>
+                		<project.java.source.version>1.7</project.java.source.version>
+				<project.java.target.version>1.7</project.java.target.version>
+            		</properties>
+        	</profile>
 		<!-- profile to enable integration (system) tests -->
 		<profile>
 			<id>SYSTESTS</id>

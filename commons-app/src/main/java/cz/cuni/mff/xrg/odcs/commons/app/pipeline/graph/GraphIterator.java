@@ -9,12 +9,12 @@ import java.util.List;
  * 
  * @author Jan Vojt
  */
-public class GraphIterator implements Iterator<Node> {
+public class GraphIterator implements Iterator<ExecutedNode> {
 
     /**
      * Stack of nodes used to perform breath-first search.
      */
-    private final List<DependencyNode> stack;
+    private final List<ExecutedNode> stack;
 
     /**
      * Constructs iterator from dependency graph.
@@ -37,11 +37,11 @@ public class GraphIterator implements Iterator<Node> {
      * Returns the next node to be processed.
      */
     @Override
-    public Node next() {
-        for (DependencyNode n : stack) {
+    public ExecutedNode next() {
+        for (ExecutedNode n : stack) {
             if (n.hasMetDependencies()) {
                 replaceWithDependants(n);
-                return n.getNode();
+                return n;
             }
         }
         return null;
@@ -61,12 +61,12 @@ public class GraphIterator implements Iterator<Node> {
      * 
      * @param node
      */
-    private void replaceWithDependants(DependencyNode node) {
+    private void replaceWithDependants(ExecutedNode node) {
         node.setExecuted(true);
         stack.remove(node);
 
         // we need to make sure dependant is not already in the stack
-        for (DependencyNode n : node.getDependants()) {
+        for (ExecutedNode n : node.getDependants()) {
             if (!stack.contains(n)) {
                 stack.add(n);
             }

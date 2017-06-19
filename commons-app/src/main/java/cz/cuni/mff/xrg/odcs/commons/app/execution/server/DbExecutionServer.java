@@ -1,8 +1,8 @@
 package cz.cuni.mff.xrg.odcs.commons.app.execution.server;
 
-import java.util.List;
-
 import cz.cuni.mff.xrg.odcs.commons.app.dao.db.DbAccess;
+
+import java.util.List;
 
 public interface DbExecutionServer extends DbAccess<ExecutionServer> {
 
@@ -41,5 +41,17 @@ public interface DbExecutionServer extends DbAccess<ExecutionServer> {
      * @return Count of unallocated QUEUED executions with IGNORE priority
      */
     long getCountOfUnallocatedQueuedExecutionsWithIgnorePriority();
+
+    /**
+     * To set sql driver information (e.g., by Spring from config.properties)
+     * @param sqlDriverInfo
+     */
+    public void setSqlDriverInfo(String sqlDriverInfo);
+
+    /**
+     * To get sql driver information
+     * @return
+     */
+    public String getSqlDriverInfo();
 
 }

@@ -10,8 +10,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryException;
 
 import eu.unifiedviews.commons.dataunit.core.ConnectionSource;
 import eu.unifiedviews.commons.dataunit.core.CoreServiceBus;

@@ -117,4 +117,19 @@ public interface ManagableDataUnit extends DataUnit {
      */
     void load() throws DataUnitException;
 
+    /**
+     * To mark whether the data unit is consumed by multiple outputs - used during context merging when deciding whether
+     * the following input data unit can run in optimistic mode
+     *
+     * @param status True if it is consumed by multiple input data units
+     */
+    void setConsumedByMultipleInputs(boolean status);
+
+    /**
+     * To get information whether the given data unit is consumed by multiple inputs
+     *
+     * @return True if it is consumed by multiple inputs
+     */
+    boolean isConsumedByMultipleInputs();
+
 }

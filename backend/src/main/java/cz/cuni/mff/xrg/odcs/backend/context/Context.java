@@ -1,32 +1,36 @@
 package cz.cuni.mff.xrg.odcs.backend.context;
 
-import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
-
 import cz.cuni.mff.xrg.odcs.backend.dpu.event.DPUMessage;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.dpu.DPUInstanceRecord;
 import cz.cuni.mff.xrg.odcs.commons.app.execution.context.ExecutionContextInfo;
 import cz.cuni.mff.xrg.odcs.commons.app.facade.ModuleFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.RuntimePropertiesFacade;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
+import cz.cuni.mff.xrg.odcs.commons.app.properties.RuntimeProperty;
 import cz.cuni.mff.xrg.odcs.commons.app.resource.MissingResourceException;
 import cz.cuni.mff.xrg.odcs.commons.app.resource.ResourceManager;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
+import eu.unifiedviews.dataunit.DataUnit;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dpu.DPUContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.*;
+
+/**
+ * Main class holding context for the executed DPU
+ */
 public class Context implements DPUContext {
+
+    @Autowired
+    private RuntimePropertiesFacade runtimePropertyFacade;
 
     /**
      * Name of directory for shared DPU's data.
@@ -102,6 +106,20 @@ public class Context implements DPUContext {
      */
     private boolean canceled;
 
+    /**
+     * To hold information which data units cannot be optimalized - because e.g. it consumes the output of the previous data unit together with other DU
+     */
+    private Set<DataUnit> cannotBeOptimalized;
+
+    public void addNonOptimalizableDataUnit(DataUnit du) {
+        cannotBeOptimalized.add(du);
+    }
+
+    @Override
+    public boolean isPerformanceOptimizationEnabled(DataUnit du) {
+        return !isDebugging() && !cannotBeOptimalized.contains(du);
+    }
+
     private Locale locale;
 
     /**
@@ -121,6 +139,7 @@ public class Context implements DPUContext {
         this.canceled = false;
         this.stopExecution = false;
         this.locale = null;
+        this.cannotBeOptimalized = new HashSet<>();
     }
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - //
@@ -177,8 +196,7 @@ public class Context implements DPUContext {
      * @return Created DataUni.
      * @throws eu.unifiedviews.dataunit.DataUnitException
      */
-    public ManagableDataUnit addOutputDataUnit(ManagableDataUnit.Type type, String name) throws DataUnitException
-    {
+    public ManagableDataUnit addOutputDataUnit(ManagableDataUnit.Type type, String name) throws DataUnitException {
         return outputsManager.addDataUnit(type, name);
     }
 
@@ -403,9 +421,18 @@ public class Context implements DPUContext {
     @Override
     public Map<String, String> getEnvironment() {
         Map<String, String> result = new HashMap<>();
+
+        //get properties from config.properties
         for (Map.Entry<Object, Object> entry : appConfig.getProperties().entrySet()) {
             result.put((String) entry.getKey(), (String) entry.getValue());
         }
+
+        //get properties from runtime properties
+        //if the map already contains value for that from config.properties, it is overwritten
+        for (RuntimeProperty property : runtimePropertyFacade.getAllRuntimeProperties()) {
+            result.put((String) property.getName(), (String) property.getValue());
+        }
+
         return result;
     }
 

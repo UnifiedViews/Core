@@ -1,16 +1,15 @@
 package cz.cuni.mff.xrg.odcs.backend.execution.pipeline.impl;
 
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.Ordered;
-import org.springframework.stereotype.Component;
-
 import cz.cuni.mff.xrg.odcs.backend.context.Context;
 import cz.cuni.mff.xrg.odcs.backend.execution.pipeline.PostExecutor;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.PipelineExecution;
 import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.DependencyGraph;
-import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.Node;
+import cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph.ExecutedNode;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.Ordered;
+import org.springframework.stereotype.Component;
+
+import java.util.Map;
 
 /**
  * Unlock pipelines that were lock in {@link ConflictLock}.
@@ -33,7 +32,7 @@ public class ConflictUnLock implements PostExecutor {
 
     @Override
     public boolean postAction(PipelineExecution execution,
-            Map<Node, Context> contexts,
+            Map<ExecutedNode, Context> contexts,
             DependencyGraph graph) {
         // just call unlock on ConflictLock
         conflictLock.unlock(execution);

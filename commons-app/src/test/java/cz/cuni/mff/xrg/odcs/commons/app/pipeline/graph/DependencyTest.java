@@ -1,11 +1,11 @@
 package cz.cuni.mff.xrg.odcs.commons.app.pipeline.graph;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * Test suite for testing pipeline graph dependency resolving algorithms.
@@ -39,7 +39,7 @@ public class DependencyTest {
         // check correct order
         for (int i = 0; i < 5; i++) {
             assertTrue(iter.hasNext());
-            assertSame(nodes[i], iter.next());
+            assertSame(nodes[i], iter.next().getNode());
         }
 
         // no more nodes
@@ -66,25 +66,25 @@ public class DependencyTest {
         GraphIterator iter = dGraph.iterator();
 
         // first must be E0 or E4
-        Node n = iter.next();
-        assertTrue(n == nodes[0] || n == nodes[4]);
+        ExecutedNode n = iter.next();
+        assertTrue(n.getNode() == nodes[0] || n.getNode() == nodes[4]);
 
         // second may be any of E0, E4, T1
         n = iter.next();
-        assertTrue(n == nodes[0] || n == nodes[1]
-                || n == nodes[4]);
+        assertTrue(n.getNode() == nodes[0] || n.getNode() == nodes[1]
+                || n.getNode() == nodes[4]);
 
         // third may be E4 or T1
         n = iter.next();
-        assertTrue(n == nodes[1] || n == nodes[4]);
+        assertTrue(n.getNode() == nodes[1] || n.getNode() == nodes[4]);
 
         // fourth is always T2
         n = iter.next();
-        assertSame(nodes[2], n);
+        assertSame(nodes[2], n.getNode());
 
         // last is always L3
         n = iter.next();
-        assertSame(nodes[3], n);
+        assertSame(nodes[3], n.getNode());
 
         // no more nodes
         assertFalse(iter.hasNext());
@@ -111,7 +111,7 @@ public class DependencyTest {
 
         // first node is not in the circle
         assertTrue(iter.hasNext());
-        assertSame(nodes[0], iter.next());
+        assertSame(nodes[0], iter.next().getNode());
 
         // second node is in the circle
         // graph still says to have more nodes and so return true for hasNext,
@@ -136,7 +136,7 @@ public class DependencyTest {
         GraphIterator iter = dGraph.iterator();
 
         assertTrue(iter.hasNext());
-        assertEquals(nodes[0], iter.next());
+        assertEquals(nodes[0], iter.next().getNode());
 
         assertFalse(iter.hasNext());
         assertNull(iter.next());
@@ -170,7 +170,7 @@ public class DependencyTest {
 
         for (int i = 0; i < 4; i++) {
             assertTrue(iter.hasNext());
-            assertTrue(nodesToRun.contains(iter.next()));
+            assertTrue(nodesToRun.contains(iter.next().getNode()));
         }
 
         assertFalse(iter.hasNext());

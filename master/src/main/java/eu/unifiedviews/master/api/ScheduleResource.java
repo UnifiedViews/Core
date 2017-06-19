@@ -238,7 +238,7 @@ public class ScheduleResource {
 
             UserActor actor = this.userFacade.getUserActorByExternalId(scheduleToUpdate.getUserActorExternalId());
 
-            Schedule schedule = scheduleFacade.createSchedule();
+            Schedule schedule = new Schedule();
             if (schedule == null) {
                 throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, Messages.getString("pipeline.create.schedule.general.error"), "ScheduleFacade returned null, after creation of schedule");
             }

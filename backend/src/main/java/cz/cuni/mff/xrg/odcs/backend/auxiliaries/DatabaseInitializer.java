@@ -46,23 +46,23 @@ public class DatabaseInitializer {
         userRole.setName("User");
 
         User admin = new User();
-        admin.setFullName("John Admin");
+        admin.setFullName("admin");
         admin.setPassword("test");
         admin.setTableRows(20);
         admin.setUsername("admin");
         admin.setEmail(adminEmailAddress);
         admin.addRole(adminRole);
-        admin.setExternalIdentifier("http://www.johnadmin.cz");
+        admin.setExternalIdentifier("admin");
         admin.addRole(userRole);
 
         User user = new User();
-        user.setFullName("John User");
+        user.setFullName("user");
         user.setPassword("test");
         user.setTableRows(20);
         user.setUsername("user");
         user.setEmail(userEmailAddress);
         user.addRole(userRole);
-        user.setExternalIdentifier("http://johnuser.at");
+        user.setExternalIdentifier("user");
 
         UserNotificationRecord userNotificationRecordAdmin = new UserNotificationRecord();
         userNotificationRecordAdmin.setUser(admin);
@@ -93,10 +93,10 @@ public class DatabaseInitializer {
         //set properties holding version of UV in DB (used by Debian installation to detect the version)
         Property property1 = new Property();
         property1.setKey("UV.Core.version");
-        property1.setValue("002.003.000");
+        property1.setValue("003.000.000");
         Property property2 = new Property();
         property2.setKey("UV.Plugin-DevEnv.version");
-        property2.setValue("002.001.005");
+        property2.setValue("003.000.000");
 
         addNewPermissionToRoles("administrator", adminRole);
         addNewPermissionToRoles("pipeline.delete", true, adminRole, userRole);

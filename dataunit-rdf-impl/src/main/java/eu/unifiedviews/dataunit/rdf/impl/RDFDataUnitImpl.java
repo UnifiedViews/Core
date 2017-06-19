@@ -1,18 +1,12 @@
 package eu.unifiedviews.dataunit.rdf.impl;
 
-import org.openrdf.model.Literal;
-import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
-import org.openrdf.model.ValueFactory;
-import org.openrdf.model.impl.URIImpl;
-import org.openrdf.query.MalformedQueryException;
-import org.openrdf.query.QueryLanguage;
-import org.openrdf.query.Update;
-import org.openrdf.query.UpdateExecutionException;
-import org.openrdf.query.impl.DatasetImpl;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.RepositoryResult;
+import org.eclipse.rdf4j.model.*;
+import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.query.*;
+import org.eclipse.rdf4j.query.impl.DatasetImpl;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.RepositoryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +14,7 @@ import eu.unifiedviews.commons.dataunit.AbstractWritableMetadataDataUnit;
 import eu.unifiedviews.commons.dataunit.ManagableDataUnit;
 import eu.unifiedviews.commons.dataunit.core.CoreServiceBus;
 import eu.unifiedviews.commons.dataunit.core.FaultTolerant;
+import eu.unifiedviews.commons.rdf.repository.ManagableRepository;
 import eu.unifiedviews.dataunit.DataUnitException;
 import eu.unifiedviews.dataunit.MetadataDataUnit;
 import eu.unifiedviews.dataunit.rdf.RDFDataUnit;
@@ -30,12 +25,10 @@ import eu.unifiedviews.dataunit.rdf.impl.i18n.Messages;
  */
 class RDFDataUnitImpl extends AbstractWritableMetadataDataUnit implements ManageableWritableRDFDataUnit {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RDFDataUnitImpl.class);
+    protected static final String GET_DATA_GRAPHS = "SELECT ?toDelete WHERE { "
+            + "GRAPH ?" + WRITE_CONTEXT_BINDING + " { ?x <" + PREDICATE_DATAGRAPH_URI + "> ?toDelete } }" ;  //http://unifiedviews.eu/DataUnit/MetadataDataUnit/RDFDataUnit/dataGraphURI
 
-    /**
-     * Base URI available to the user.
-     */
-    private final URI baseDataGraphURI;
+    private static final Logger LOG = LoggerFactory.getLogger(RDFDataUnitImpl.class);
 
     private static final String DATA_GRAPH_BINDING = "dataGraph";
 
@@ -54,11 +47,16 @@ class RDFDataUnitImpl extends AbstractWritableMetadataDataUnit implements Manage
             + "?s <" + RDFDataUnit.PREDICATE_DATAGRAPH_URI + "> ?o "
             + "}";
 
-    public RDFDataUnitImpl(String dataUnitName, String workingDirectoryURI,
-            String writeContextString, CoreServiceBus coreServices) {
-        super(dataUnitName, writeContextString, coreServices);
+    /**
+     * Base IRI available to the user.
+     */
+    private final IRI baseDataGraphURI;
 
-        baseDataGraphURI = new URIImpl(writeContextString + "/user/");
+    public RDFDataUnitImpl(String dataUnitName, String workingDirectoryURI,
+            String directoryUri, CoreServiceBus coreServices) {
+        super(dataUnitName, directoryUri, coreServices);
+
+        baseDataGraphURI = new URIImpl(directoryUri + "/user/");
     }
 
     @Override
@@ -73,25 +71,21 @@ class RDFDataUnitImpl extends AbstractWritableMetadataDataUnit implements Manage
 
     @Override
     public RDFDataUnit.Iteration getIteration() throws DataUnitException {
-        checkForMultithreadAccess();
-
         if (connectionSource.isRetryOnFailure()) {
             return new RDFDataUnitIterationEager(this, connectionSource, faultTolerant);
         } else {
-            return new RDFDataUnitIterationLazy(this);
+            return new RDFDataUnitIterationEager(this, connectionSource, faultTolerant);
         }
     }
 
     @Override
-    public URI getBaseDataGraphURI() throws DataUnitException {
+    public IRI getBaseDataGraphURI() throws DataUnitException {
         return baseDataGraphURI;
     }
 
     @Override
-    public void addExistingDataGraph(final String symbolicName, final URI existingDataGraphURI) throws DataUnitException {
-        checkForMultithreadAccess();
-
-        final URI entrySubject = this.creatEntitySubject();
+    public void addExistingDataGraph(final String symbolicName, final IRI existingDataGraphURI) throws DataUnitException {
+        final IRI entrySubject = this.creatEntitySubject();
         try {
             faultTolerant.execute(new FaultTolerant.Code() {
 
@@ -100,10 +94,10 @@ class RDFDataUnitImpl extends AbstractWritableMetadataDataUnit implements Manage
                     //adds triple with symbolic name
                     addEntry(entrySubject, symbolicName, connection);
                     final ValueFactory valueFactory = connection.getValueFactory();
-                    //adds triple with data graph URI
+                    //adds triple with data graph IRI
                     connection.add(
                             entrySubject,
-                            valueFactory.createURI(RDFDataUnitImpl.PREDICATE_DATAGRAPH_URI),
+                            valueFactory.createIRI(RDFDataUnitImpl.PREDICATE_DATAGRAPH_URI),
                             existingDataGraphURI,
                             getMetadataWriteGraphname()
                             );
@@ -115,10 +109,8 @@ class RDFDataUnitImpl extends AbstractWritableMetadataDataUnit implements Manage
     }
 
     @Override
-    public URI addNewDataGraph(final String symbolicName) throws DataUnitException {
-        checkForMultithreadAccess();
-
-        final URI entrySubject = this.creatEntitySubject();
+    public IRI addNewDataGraph(final String symbolicName) throws DataUnitException {
+        final IRI entrySubject = this.creatEntitySubject();
         try {
             faultTolerant.execute(new FaultTolerant.Code() {
 
@@ -127,10 +119,10 @@ class RDFDataUnitImpl extends AbstractWritableMetadataDataUnit implements Manage
                     //adds triple with symbolic name
                     addEntry(entrySubject, symbolicName, connection);
                     final ValueFactory valueFactory = connection.getValueFactory();
-                    //adds triple with data graph URI 
+                    //adds triple with data graph IRI
                     connection.add(
                             entrySubject,
-                            valueFactory.createURI(RDFDataUnitImpl.PREDICATE_DATAGRAPH_URI),
+                            valueFactory.createIRI(RDFDataUnitImpl.PREDICATE_DATAGRAPH_URI),
                             entrySubject,
                             getMetadataWriteGraphname()
                             );
@@ -143,9 +135,7 @@ class RDFDataUnitImpl extends AbstractWritableMetadataDataUnit implements Manage
     }
 
     @Override
-    public void updateExistingDataGraph(String symbolicName, URI newDataGraphURI) throws DataUnitException {
-        checkForMultithreadAccess();
-
+    public void updateExistingDataGraph(String symbolicName, IRI newDataGraphURI) throws DataUnitException {
         RepositoryConnection connection = null;
         RepositoryResult<Statement> result = null;
         try {
@@ -191,6 +181,69 @@ class RDFDataUnitImpl extends AbstractWritableMetadataDataUnit implements Manage
                 }
             }
         }
+    }
+
+    @Override
+    /**
+     * Clears RDF data graphs - the content of the graph. Relevant for GraphDB e.g. to clear the graph content.
+     * Uses super() for removing the generated metadata from the RDF store
+     * Not relevant for localRDF as in this case it is easier to just throw away the file created.
+     */
+    public void clear() throws DataUnitException {
+
+        if (!this.connectionSource.getRepositoryType().equals(ManagableRepository.Type.LOCAL_RDF)) {
+        //not called for RDF local native store as in this case it is easier just to delete the file (instead of deleting the graphs)
+            RepositoryConnection connection = null;
+            TupleQueryResult result = null;
+            try {
+                connection = this.getConnection();
+                //get all data graphs from the writeContext graphs
+                TupleQuery tupleQuery = null;
+                try {
+                    tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, GET_DATA_GRAPHS);
+                } catch (MalformedQueryException e) {
+                    throw new DataUnitException(e);
+                }
+                tupleQuery.setBinding(WRITE_CONTEXT_BINDING, writeContext);
+
+                try {
+                    result = tupleQuery.evaluate();
+
+                    while (result.hasNext()) {
+
+                        BindingSet bindingSet = result.next();
+                        Value dataGraphToBeDeleted = bindingSet.getValue("toDelete");
+                        Resource dataGraphToBeDeletedResource = (Resource) dataGraphToBeDeleted;
+
+                        // Delete graph with entries.
+                        connection.clear(dataGraphToBeDeletedResource);
+                    }
+
+                } catch (QueryEvaluationException ex) {
+                    throw new DataUnitException(ex);
+                }
+            } catch (RepositoryException ex) {
+                throw new DataUnitException("Could not delete RDF data graphs.", ex);
+            } finally {
+                if (result != null) {
+                    try {
+                        result.close();
+                    } catch (QueryEvaluationException ex) {
+                        LOG.warn("Cannot close result set.", ex);
+                    }
+                }
+                try {
+                    if (connection != null) {
+                        connection.close();
+                    }
+                } catch (RepositoryException ex) {
+                    LOG.warn("Error when closing connection.", ex);
+                }
+            }
+
+        }
+
+        super.clear();
     }
 
 }

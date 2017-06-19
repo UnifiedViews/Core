@@ -426,7 +426,7 @@ class OSGIModuleFacade implements ModuleFacade {
      * @param directoryPath
      */
     private void loadLibs(String directoryPath) {
-        LOG.info("Loading libraries from: {}", directoryPath);
+        LOG.info("Loading shared libraries for DPUs from: {}", directoryPath);
 
         File directory = new File(directoryPath);
         File[] fList = directory.listFiles();
@@ -570,7 +570,7 @@ class OSGIModuleFacade implements ModuleFacade {
         try {
             bundle = context.installBundle(uri);
         } catch (org.osgi.framework.BundleException e) {
-            LOG.error("Failed to load libary from: {}", uri, e);
+            LOG.error("Failed to load library from: {}", uri, e);
             return null;
         }
 

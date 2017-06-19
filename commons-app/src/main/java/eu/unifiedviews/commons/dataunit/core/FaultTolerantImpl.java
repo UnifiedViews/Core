@@ -5,8 +5,8 @@
  */
 package eu.unifiedviews.commons.dataunit.core;
 
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +30,7 @@ public class FaultTolerantImpl implements FaultTolerant {
     private final int numberOfAttemps;
 
     public FaultTolerantImpl(ConnectionSource connectionSource, int waitTime, int numberOfAttemps) {
-        LOG.info("FaultTolerantImpl waitTime={} numberOfAttemps={}", waitTime, numberOfAttemps);
+        LOG.debug("FaultTolerantImpl waitTime={} numberOfAttemps={}", waitTime, numberOfAttemps);
         this.connectionSource = connectionSource;
         this.waitTime = waitTime;
         this.numberOfAttemps = numberOfAttemps;
