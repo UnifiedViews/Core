@@ -4,11 +4,11 @@
 	<parent>
 		<artifactId>uv-core</artifactId>
 		<groupId>eu.unifiedviews</groupId>
-		<version>3.0.0</version>
+		<version>3.1.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>dataunit-rdf-impl</artifactId>
-	<version>3.0.0</version>
+	<version>3.1.0-SNAPSHOT</version>
         <name>dataunit-rdf-impl</name>
 
 	<dependencies>
