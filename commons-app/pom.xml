@@ -126,7 +126,7 @@
 			<artifactId>xstream</artifactId>
 		</dependency>
 
-		<dependency> <!-- OSGI impelemention -->
+		<dependency> <!-- OSGI implementation -->
 			<groupId>org.eclipse.tycho</groupId>
 			<artifactId>org.eclipse.osgi</artifactId>
 			<version>${eclipse.osgi.version}</version>

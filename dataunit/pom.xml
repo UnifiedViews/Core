@@ -249,6 +249,11 @@
 			<version>${rdf4j.version}</version>
 			<type>jar</type>
 		</dependency>
+		<dependency>
+			<groupId>org.eclipse.rdf4j</groupId>
+			<artifactId>rdf4j-sail-inferencer</artifactId>
+			<version>${rdf4j.version}</version>
+		</dependency>
 
 		<!-- OpenRdf dependencies - sesame 2.X - for backward compatibility!!) -->
 		<dependency>
