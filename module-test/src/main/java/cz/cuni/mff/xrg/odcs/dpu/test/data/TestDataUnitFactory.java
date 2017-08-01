@@ -76,7 +76,7 @@ public class TestDataUnitFactory {
      *
      * @param name
      *            Name of the DataUnit.
-     * @return New {@link ManagableRdfDataUnit}.
+     * @return New {@link ManageableWritableRDFDataUnit}.
      * @throws RepositoryException
      * @throws java.io.IOException
      * @throws eu.unifiedviews.dataunit.DataUnitException
@@ -86,14 +86,15 @@ public class TestDataUnitFactory {
             final String id = "dpu-test_" + Integer.toString(dataUnitIdCounter++) + "_" + name;
             final String namedGraph = GraphUrl.translateDataUnitId(id);
             String pipelineId = "test_env_" + String.valueOf(this.hashCode());
+            String repositoryId = pipelineId + "_" + name;
 
-            File dataUnitWorkingDirectory = Files.createTempDirectory(FileSystems.getDefault().getPath(workingDirectory.getCanonicalPath()), pipelineId).toFile();
+            File dataUnitWorkingDirectory = Files.createTempDirectory(FileSystems.getDefault().getPath(workingDirectory.getCanonicalPath()), repositoryId).toFile();  //+ File.separator + name
 
-            Repository repository = initializedRepositories.get(pipelineId);
+            Repository repository = initializedRepositories.get(repositoryId);
             if (repository == null) {
-                repository = new SailRepository(new NativeStore(new File(workingDirectory, pipelineId)));
+                repository = new SailRepository(new NativeStore(new File(workingDirectory, repositoryId)));
                 repository.initialize();
-                initializedRepositories.put(pipelineId, repository);
+                initializedRepositories.put(repositoryId, repository);
             }
             return (ManageableWritableRDFDataUnit)rdfFactory.create(name, namedGraph,
                     dataUnitWorkingDirectory.toURI().toString(),  createCoreServiceBus(repository));
@@ -105,14 +106,15 @@ public class TestDataUnitFactory {
             final String id = "dpu-test_" + Integer.toString(dataUnitIdCounter++) + "_" + name;
             final String namedGraph = GraphUrl.translateDataUnitId(id);
             String pipelineId = "test_env_" + String.valueOf(this.hashCode());
+            String repositoryId = pipelineId + "_" + name;
 
-            File dataUnitWorkingDirectory = Files.createTempDirectory(FileSystems.getDefault().getPath(workingDirectory.getCanonicalPath()), pipelineId).toFile();
+            File dataUnitWorkingDirectory = Files.createTempDirectory(FileSystems.getDefault().getPath(workingDirectory.getCanonicalPath()), repositoryId).toFile();
     
-            Repository repository = initializedRepositories.get(pipelineId);
+            Repository repository = initializedRepositories.get(repositoryId);
             if (repository == null) {
-                repository = new SailRepository(new NativeStore(new File(workingDirectory, pipelineId)));
+                repository = new SailRepository(new NativeStore(new File(workingDirectory, repositoryId)));
                 repository.initialize();
-                initializedRepositories.put(pipelineId, repository);
+                initializedRepositories.put(repositoryId, repository);
             }
             return (ManageableWritableFilesDataUnit)filesFactory.create(name, namedGraph,
                     dataUnitWorkingDirectory.toURI().toString(),  createCoreServiceBus(repository));
@@ -125,14 +127,15 @@ public class TestDataUnitFactory {
             final String id = "dpu-test_" + Integer.toString(dataUnitId) + "_" + name;
             final String namedGraph = GraphUrl.translateDataUnitId(id);
             String pipelineId = "test_env_" + String.valueOf(this.hashCode());
+            String repositoryId = pipelineId + "_" + name;
 
-            File dataUnitWorkingDirectory = Files.createTempDirectory(FileSystems.getDefault().getPath(this.workingDirectory.getCanonicalPath()), pipelineId).toFile();
+            File dataUnitWorkingDirectory = Files.createTempDirectory(FileSystems.getDefault().getPath(this.workingDirectory.getCanonicalPath()), repositoryId).toFile();
 
-            Repository repository = this.initializedRepositories.get(pipelineId);
+            Repository repository = this.initializedRepositories.get(repositoryId);
             if (repository == null) {
-                repository = new SailRepository(new NativeStore(new File(this.workingDirectory, pipelineId)));
+                repository = new SailRepository(new NativeStore(new File(this.workingDirectory, repositoryId)));
                 repository.initialize();
-                this.initializedRepositories.put(pipelineId, repository);
+                this.initializedRepositories.put(repositoryId, repository);
             }
 
             ManagableRelationalRepository relationalRepo = this.initializedRelationalRepositories.get(pipelineId);
