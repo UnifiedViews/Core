@@ -342,7 +342,7 @@ public class TestEnvironment {
                     filesDataUnit.addExistingFile(toAdd.getAbsolutePath(), toAdd.toURI().toASCIIString());
                 }
             } else {
-                filesDataUnit.addExistingFile(resourceRoot.getAbsolutePath(), resourceRoot.toURI().toASCIIString());
+                filesDataUnit.addExistingFile(resourceRoot.getName(), resourceRoot.toURI().toASCIIString());
             }
         }
 
