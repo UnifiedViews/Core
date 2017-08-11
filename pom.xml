@@ -44,20 +44,27 @@
 		<org.springframework.version>3.1.4.RELEASE</org.springframework.version>
 		<org.springframework.security.version>3.1.4.RELEASE</org.springframework.security.version>
 
+		<!-- lib-core libraries -->
+		<commons.lang.version>3.4</commons.lang.version>
+		<httpclient.osgi.version>4.5.2</httpclient.osgi.version>
+		<httpcore.osgi.version>4.4.5</httpcore.osgi.version>
+		<jackson.version>2.8.3</jackson.version>
+		<jena.version>2.13.0</jena.version>
+		<org.apache.servicemix.bundles.jsch.version>0.1.54_1</org.apache.servicemix.bundles.jsch.version>
+		<org.apache.servicemix.bundles.poi.version>3.14_1</org.apache.servicemix.bundles.poi.version>
+		<org.apache.servicemix.bundles.xmlresolver.version>1.2_5</org.apache.servicemix.bundles.xmlresolver.version>
+		<org.apache.servicemix.bundles.junit.version>4.12_1</org.apache.servicemix.bundles.junit.version>
+
 		<!-- other third party libraries versions -->
 		<commons.dpcp.version>1.4</commons.dpcp.version>
 		<commons.dbcp2.version>2.0.1</commons.dbcp2.version>
 		<commons.cli.version>1.2</commons.cli.version>
-		<commons.lang.version>3.4</commons.lang.version>
 		<commons.validator.version>1.4.0</commons.validator.version>
 		<h2.version>1.4.182</h2.version>
-		<httpclient.osgi.version>4.5.2</httpclient.osgi.version>
-		<httpcore.osgi.version>4.4.5</httpcore.osgi.version>
-		<!--<osgi.version>4.3.1</osgi.version>-->
-		<jsch.version>0.1.49_1</jsch.version>
+		<osgi.version>4.3.1</osgi.version>
 		<xml.apis.version>1.4.01</xml.apis.version>
 		<mockito.version>1.8.4</mockito.version>
-		<eclipse.osgi.version>3.12.0.v20170512-1932</eclipse.osgi.version> <!-- orig: 3.9.0.v20130305-2200 -->
+		<eclipse.osgi.version>3.12.0.v20170512-1932</eclipse.osgi.version> <!-- orig: 3.9.0.v20130305-2200 3.12.0.v20170512-1932 -->
 		<javax.mail.version>1.4</javax.mail.version>
 		<cglib.version>3.0</cglib.version>
 		<asm.util.version>4.0</asm.util.version>

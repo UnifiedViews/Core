@@ -30,7 +30,7 @@
 								<dependency>
 									<groupId>org.apache.servicemix.bundles</groupId>
 									<artifactId>org.apache.servicemix.bundles.junit</artifactId>
-									<version>4.12_1</version>
+									<version>${org.apache.servicemix.bundles.junit.version}</version>
 								</dependency>
 								<dependency>
 									<groupId>org.apache.thrift</groupId>
@@ -50,22 +50,22 @@
 								<dependency>
 									<groupId>com.fasterxml.jackson.core</groupId>
 									<artifactId>jackson-annotations</artifactId>
-									<version>2.8.3</version>
+									<version>${jackson.version}</version>
 								</dependency>
 								<dependency>
 									<groupId>com.fasterxml.jackson.core</groupId>
 									<artifactId>jackson-databind</artifactId>
-									<version>2.8.3</version>
+									<version>${jackson.version}</version>
 								</dependency>
 								<dependency>
 									<groupId>com.fasterxml.jackson.core</groupId>
 									<artifactId>jackson-core</artifactId>
-									<version>2.8.3</version>
+									<version>${jackson.version}</version>
 								</dependency>
 								<dependency>
 									<groupId>org.apache.jena</groupId>
 									<artifactId>jena-osgi</artifactId>
-									<version>2.13.0</version>
+									<version>${jena.version}</version>
 								</dependency>
 
 								<dependency>
@@ -91,7 +91,7 @@
 								<dependency>
 									<groupId>org.apache.servicemix.bundles</groupId>
 									<artifactId>org.apache.servicemix.bundles.jsch</artifactId>
-									<version>${jsch.version}</version>
+									<version>${org.apache.servicemix.bundles.jsch.version}</version>
 								</dependency>
 								<dependency>
 									<groupId>commons-codec</groupId>
@@ -101,7 +101,7 @@
 								<dependency>
 									<groupId>org.apache.servicemix.bundles</groupId>
 									<artifactId>org.apache.servicemix.bundles.poi</artifactId>
-									<version>3.14_1</version>
+									<version>${org.apache.servicemix.bundles.poi.version}</version>
 								</dependency>
 								<dependency>
 									<groupId>org.apache.santuario</groupId>
@@ -111,7 +111,7 @@
 								<dependency>
 									<groupId>org.apache.servicemix.bundles</groupId>
 									<artifactId>org.apache.servicemix.bundles.xmlresolver</artifactId>
-									<version>1.2_5</version>
+									<version>${org.apache.servicemix.bundles.xmlresolver.version}</version>
 								</dependency>
 								<dependency>
 									<groupId>eu.unifiedviews</groupId>
