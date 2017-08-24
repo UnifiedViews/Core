@@ -336,13 +336,15 @@ public class TestEnvironment {
 
             File resourceRoot = new File(url.getPath());
 
-            //if the resource is a directory:
+            //if the resource is a directory - symbolic names are not retained (as the names suggested by users):
             if (resourceRoot.isDirectory()) {
                 for (File toAdd : FileUtils.listFiles(resourceRoot, FileFileFilter.FILE, TrueFileFilter.INSTANCE)) {
                     filesDataUnit.addExistingFile(toAdd.getAbsolutePath(), toAdd.toURI().toASCIIString());
                 }
             } else {
-                filesDataUnit.addExistingFile(resourceRoot.getName(), resourceRoot.toURI().toASCIIString());
+                //symbolic names are retained as names of resources!
+                //resourceRoot.getAbsolutePath()
+                filesDataUnit.addExistingFile(resourceName, resourceRoot.toURI().toASCIIString());
             }
         }
 
