@@ -138,10 +138,10 @@ public class TestDataUnitFactory {
                 this.initializedRepositories.put(repositoryId, repository);
             }
 
-            ManagableRelationalRepository relationalRepo = this.initializedRelationalRepositories.get(pipelineId);
+            ManagableRelationalRepository relationalRepo = this.initializedRelationalRepositories.get(repositoryId);
             if (relationalRepo == null) {
                 relationalRepo = new InMemoryRelationalDatabase(null, null, dataUnitId);
-                this.initializedRelationalRepositories.put(pipelineId, relationalRepo);
+                this.initializedRelationalRepositories.put(repositoryId, relationalRepo);
             }
 
             return (ManageableWritableRelationalDataUnit) this.relationalFactory.create(name, namedGraph,
