@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import eu.unifiedviews.dataunit.relational.repository.ManagableRelationalRepository;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
@@ -366,7 +367,24 @@ public class TestEnvironment {
     public WritableRelationalDataUnit createRelationalDataUnit(String name) throws RepositoryException, IOException, DataUnitException {
         ManageableWritableRelationalDataUnit relational = this.testDataUnitFactory.createRelationalDataUnit(name);
         this.customDataUnits.put(name, relational);
+        return relational;
+    }
 
+    /**
+     * Create {@link WritableRelationalDataUnit} which is just returned to test developer for use.
+     *
+     * @param name
+     *            Name of DataUnit.
+     * @param type
+     *            Type of DataUnit.
+     * @return Created {@link WritableRelationalDataUnit}.
+     * @throws RepositoryException
+     * @throws DataUnitException
+     * @throws IOException
+     */
+    public WritableRelationalDataUnit createRelationalDataUnit(String name, ManagableRelationalRepository.Type type) throws RepositoryException, IOException, DataUnitException {
+        ManageableWritableRelationalDataUnit relational = this.testDataUnitFactory.createRelationalDataUnit(name, type);
+        this.customDataUnits.put(name, relational);
         return relational;
     }
 
