@@ -406,6 +406,27 @@ public class TestEnvironment {
     }
 
     /**
+     * Create input {@link WritableRelationalDataUnit} that is used in test environment.
+     *
+     * @param name
+     *            Name of DataUnit.
+     * @param type
+     *            Type of DataUnit.
+     * @return Created input {@link WritableRelationalDataUnit}.
+     * @throws RepositoryException
+     * @throws DataUnitException
+     * @throws IOException
+     */
+    public WritableRelationalDataUnit createRelationalInput(String name, ManagableRelationalRepository.Type type) throws RepositoryException, IOException, DataUnitException {
+        ManageableWritableRelationalDataUnit relational = this.testDataUnitFactory.createRelationalDataUnit(name, type);
+        addInput(name, relational);
+
+        return relational;
+    }
+
+
+
+    /**
      * Create output {@link WritableRelationalDataUnit} that is used in test environment.
      *
      * @param name
@@ -418,6 +439,26 @@ public class TestEnvironment {
     public WritableRelationalDataUnit createRelationalOutput(String name)
             throws RepositoryException, IOException, DataUnitException {
         ManageableWritableRelationalDataUnit relational = this.testDataUnitFactory.createRelationalDataUnit(name);
+        addOutput(name, relational);
+        return relational;
+    }
+
+
+    /**
+     * Create output {@link WritableRelationalDataUnit} that is used in test environment.
+     *
+     * @param name
+     *            Name of DataUnit.
+     * @param type
+     *            Type of DataUnit.
+     * @return Created input {@link WritableRelationalDataUnit}.
+     * @throws RepositoryException
+     * @throws DataUnitException
+     * @throws IOException
+     */
+    public WritableRelationalDataUnit createRelationalOutput(String name, ManagableRelationalRepository.Type type)
+            throws RepositoryException, IOException, DataUnitException {
+        ManageableWritableRelationalDataUnit relational = this.testDataUnitFactory.createRelationalDataUnit(name, type);
         addOutput(name, relational);
         return relational;
     }
