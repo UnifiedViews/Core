@@ -249,7 +249,7 @@ class OSGIModuleFacade implements ModuleFacade {
      * In case of error throw.
      * 
      * @param directory
-     * @param newName
+     * @param fileName
      * @throws ModuleException
      */
     public void nonCheckUpdate(String directory, String fileName) throws ModuleException {

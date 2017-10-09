@@ -18,7 +18,7 @@ public class commons_web {
                     // com.steadystate.css.userdata, org.w3c.dom.stylesheets
                     "com.steadystate.css.parser;uses:=\"com.steadystate.css.parser.selectors,com.steadystate.css.sac,org.w3c.css.sac,org.w3c.dom.css,org.w3c.dom,com.steadystate.css.dom,org.w3c.css.sac.helpers\";version=\"0.9.5\"," +
                     "com.steadystate.css.dom;uses:=\"org.w3c.dom.css,org.w3c.dom,org.w3c.css.sac,com.steadystate.css.parser,org.w3c.dom.stylesheets,com.steadystate.css.userdata\";version=\"0.9.5\"," +
-                    "org.apache.commons.cli;version=\"1.2\"," +
+                    "org.apache.commons.cli;version=\"1.3\"," +
                     "org.apache.commons.jexl2.internal.introspection;uses:=\"org.apache.commons.logging\";version=\"2.1.1\"," +
                     "org.apache.commons.jexl2.internal;uses:=\"org.apache.commons.jexl2.introspection,org.apache.commons.jexl2.internal.introspection,org.apache.commons.logging\";version=\"2.1.1\"," +
                     "org.apache.commons.jexl2.introspection;uses:=\"org.apache.commons.jexl2.internal.introspection,org.apache.commons.logging,org.apache.commons.jexl2,org.apache.commons.jexl2.internal\";version=\"2.1.1\"," +

@@ -123,6 +123,11 @@
 									<artifactId>rml-osgi</artifactId>
 									<version>1.0.0</version>
 								</dependency>
+								<dependency>
+									<groupId>eu.unifiedviews.osgi-libs</groupId>
+									<artifactId>r2rml-morph-osgi</artifactId>
+									<version>1.0.0</version>
+								</dependency>
 							</artifactItems>
 						</configuration>
 					</execution>
