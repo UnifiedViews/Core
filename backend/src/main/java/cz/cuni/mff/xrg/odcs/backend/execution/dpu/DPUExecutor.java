@@ -100,6 +100,9 @@ public final class DPUExecutor implements Runnable {
      */
     private Context context;
 
+    private Map<String, String> rootContextMap;
+
+
     /**
      * Store result state of the execution.
      */
@@ -138,7 +141,7 @@ public final class DPUExecutor implements Runnable {
     public void bind(ExecutedNode node,
             Map<ExecutedNode, Context> contexts,
             PipelineExecution execution,
-            Date lastExecutionTime) throws ContextException {
+            Date lastExecutionTime, Map<String, String> rootContextMap) throws ContextException {
         this.node = node;
         this.contexts = contexts;
         this.execution = execution;
@@ -147,6 +150,7 @@ public final class DPUExecutor implements Runnable {
                 execution.getContext(), lastExecutionTime);
         // if we have context then add it to the context storage
         this.contexts.put(node, context);
+        this.rootContextMap = rootContextMap;
     }
 
     /**
@@ -221,11 +225,6 @@ public final class DPUExecutor implements Runnable {
         // execute
         LOG.debug("Executing DPU ... ");
 
-        // put dpuInstance id to MDC, so we can identify logs related to the
-        // dpuInstance
-        MDC.put(Log.MDC_DPU_INSTANCE_KEY_NAME,
-                Long.toString(node.getDpuInstance().getId()));
-
         try {
             if (dpuInstance instanceof DPU) {
                 ((DPU) dpuInstance).execute(context);
@@ -256,7 +255,7 @@ public final class DPUExecutor implements Runnable {
         }
 
         // remove MDC from logs
-        MDC.remove(Log.MDC_DPU_INSTANCE_KEY_NAME);
+        //MDC.remove(Log.MDC_DPU_INSTANCE_KEY_NAME);
 
         LOG.debug("Executing DPU ... done");
     }
@@ -410,6 +409,16 @@ public final class DPUExecutor implements Runnable {
      */
     @Override
     public void run() {
+
+        // See https://logback.qos.ch/manual/mdc.html
+        MDC.setContextMap(this.rootContextMap);
+
+        // put dpuInstance id to MDC, so we can identify logs related to the
+        // dpuInstance
+        MDC.put(Log.MDC_DPU_INSTANCE_KEY_NAME,
+                Long.toString(node.getDpuInstance().getId()));
+
+
         // get DPU instance record, the DPU to execute
         DPUInstanceRecord dpu = node.getDpuInstance();
         // get processing context info

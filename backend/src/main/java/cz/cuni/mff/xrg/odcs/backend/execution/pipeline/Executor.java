@@ -316,14 +316,16 @@ public class Executor implements Runnable {
 
             // put dpuInstance id to MDC, so we can identify logs related to the
             // dpuInstance
-            MDC.put(Log.MDC_DPU_INSTANCE_KEY_NAME,
-                    Long.toString(node.getDpuInstance().getId()));
+            //MDC.put(Log.MDC_DPU_INSTANCE_KEY_NAME,
+            //        Long.toString(node.getDpuInstance().getId()));
+
+            Map<String, String> rootContextMap = MDC.getCopyOfContextMap();
 
             cz.cuni.mff.xrg.odcs.backend.execution.dpu.DPUExecutor dpuExecutor = beanFactory
                     .getBean(cz.cuni.mff.xrg.odcs.backend.execution.dpu.DPUExecutor.class);
 
             try {
-                dpuExecutor.bind(node, contexts, execution, lastSuccessfulExTime);
+                dpuExecutor.bind(node, contexts, execution, lastSuccessfulExTime, rootContextMap);
             } catch (ContextException e) {
                 // failed to create context .. fail the execution
                 eventPublisher.publishEvent(PipelineFailedEvent.create(e, node.getDpuInstance(), execution, this));
