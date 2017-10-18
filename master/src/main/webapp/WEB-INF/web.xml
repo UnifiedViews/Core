@@ -5,7 +5,10 @@
 	id="WebApp_ID" version="3.0">
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>classpath:master-context.xml</param-value>
+		<param-value>
+			classpath:master-context.xml
+			classpath:master-context-security.xml
+		</param-value>
 	</context-param>
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>

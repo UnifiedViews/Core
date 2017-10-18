@@ -2,19 +2,32 @@ package eu.unifiedviews.master.authentication;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
+import cz.cuni.mff.xrg.odcs.commons.app.auth.AuthenticationContext;
+import cz.cuni.mff.xrg.odcs.commons.app.auth.PasswordHash;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.AppConfig;
 import cz.cuni.mff.xrg.odcs.commons.app.conf.ConfigProperty;
+import cz.cuni.mff.xrg.odcs.commons.app.facade.UserFacade;
+import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import eu.unifiedviews.master.i18n.Messages;
 import eu.unifiedviews.master.model.ApiException;
 import org.glassfish.jersey.internal.util.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
+import org.springframework.security.authentication.AuthenticationManager;
 
 import javax.annotation.PostConstruct;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 
 /**
  * Authentication filter, that filters incoming request to resource.
@@ -28,7 +41,17 @@ public class BasicAuthenticationFilter implements ContainerRequestFilter {
     @Autowired
     private AppConfig configuration;
 
+    @Autowired
+    @Qualifier("authenticationManager")
+    private AuthenticationManager authManager;
+
+    @Autowired
+    private AuthenticationContext authCtx;
+
     private String credentials;
+    private String username = "";
+
+    private static final Logger log = LoggerFactory.getLogger(BasicAuthenticationFilter.class);
 
     @PostConstruct
     private void init() {
@@ -64,12 +87,61 @@ public class BasicAuthenticationFilter implements ContainerRequestFilter {
         }
     }
 
+    public String getUserName() {
+        return this.username;
+    }
+
     private boolean isAuthorizationValid(String authorization) {
         if(isEmpty(authorization)) {
             return false;
         }
         // remove "Basic " part from header
         authorization = authorization.replaceAll("[Bb]asic ", "");
-        return authorization.equals(credentials);
+
+        // return authorization.equals(credentials);
+
+
+
+        //get the user, correctPass, check
+        String decodedToken = Base64.decodeAsString(authorization);
+
+        //parse username and password
+        int delim = decodedToken.indexOf(":");
+
+        if (delim == -1) {
+            log.error("Invalid basic authentication token {}", decodedToken);
+            return false;
+        }
+
+        this.username = decodedToken.substring(0, delim);
+        String pass = decodedToken.substring(delim + 1);
+
+        //authentication
+        try {
+            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, pass);
+            Authentication authentication = authManager.authenticate(token);
+            authCtx.setAuthentication(authentication);
+        } catch (AuthenticationException ex) {
+            //authentication failed
+            log.error("Basic authentication failed: {}", ex.getLocalizedMessage());
+            return false;
+        }
+
+        return true;
+
+//        //authentication manual, not needed
+//        User u = users.getUserByUsername(username);
+//        u.getPassword();
+//
+//
+//        String correctPassHashed = u.getPassword();
+//        try {
+//            return PasswordHash.validatePassword(pass,correctPassHashed);
+//        } catch (NoSuchAlgorithmException e) {
+//            e.printStackTrace();
+//        } catch (InvalidKeySpecException e) {
+//            e.printStackTrace();
+//        }
+//        return false;
     }
 }

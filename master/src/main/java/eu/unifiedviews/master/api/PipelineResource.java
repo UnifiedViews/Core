@@ -9,6 +9,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.pipeline.transfer.ImportService;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 import cz.cuni.mff.xrg.odcs.commons.app.user.UserActor;
 import eu.unifiedviews.master.authentication.AuthenticationRequired;
+import eu.unifiedviews.master.authentication.BasicAuthenticationFilter;
 import eu.unifiedviews.master.converter.ConvertUtils;
 import eu.unifiedviews.master.converter.PipelineDTOConverter;
 import eu.unifiedviews.master.i18n.Messages;
@@ -48,6 +49,9 @@ public class PipelineResource {
 
     @Autowired
     private UserFacade userFacade;
+
+    @Autowired
+    private BasicAuthenticationFilter authFilter;
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -89,15 +93,29 @@ public class PipelineResource {
         return PipelineDTOConverter.convert(pipeline);
     }
 
+    /**
+     * Returns pipelines for the user specified as a query parameter. If user is not specified, it uses the user from the basic authentication header
+     * @param userExternalId
+     * @return Pipelines for the user specified as a query parameter
+     */
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     public List<PipelineDTO> getPipelines(@QueryParam("userExternalId") String userExternalId) {
         List<Pipeline> pipelines = null;
+
         try {
             if (isNotEmpty(userExternalId)) {
                 pipelines = this.pipelineFacade.getAllPipelines(userExternalId);
             } else {
-                pipelines = new ArrayList<>();
+                //user is empty, use the one from the basic auth header
+                userExternalId = this.authFilter.getUserName();
+                if (isNotEmpty(userExternalId)) {
+                    pipelines = this.pipelineFacade.getAllPipelines(userExternalId);
+                }
+                else {
+                    LOG.error("No user defined in the parameter and no user was retrieved from the authentication header");
+                    pipelines = new ArrayList<>();
+                }
             }
 
             if (pipelines == null) {
