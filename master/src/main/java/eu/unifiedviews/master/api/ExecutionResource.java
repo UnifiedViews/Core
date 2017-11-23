@@ -42,6 +42,9 @@ public class ExecutionResource {
     @Autowired
     private UserFacade userFacade;
 
+    @Autowired
+    private UserHelper userHelper;
+
     private static final Logger log = LoggerFactory.getLogger(
             ExecutionResource.class);
 
@@ -180,17 +183,21 @@ public class ExecutionResource {
         log.info("Pipeline exec in the request: {}", newExecution.toString());
 
         // try to get user
-        User user = userFacade.getUserByExtId(newExecution.getUserExternalId());
+        String username = userHelper.getUser(newExecution.getUserExternalId());
+        if (username == null) {
+            throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("execution.user.id.not.found"), String.format("Username cannot be found in the input - either in the JSON object or in the basic auth"));
+        }
+        User user = userFacade.getUserByExtId(username);
         if (user == null) {
             throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("execution.user.id.not.found"), String.format("User with ID=%s could not be found.", newExecution.getUserExternalId()));
         }
 
-        log.info("Obtained user ID: {}", user.getId());
-
-        UserActor actor = this.userFacade.getUserActorByExternalId(newExecution.getUserActorExternalId());
+        log.info("Used user ID: {}", user.getId());
 
         final PipelineExecution execution =  new PipelineExecution(pipeline);
         execution.setOwner(user);
+
+        UserActor actor = this.userFacade.getUserActorByExternalId(newExecution.getUserActorExternalId());
         if (actor != null) {
             log.info("Obtained actor ID: {}, external ID {}", actor.getId(), actor.getExternalId());
             execution.setActor(actor);
