@@ -55,10 +55,10 @@ public class BasicAuthenticationFilter implements ContainerRequestFilter {
 
     @PostConstruct
     private void init() {
-        String username = configuration.getString(ConfigProperty.MASTER_API_USER);
-        String password = configuration.getString(ConfigProperty.MASTER_API_PASSWORD);
-
-        this.credentials = Base64.encodeAsString(username + ":" + password);
+//        String username = configuration.getString(ConfigProperty.MASTER_API_USER);
+//        String password = configuration.getString(ConfigProperty.MASTER_API_PASSWORD);
+//
+//        this.credentials = Base64.encodeAsString(username + ":" + password);
     }
 
     /**
@@ -98,10 +98,6 @@ public class BasicAuthenticationFilter implements ContainerRequestFilter {
         // remove "Basic " part from header
         authorization = authorization.replaceAll("[Bb]asic ", "");
 
-        // return authorization.equals(credentials);
-
-
-
         //get the user, correctPass, check
         String decodedToken = Base64.decodeAsString(authorization);
 
@@ -129,19 +125,5 @@ public class BasicAuthenticationFilter implements ContainerRequestFilter {
 
         return true;
 
-//        //authentication manual, not needed
-//        User u = users.getUserByUsername(username);
-//        u.getPassword();
-//
-//
-//        String correctPassHashed = u.getPassword();
-//        try {
-//            return PasswordHash.validatePassword(pass,correctPassHashed);
-//        } catch (NoSuchAlgorithmException e) {
-//            e.printStackTrace();
-//        } catch (InvalidKeySpecException e) {
-//            e.printStackTrace();
-//        }
-//        return false;
     }
 }

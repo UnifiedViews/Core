@@ -19,11 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.File;
@@ -53,7 +49,7 @@ public class DPUResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public String importJarDpu(@FormDataParam("file") InputStream inputStream, @FormDataParam("file") FormDataContentDisposition contentDispositionHeader, @QueryParam("name") String dpuName, @QueryParam("description") String dpuDescription, @QueryParam("visibility") String visibility,
-            @QueryParam("force") boolean force) {
+            @QueryParam("force") @DefaultValue("false") boolean force) {
         LOG.debug("Importing dpu file: {}, name: {}, description: {}, visibility: {}, force?: {}", contentDispositionHeader.getFileName(), dpuName, dpuDescription, visibility, force);
         // parse input steam to file, located in temporary directory
         File jarFile;
