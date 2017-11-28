@@ -64,7 +64,7 @@
 		<osgi.version>4.3.1</osgi.version>
 		<xml.apis.version>1.4.01</xml.apis.version>
 		<mockito.version>1.8.4</mockito.version>
-		<eclipse.osgi.version>3.12.0.v20170512-1932</eclipse.osgi.version> <!-- orig: 3.9.0.v20130305-2200 3.12.0.v20170512-1932 -->
+		<eclipse.osgi.version>3.12.1.v20170821-1548</eclipse.osgi.version> <!-- orig: 3.9.0.v20130305-2200 3.12.0.v20170512-1932 -->
 		<javax.mail.version>1.4</javax.mail.version>
 		<cglib.version>3.0</cglib.version>
 		<asm.util.version>4.0</asm.util.version>
