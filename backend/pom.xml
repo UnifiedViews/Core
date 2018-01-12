@@ -4,11 +4,11 @@
     <parent>
         <groupId>eu.unifiedviews</groupId>
         <artifactId>uv-core</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>3.1.0</version>
 	<relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>backend</artifactId>
-    <version>3.1.0-SNAPSHOT</version>
+    <version>3.1.0</version>
     <packaging>jar</packaging>
     <name>backend</name>
     <description />
