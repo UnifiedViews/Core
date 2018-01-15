@@ -422,10 +422,10 @@ public class Context implements DPUContext {
     public Map<String, String> getEnvironment() {
         Map<String, String> result = new HashMap<>();
 
-        //get properties from config.properties
-        for (Map.Entry<Object, Object> entry : appConfig.getProperties().entrySet()) {
-            result.put((String) entry.getKey(), (String) entry.getValue());
-        }
+//        //get properties from config.properties
+//        for (Map.Entry<Object, Object> entry : appConfig.getProperties().entrySet()) {
+//            result.put((String) entry.getKey(), (String) entry.getValue());
+//        }
 
         //get properties from runtime properties
         //if the map already contains value for that from config.properties, it is overwritten

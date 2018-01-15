@@ -1101,3 +1101,12 @@ span.v-inline-datefield-calendarpanel-month{
 .dpu-error-label{
 	color:red;
 }
+
+.dpu-v-panel-content > div {
+    background: transparent;
+}
+
+.dpu-v-panel-content {
+    /*background-color:#0094b7;*/
+    background-color:#E6F0F2;
+}

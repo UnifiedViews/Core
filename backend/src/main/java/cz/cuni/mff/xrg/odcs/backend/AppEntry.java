@@ -100,6 +100,7 @@ public class AppEntry {
             }
         } catch (Exception e) {
             //not logging exception, default value is used in this case
+            System.err.println("Cannot log to the given directory: " + e.getLocalizedMessage() + e.getStackTrace().toString());
         }
 
         try {

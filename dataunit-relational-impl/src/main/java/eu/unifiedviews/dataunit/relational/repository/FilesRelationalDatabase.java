@@ -95,6 +95,7 @@ public class FilesRelationalDatabase implements ManagableRelationalRepository {
             dbURL.append("/");
         }
         dbURL.append(this.databaseFileName);
+        dbURL.append(";AUTO_SERVER=TRUE");
 
         return dbURL.toString();
     }

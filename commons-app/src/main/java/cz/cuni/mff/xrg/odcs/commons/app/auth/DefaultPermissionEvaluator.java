@@ -18,7 +18,7 @@ import cz.cuni.mff.xrg.odcs.commons.app.user.Permission;
 import cz.cuni.mff.xrg.odcs.commons.app.user.User;
 
 /**
- * Evaluates whether currently authorized user has a given permission on a given
+ * Evaluates whether currently authenticated user has a given permission on a given
  * object.
  * 
  * @author Jan Vojt

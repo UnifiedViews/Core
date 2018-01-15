@@ -4,11 +4,11 @@
     <parent>
         <groupId>eu.unifiedviews</groupId>
         <artifactId>uv-core</artifactId>
-        <version>3.0.0</version>
+        <version>3.1.0</version>
 	<relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>backend</artifactId>
-    <version>3.0.0</version>
+    <version>3.1.0</version>
     <packaging>jar</packaging>
     <name>backend</name>
     <description />
@@ -29,7 +29,7 @@
         <dependency> 
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore</artifactId>
-            <version>4.4</version>
+            <version>${httpcore.osgi.version}</version>
         </dependency>
 
         <dependency> <!-- apache.commons : parse cmd. args -->

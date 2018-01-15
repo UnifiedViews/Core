@@ -3,11 +3,11 @@
 	<parent>
 		<groupId>eu.unifiedviews</groupId>
 		<artifactId>uv-core</artifactId>
-		<version>3.0.0</version>
+		<version>3.1.0</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>dataunit</artifactId>
-	<version>3.0.0</version>
+	<version>3.1.0</version>
         <description>Base project for new DataUnit's implementations.</description>
 	<packaging>jar</packaging>	
 
@@ -248,6 +248,11 @@
 			<artifactId>rdf4j-util</artifactId>
 			<version>${rdf4j.version}</version>
 			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.rdf4j</groupId>
+			<artifactId>rdf4j-sail-inferencer</artifactId>
+			<version>${rdf4j.version}</version>
 		</dependency>
 
 		<!-- OpenRdf dependencies - sesame 2.X - for backward compatibility!!) -->

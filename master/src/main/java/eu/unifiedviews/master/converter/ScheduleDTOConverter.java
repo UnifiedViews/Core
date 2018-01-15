@@ -91,4 +91,34 @@ public class ScheduleDTOConverter {
         }
         return schedule;
     }
+
+    public static Schedule convertFromDTOEdit(PipelineScheduleDTO dto, List<Pipeline> pipelines, Schedule schedule) {
+        if (dto.getDescription() != null) {
+            schedule.setDescription(dto.getDescription());
+        }
+        schedule.setJustOnce(dto.isJustOnce());
+        schedule.setEnabled(dto.isEnabled());
+        if (dto.getFirstExecution() != null) {
+            schedule.setFirstExecution(ConvertUtils.stringToDate(dto.getFirstExecution()));
+        }
+        if (dto.getLastExecution() != null) {
+            schedule.setLastExecution(ConvertUtils.stringToDate(dto.getLastExecution()));
+        }
+
+        //TODO after pipelines are always cleared!
+        Set<Pipeline> originalSet = schedule.getAfterPipelines();
+        originalSet.clear();
+        if (pipelines != null) {
+            originalSet.addAll(pipelines);
+            schedule.setAfterPipelines(originalSet);
+        } else {
+            schedule.setAfterPipelines(null);
+        }
+
+        if (dto.getPeriod() != null && dto.getPeriodUnit() != null) {
+            schedule.setPeriod(dto.getPeriod());
+            schedule.setPeriodUnit(PeriodUnit.valueOf(dto.getPeriodUnit()));
+        }
+        return schedule;
+    }
 }

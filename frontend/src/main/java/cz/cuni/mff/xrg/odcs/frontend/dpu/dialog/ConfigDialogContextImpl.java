@@ -49,9 +49,9 @@ public class ConfigDialogContextImpl implements ConfigDialogContext {
     @Override
     public Map<String, String> getEnvironment() {
         Map<String, String> result = new HashMap<>();
-        for (Map.Entry<Object, Object> entry : appConfig.getProperties().entrySet()) {
-            result.put((String) entry.getKey(), (String) entry.getValue());
-        }
+//        for (Map.Entry<Object, Object> entry : appConfig.getProperties().entrySet()) {
+//            result.put((String) entry.getKey(), (String) entry.getValue());
+//        }
         return result;
     }
 

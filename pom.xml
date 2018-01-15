@@ -5,13 +5,13 @@
 	<parent>
 		<groupId>eu.unifiedviews</groupId>
 		<artifactId>uv-pom</artifactId>
-		<version>3.0.0</version>
+		<version>3.0.1</version>
 		<relativePath/>
 	</parent>
 
 	<groupId>eu.unifiedviews</groupId>
 	<artifactId>uv-core</artifactId>
-	<version>3.0.0</version>
+	<version>3.1.0</version>
 	<packaging>pom</packaging>
 	<name>UnifiedViews-Core</name>
 	<description />
@@ -22,14 +22,13 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-
 		<!-- TODO: update ussage as rdf/files-impls utilize project version, not this property -->
 		<uv-dpu-api.version>${unifiedviews.api.version}</uv-dpu-api.version>
-		<uv-dpu-api-helpers.version>3.0.0</uv-dpu-api-helpers.version>		
+		<uv-dpu-api-helpers.version>3.0.1</uv-dpu-api-helpers.version>
 		<uv-dataunit-rdf.version>${unifiedviews.api.version}</uv-dataunit-rdf.version>
 		<uv-dataunit-files.version>${unifiedviews.api.version}</uv-dataunit-files.version>
 		<uv-dataunit-relational.version>${unifiedviews.api.version}</uv-dataunit-relational.version>
-		<uv-dataunit-helpers.version>3.0.0</uv-dataunit-helpers.version>		
+		<uv-dataunit-helpers.version>3.0.1</uv-dataunit-helpers.version>
 
 		<dataunit.version>${project.version}</dataunit.version>
 
@@ -45,20 +44,27 @@
 		<org.springframework.version>3.1.4.RELEASE</org.springframework.version>
 		<org.springframework.security.version>3.1.4.RELEASE</org.springframework.security.version>
 
+		<!-- lib-core libraries -->
+		<commons.lang.version>3.4</commons.lang.version>
+		<httpclient.osgi.version>4.5.2</httpclient.osgi.version>
+		<httpcore.osgi.version>4.4.5</httpcore.osgi.version>
+		<jackson.version>2.8.3</jackson.version>
+		<jena.version>2.13.0</jena.version>
+		<org.apache.servicemix.bundles.jsch.version>0.1.54_1</org.apache.servicemix.bundles.jsch.version>
+		<org.apache.servicemix.bundles.poi.version>3.14_1</org.apache.servicemix.bundles.poi.version>
+		<org.apache.servicemix.bundles.xmlresolver.version>1.2_5</org.apache.servicemix.bundles.xmlresolver.version>
+		<org.apache.servicemix.bundles.junit.version>4.12_1</org.apache.servicemix.bundles.junit.version>
+
 		<!-- other third party libraries versions -->
 		<commons.dpcp.version>1.4</commons.dpcp.version>
 		<commons.dbcp2.version>2.0.1</commons.dbcp2.version>
-		<commons.cli.version>1.2</commons.cli.version>
-		<commons.lang.version>3.4</commons.lang.version>
+		<commons.cli.version>1.3</commons.cli.version>
 		<commons.validator.version>1.4.0</commons.validator.version>
 		<h2.version>1.4.182</h2.version>
-		<httpclient.osgi.version>4.5.2</httpclient.osgi.version>
-		<httpcore.osgi.version>4.4.5</httpcore.osgi.version>
 		<osgi.version>4.3.1</osgi.version>
-		<jsch.version>0.1.49_1</jsch.version>
 		<xml.apis.version>1.4.01</xml.apis.version>
 		<mockito.version>1.8.4</mockito.version>
-		<eclipse.osgi.version>3.9.0.v20130305-2200</eclipse.osgi.version>
+		<eclipse.osgi.version>3.12.1.v20170821-1548</eclipse.osgi.version> <!-- orig: 3.9.0.v20130305-2200 3.12.0.v20170512-1932 -->
 		<javax.mail.version>1.4</javax.mail.version>
 		<cglib.version>3.0</cglib.version>
 		<asm.util.version>4.0</asm.util.version>
@@ -278,7 +284,7 @@
 			<plugin>
 				<groupId>org.zeroturnaround</groupId>
 				<artifactId>jrebel-maven-plugin</artifactId>
-				<version>1.1.7</version>
+				<version>1.1.8</version>
 				<configuration>
 					<alwaysGenerate>true</alwaysGenerate>
 					<addResourcesDirToRebelXml>true</addResourcesDirToRebelXml>

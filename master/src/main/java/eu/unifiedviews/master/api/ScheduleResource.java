@@ -37,6 +37,9 @@ public class ScheduleResource {
     @Autowired
     private UserFacade userFacade;
 
+    @Autowired
+    private UserHelper userHelper;
+
     @GET
     @Path("/{pipelineid}/schedules")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -203,7 +206,7 @@ public class ScheduleResource {
                         }
                     }
                 }
-                ScheduleDTOConverter.convertFromDTO(scheduleToUpdate, afterPipelines, schedule);
+                ScheduleDTOConverter.convertFromDTOEdit(scheduleToUpdate, afterPipelines, schedule);
                 scheduleFacade.save(schedule);
                 return ScheduleDTOConverter.convertToDTO(schedule);
             } else {
@@ -230,13 +233,15 @@ public class ScheduleResource {
             if (pipeline == null) {
                 throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.id.not.found", pipelineId), String.format("Pipeline with id=%s doesn't exist!", pipelineId));
             }
-            // try to get user
-            User user = userFacade.getUserByExtId(scheduleToUpdate.getUserExternalId());
+
+            String username = userHelper.getUser(scheduleToUpdate.getUserExternalId());
+            if (username == null) {
+                throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("schedule.user.id.not.found"), String.format("Username cannot be found in the input - either in the JSON object or in the basic auth"));
+            }
+            User user = userFacade.getUserByExtId(username);
             if (user == null) {
                 throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("schedule.user.id.not.found"), String.format("User '%s' could not be found! Pipeline could not be created.", scheduleToUpdate.getUserExternalId()));
             }
-
-            UserActor actor = this.userFacade.getUserActorByExternalId(scheduleToUpdate.getUserActorExternalId());
 
             Schedule schedule = new Schedule();
             if (schedule == null) {
@@ -245,9 +250,12 @@ public class ScheduleResource {
             schedule.setPipeline(pipeline);
             schedule.setType(scheduleToUpdate.getScheduleType());
             schedule.setOwner(user);
+
+            UserActor actor = this.userFacade.getUserActorByExternalId(scheduleToUpdate.getUserActorExternalId());
             if (actor != null) {
                 schedule.setActor(actor);
             }
+
             List<Pipeline> afterPipelines = null;
             if (scheduleToUpdate.getAfterPipelines() != null) {
                 afterPipelines = new ArrayList<Pipeline>();
@@ -270,4 +278,41 @@ public class ScheduleResource {
             throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, Messages.getString("pipeline.create.schedule.general.error"), e.getMessage());
         }
     }
+
+
+    @DELETE
+    @Path("/{pipelineid}/schedules/{scheduleid}/delete")
+    public Response deletePipelineSchedule(@PathParam("pipelineid") String pipelineId, @PathParam("scheduleid") String scheduleId) {
+        if (StringUtils.isBlank(pipelineId) || !StringUtils.isNumeric(pipelineId)) {
+            throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("pipeline.id.invalid", pipelineId), String.format("ID=%s is not valid pipeline ID", pipelineId));
+        }
+        if (StringUtils.isBlank(scheduleId) || !StringUtils.isNumeric(scheduleId)) {
+            throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("schedule.id.invalid", scheduleId), String.format("ID=%s is not valid schedule ID", scheduleId));
+        }
+        try {
+            // try to get pipeline
+            Pipeline pipeline = pipelineFacade.getPipeline(Long.parseLong(pipelineId));
+            if (pipeline == null) {
+                throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.id.not.found", pipelineId), String.format("Pipeline with id=%s doesn't exist!", pipelineId));
+            }
+
+            Schedule schedule = scheduleFacade.getSchedule(Long.parseLong(scheduleId));
+            if (schedule == null) {
+                throw new ApiException(Response.Status.NOT_FOUND, Messages.getString("pipeline.schedule.id.not.found", scheduleId), String.format("Pipeline schedule with id=%s doesn't exist!", scheduleId));
+            }
+            if (schedule.getPipeline().getId().equals(pipeline.getId())) {
+                scheduleFacade.delete(schedule);
+                return Response.status(204).entity("Employee deleted successfully !!").build();
+            } else {
+                throw new ApiException(Response.Status.BAD_REQUEST, Messages.getString("pipeline.schedule.mismatch", scheduleId, pipelineId),String.format("Schedule with id=%s is not schedule of pipeline with id=%s!", scheduleId, pipelineId));
+            }
+
+        } catch (ApiException e) {
+            throw e;
+        } catch (RuntimeException e) {
+            throw new ApiException(Response.Status.INTERNAL_SERVER_ERROR, Messages.getString("pipeline.create.schedule.general.error"), e.getMessage());
+        }
+    }
+
+
 }

@@ -249,7 +249,7 @@ class OSGIModuleFacade implements ModuleFacade {
      * In case of error throw.
      * 
      * @param directory
-     * @param newName
+     * @param fileName
      * @throws ModuleException
      */
     public void nonCheckUpdate(String directory, String fileName) throws ModuleException {
@@ -437,7 +437,7 @@ class OSGIModuleFacade implements ModuleFacade {
         for (File file : fList) {
             if (file.isFile()) {
                 if (file.getName().contains("jar")) {
-                    LOG.debug("Loading library: {}", file.toString());
+                    LOG.info("Loading library: {}", file.toString());
                     // now we need uri
                     String uri = "file:///"
                             + file.getAbsolutePath().replace('\\', '/');

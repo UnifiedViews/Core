@@ -3,11 +3,11 @@
 	<parent>
 		<groupId>eu.unifiedviews</groupId>
 		<artifactId>uv-core</artifactId>
-		<version>3.0.0</version>
+		<version>3.1.0</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>commons-app</artifactId>
-	<version>3.0.0</version>
+	<version>3.1.0</version>
         <name>commons-app</name>
 	<description />
 
@@ -126,7 +126,7 @@
 			<artifactId>xstream</artifactId>
 		</dependency>
 
-		<dependency> <!-- OSGI impelemention -->
+		<dependency> <!-- OSGI implementation -->
 			<groupId>org.eclipse.tycho</groupId>
 			<artifactId>org.eclipse.osgi</artifactId>
 			<version>${eclipse.osgi.version}</version>

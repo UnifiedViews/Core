@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import eu.unifiedviews.dataunit.relational.repository.ManagableRelationalRepository;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
@@ -178,8 +179,21 @@ public class TestEnvironment {
     }
 
     /**
-     * Create output {@link RDFDataUnit}, add it to the test environment and
-     * return it.
+     * Create input {@link RDFDataUnit} that is used in the testing environment.
+     *
+     * @param name
+     *            Name of DataUnit.
+     * @return Created input {@link RDFDataUnit}.
+     * @throws RepositoryException
+     * @throws java.io.IOException
+     * @throws eu.unifiedviews.dataunit.DataUnitException
+     */
+    public WritableRDFDataUnit createRdfInput(String name) throws RepositoryException, IOException, DataUnitException {
+        return createRdfInput(name, false);
+    }
+
+    /**
+     * Create output {@link RDFDataUnit} that is used in the testing environment.
      *
      * @param name
      *            Name of DataUnit.
@@ -196,6 +210,22 @@ public class TestEnvironment {
         addOutput(name, rdf);
         return rdf;
     }
+
+    /**
+     * Create output {@link RDFDataUnit} that is used in the testing environment.
+     *
+     * @param name
+     *            Name of DataUnit.
+     * @return Created output {@link RDFDataUnit}.
+     * @throws RepositoryException
+     * @throws java.io.IOException
+     * @throws eu.unifiedviews.dataunit.DataUnitException
+     */
+    public WritableRDFDataUnit createRdfOutput(String name)
+            throws RepositoryException, IOException, DataUnitException {
+        return createRdfOutput(name, false);
+    }
+
 
     /**
      * Create {@link WritableFilesDataUnit} which is just returned to test developer for use.
@@ -264,35 +294,65 @@ public class TestEnvironment {
     public FilesDataUnit createFilesInputFromResource(String name,
             String resourceName)
             throws DataUnitException, RepositoryException, IOException {
+        return createFilesInputFromResources(name, resourceName);
+    }
+
+
+    /**
+     * Create files data unit, add it as an input and return reference to it. The
+     * files data unit is created in temp directory and data from given resource
+     * path are added to the root.
+     *
+     * @param name
+     *            Name of DataUnit.
+     * @param resourceNames
+     *            Path to the resources - one or more.
+     * @return Created input {@link FilesDataUnit}.
+     * @throws eu.unifiedviews.dataunit.DataUnitException
+     * @throws IOException
+     * @throws RepositoryException
+     */
+    public FilesDataUnit createFilesInputFromResources(String name,
+            String... resourceNames)
+            throws DataUnitException, RepositoryException, IOException {
         File dir = new File(FileUtils.getTempDirectory(),
                 "odcs-file-test-" + Long.toString(System.nanoTime()));
         dir.mkdirs();
 
         ManageableWritableFilesDataUnit filesDataUnit = testDataUnitFactory.createFilesDataUnit(name);
-        // add from resources
-        URL url = Thread.currentThread().getContextClassLoader()
-                .getResource(resourceName);
 
-        // check ..
-        if (url == null) {
-            throw new DataUnitException("Missing input file in resource for: "
-                    + resourceName);
+        if (resourceNames.length < 1) {
+            throw new IllegalArgumentException("There must be at least one resource");
         }
+        for (String resourceName : resourceNames) {
+            // add from resources
+            URL url = Thread.currentThread().getContextClassLoader()
+                    .getResource(resourceName);
 
-        File resourceRoot = new File(url.getPath());
-
-        //if the resource is a directory:
-        if (resourceRoot.isDirectory()) {
-            for (File toAdd : FileUtils.listFiles(resourceRoot, FileFileFilter.FILE, TrueFileFilter.INSTANCE)) {
-                filesDataUnit.addExistingFile(toAdd.getAbsolutePath(), toAdd.toURI().toASCIIString());
+            // check ..
+            if (url == null) {
+                throw new DataUnitException("Missing input file in resource for: "
+                        + resourceName);
             }
-        } else {
-            filesDataUnit.addExistingFile(resourceRoot.getAbsolutePath(), resourceRoot.toURI().toASCIIString());
+
+            File resourceRoot = new File(url.getPath());
+
+            //if the resource is a directory - symbolic names are not retained (as the names suggested by users):
+            if (resourceRoot.isDirectory()) {
+                for (File toAdd : FileUtils.listFiles(resourceRoot, FileFileFilter.FILE, TrueFileFilter.INSTANCE)) {
+                    filesDataUnit.addExistingFile(toAdd.getAbsolutePath(), toAdd.toURI().toASCIIString());
+                }
+            } else {
+                //symbolic names are retained as names of resources!
+                //resourceRoot.getAbsolutePath()
+                filesDataUnit.addExistingFile(resourceName, resourceRoot.toURI().toASCIIString());
+            }
         }
 
         addInput(name, filesDataUnit);
         return filesDataUnit;
     }
+
 
     /**
      * Create {@link WritableRelationalDataUnit} which is just returned to test developer for use.
@@ -307,7 +367,24 @@ public class TestEnvironment {
     public WritableRelationalDataUnit createRelationalDataUnit(String name) throws RepositoryException, IOException, DataUnitException {
         ManageableWritableRelationalDataUnit relational = this.testDataUnitFactory.createRelationalDataUnit(name);
         this.customDataUnits.put(name, relational);
+        return relational;
+    }
 
+    /**
+     * Create {@link WritableRelationalDataUnit} which is just returned to test developer for use.
+     *
+     * @param name
+     *            Name of DataUnit.
+     * @param type
+     *            Type of DataUnit.
+     * @return Created {@link WritableRelationalDataUnit}.
+     * @throws RepositoryException
+     * @throws DataUnitException
+     * @throws IOException
+     */
+    public WritableRelationalDataUnit createRelationalDataUnit(String name, ManagableRelationalRepository.Type type) throws RepositoryException, IOException, DataUnitException {
+        ManageableWritableRelationalDataUnit relational = this.testDataUnitFactory.createRelationalDataUnit(name, type);
+        this.customDataUnits.put(name, relational);
         return relational;
     }
 
@@ -329,6 +406,27 @@ public class TestEnvironment {
     }
 
     /**
+     * Create input {@link WritableRelationalDataUnit} that is used in test environment.
+     *
+     * @param name
+     *            Name of DataUnit.
+     * @param type
+     *            Type of DataUnit.
+     * @return Created input {@link WritableRelationalDataUnit}.
+     * @throws RepositoryException
+     * @throws DataUnitException
+     * @throws IOException
+     */
+    public WritableRelationalDataUnit createRelationalInput(String name, ManagableRelationalRepository.Type type) throws RepositoryException, IOException, DataUnitException {
+        ManageableWritableRelationalDataUnit relational = this.testDataUnitFactory.createRelationalDataUnit(name, type);
+        addInput(name, relational);
+
+        return relational;
+    }
+
+
+
+    /**
      * Create output {@link WritableRelationalDataUnit} that is used in test environment.
      *
      * @param name
@@ -341,6 +439,26 @@ public class TestEnvironment {
     public WritableRelationalDataUnit createRelationalOutput(String name)
             throws RepositoryException, IOException, DataUnitException {
         ManageableWritableRelationalDataUnit relational = this.testDataUnitFactory.createRelationalDataUnit(name);
+        addOutput(name, relational);
+        return relational;
+    }
+
+
+    /**
+     * Create output {@link WritableRelationalDataUnit} that is used in test environment.
+     *
+     * @param name
+     *            Name of DataUnit.
+     * @param type
+     *            Type of DataUnit.
+     * @return Created input {@link WritableRelationalDataUnit}.
+     * @throws RepositoryException
+     * @throws DataUnitException
+     * @throws IOException
+     */
+    public WritableRelationalDataUnit createRelationalOutput(String name, ManagableRelationalRepository.Type type)
+            throws RepositoryException, IOException, DataUnitException {
+        ManageableWritableRelationalDataUnit relational = this.testDataUnitFactory.createRelationalDataUnit(name, type);
         addOutput(name, relational);
         return relational;
     }

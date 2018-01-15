@@ -1,8 +1,9 @@
 #!/bin/bash
+# Sample call batch-replace.sh /uv/dpusToImport
 
 REST_API_URL="http://localhost:8080/master/api/1/import/dpu/jar"
-MASTER_USER=master
-MASTER_PASS=commander
+MASTER_USER=admin    
+MASTER_PASS=test
 
 echo "---------------------------------------------------------------------"
 echo "Replacing DPUs using REST API URL: $REST_API_URL"

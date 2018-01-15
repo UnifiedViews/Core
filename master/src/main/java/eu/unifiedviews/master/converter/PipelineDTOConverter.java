@@ -28,17 +28,19 @@ public class PipelineDTOConverter {
     }
 
     public static List<PipelineDTO> convert(List<Pipeline> pipelines) {
-        List<PipelineDTO> dtos = null;
-        if (pipelines != null) {
-            dtos = new ArrayList<PipelineDTO>();
-            for (Pipeline pipeline : pipelines) {
-                PipelineDTO dto = convert(pipeline);
-                if (dto != null) {
-                    dtos.add(dto);
-                }
 
+        if (pipelines == null) {
+            pipelines = new ArrayList<>();
+        }
+
+        List<PipelineDTO> dtos  = new ArrayList<PipelineDTO>();
+        for (Pipeline pipeline : pipelines) {
+            PipelineDTO dto = convert(pipeline);
+            if (dto != null) {
+                dtos.add(dto);
             }
         }
+
         return dtos;
     }
 

@@ -1,8 +1,0 @@
-/var/log/unifiedviews/frontend/catalina.out {
-  copytruncate
-  weekly
-  rotate 52
-  compress
-  missingok
-  create 640 unifiedviews unifiedviews
-}
