@@ -1,8 +1,0 @@
-<!--
-    Context configuration file for the Unifiedviews
--->
-
-<Context path="/unifiedviews" docBase="/usr/share/unifiedviews/frontend"
-  privileged="false" allowLinking="true" crossContext="false">
- 
-</Context>
