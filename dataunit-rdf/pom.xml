@@ -4,11 +4,11 @@
 	<parent>
 		<groupId>eu.unifiedviews</groupId>
 		<artifactId>uv-core</artifactId>
-		<version>3.1.0</version>
+		<version>3.2.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>dataunit-rdf</artifactId>
-	<version>3.1.0</version>
+	<version>3.2.0-SNAPSHOT</version>
         <name>dataunit-rdf</name>
 	<description>Helper classes for RDFDataUnit. Do not reuse this module, it is deprecated, but it is still needed, because frontend uses it for browse/query features and certain UV 1.X DPUs use it. </description>
 
