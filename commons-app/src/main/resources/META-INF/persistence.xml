@@ -40,8 +40,7 @@
             <property name="eclipselink.logging.level" value="INFO"/>
             <property name="eclipselink.logging.parameters" value="true"/>
 
-            <!-- logger for eclipse link -->
-            <property name="eclipselink.logging.logger" value="org.eclipse.persistence.logging.Slf4jSessionLogger"/>
+            <!-- logger for eclipse link <property name="eclipselink.logging.logger" value="org.eclipse.persistence.logging.Slf4jSessionLogger"/> -->
             <!-- Aditional performance monitor. -->
             <property name="eclipselink.session.customizer" value="cz.cuni.mff.xrg.odcs.commons.app.PerformanceSessionCustomizer"/>
 
