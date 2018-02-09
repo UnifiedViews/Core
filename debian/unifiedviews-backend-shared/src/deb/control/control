@@ -3,7 +3,7 @@ Version: [[debian-package-version]]
 Section: java
 Priority: extra
 Architecture: all
-Maintainer: jmc@eea.sk
+Maintainer: peter.hanecak@eea.sk
 Depends: openjdk-8-jre-headless, tomcat7, debconf (>= 0.5)
 Conflicts: unifiedviews-backend-shared (<< 2.0.0)
 Description: The unifiedviews's backend binaries. 
