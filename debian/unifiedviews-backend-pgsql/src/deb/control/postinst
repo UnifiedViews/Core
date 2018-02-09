@@ -1,0 +1,208 @@
+#!/bin/sh
+# postinst script for #PACKAGE#
+#
+# see: dh_installdeb(1)
+
+set -e
+
+# summary of how this script can be called:
+#        * <postinst> `configure' <most-recently-configured-version>
+#        * <old-postinst> `abort-upgrade' <new version>
+#        * <conflictor's-postinst> `abort-remove' `in-favour' <package>
+#          <new-version>
+#        * <postinst> `abort-remove'
+#        * <deconfigured's-postinst> `abort-deconfigure' `in-favour'
+#          <failed-install-package> <version> `removing'
+#          <conflicting-package> <version>
+# for details, see http://www.debian.org/doc/debian-policy/ or
+# the debian-policy package
+
+. /usr/share/debconf/confmodule
+
+db_creadentials() {
+    db_get backend/pgsql_db_user
+    DB_USER=$RET
+
+    db_get backend/pgsql_db_password
+    DB_PASS=$RET
+}
+
+set_java() {
+ JAVA_VERSION=`java -version 2>&1 | grep "java version" | awk '{print $3}' | tr -d \" | awk '{split($0, array, ".")} END{print array[2]}'`
+ echo -n "check java version"
+ if [ ! $JAVA_VERSION -eq 7 ]; then
+     JAVA_NAME=`update-java-alternatives  -l | grep 7 | cut -d' ' -f1`
+     if [ -n $JAVA_NAME ] ; then
+         /usr/sbin/update-java-alternatives --jre-headless --set $JAVA_NAME
+     echo " - Java version is set to 1.7"
+     else
+        echo " ERROR: java 7 is not installed"
+     fi
+
+ else
+    echo  " - ok"
+ fi
+
+}
+
+
+db_up() {
+  #Check if postgresql is started
+  /etc/init.d/postgresql status > /dev/null || /etc/init.d/postgresql start >/dev/null 2>&1
+
+  echo -n "INFO: Waiting for postgresql to be up..."
+  CPT=0
+  TIMEOUT=60
+  while ! su - postgres -c "psql -q --output /dev/null -c \"SELECT COUNT(*) FROM pg_catalog.pg_authid\"" >/dev/null 2>&1
+  do
+    echo -n "."
+    sleep 1
+    CPT=$((${CPT}+1))
+    if [ ${CPT} -eq ${TIMEOUT} ]
+    then
+      echo -e "\nERROR: Connection to PostgreSQL has not been established before timeout. Exiting"
+      exit 1
+    fi
+  done
+  echo " Done"
+}
+
+
+db_configure() {
+    dbname="$1"
+    usrname="$2"
+    pass="$3"
+    CHK_PG_DB=$(su - postgres -c "psql -t -c \"select count(1) from pg_catalog.pg_database where datname = '${dbname}'\"")
+    CHK_PG_USER=$(su - postgres -c "psql -t -c \"select count(1) from pg_user where usename = '${usrname}'\"")
+    echo -n "INFO: Configuring PostgreSQL database..."
+
+    if [ ${CHK_PG_USER} -eq 0 ]
+        then
+        echo -n "INFO: Creating PostgreSQL user..."
+        su - postgres -c "psql -q -c \"CREATE USER ${usrname} WITH PASSWORD '${DB_PASS}'\"" 
+       echo "Done"
+    fi
+
+    CHK_PG_ENCODE=$(su - postgres -c " psql template1 -t -c 'SHOW SERVER_ENCODING'")
+    ENCODING="UTF8"
+    if [ ! ${CHK_PG_ENCODE} = $ENCODING ]; then
+        echo "set encoding ${ENCODING} to template1"
+        su - postgres -c "psql -q -d template1 -c \"UPDATE pg_database SET datistemplate=FALSE WHERE datname='template1'  ;\""
+        su - postgres -c "psql -q -c \"DROP DATABASE IF EXISTS template1;\""
+        su - postgres -c "createdb  -O postgres template1 -T template0 -E $ENCODING;"
+        su - postgres -c "psql -q -d template1 -c \"UPDATE pg_database SET datistemplate=TRUE WHERE datname='template1'  ;\""
+    fi
+
+    if [ ${CHK_PG_DB} -eq 0 ]
+    then
+        echo -n "INFO: Creating PostgreSQL database (which does not exists)..."
+        su - postgres -c "createdb  -O ${usrname} ${dbname}" 
+        
+        #su - postgres -c "psql  -d ${dbname}" < \
+        #/usr/share/unifiedviews/pgsql/schema.sql
+        
+        #su - postgres -c "psql  -d ${dbname}" < \
+        #/usr/share/unifiedviews/pgsql/data-core.sql
+
+        #su - postgres -c "psql  -d ${dbname}" < \
+        #/usr/share/unifiedviews/pgsql/data-permissions.sql
+
+        su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ${usrname};\"" 
+        su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ${usrname};\"" 
+        echo " Done" 
+    
+    else
+         echo -n "INFO: Updating PostgreSQL database (the database exists)..."
+         version=`su - postgres -c  "psql -A -t -d unifiedviews -c \"select value from properties WHERE properties.key='UV.Core.version' \""`
+         if [ "$version" = "001.005.005" ]
+         then
+           # set db schema version
+            su - postgres -c "psql -d ${dbname}" < \
+            /usr/share/unifiedviews/pgsql/updates/1.6.0-update.sql
+            su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ${usrname};\"" 
+            su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ${usrname};\"" 
+         fi
+         
+         if [ "$version" = "001.006.000" ]
+         then
+           # set db schema version
+            su - postgres -c "psql -d ${dbname}" < \
+            /usr/share/unifiedviews/pgsql/updates/2.0.0-update.sql
+            su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ${usrname};\"" 
+            su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ${usrname};\"" 
+        fi     
+         
+        if [ "$version" = "002.000.000" ]
+        then
+            su - postgres -c "psql -d ${dbname}" < \
+            /usr/share/unifiedviews/pgsql/updates/2.1.0-core.sql
+            
+            su - postgres -c "psql -d ${dbname}" < \
+            /usr/share/unifiedviews/pgsql/updates/2.1.0-permissions.sql
+            su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ${usrname};\"" 
+            su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ${usrname};\"" 
+         fi     
+
+        if [ "$version" = "002.001.000" ]
+            then
+                    # set db schema version
+                    su - postgres -c "psql -d ${dbname}" < \
+                    /usr/share/unifiedviews/pgsql/updates/2.2.0-update.sql
+                    su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ${usrname};\""
+                    su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ${usrname};\""
+            fi
+        
+        if [ "$version" = "002.002.000" ]
+            then
+                    # set db schema version
+                    su - postgres -c "psql -d ${dbname}" < \
+                    /usr/share/unifiedviews/pgsql/updates/2.3.0-update.sql
+                    su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ${usrname};\""
+                    su - postgres -c "psql -q -d ${dbname} -c \"GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ${usrname};\""
+            fi  
+    fi
+
+    # update backend config
+    sed --in-place \
+    -e "s/database.sql.hostname = .*/database.sql.hostname = $address_host/" \
+    -e "s/database.sql.port = .*/database.sql.port = 3306/" \
+    -e "s/database.sql.user = .*/database.sql.user = $DB_USER/" \
+    -e "s/database.sql.password = .*/database.sql.password = $DB_PASS/" \
+    /etc/unifiedviews/backend-config.properties
+}
+
+
+fix_perms() {
+    chown unifiedviews:unifiedviews /etc/unifiedviews/backend-config.properties
+    chown -R unifiedviews:unifiedviews /usr/share/unifiedviews/pgsql
+}
+
+
+case "$1" in
+  configure)
+    db_creadentials  
+    fix_perms
+    db_up
+    set_java
+    db_configure unifiedviews $DB_USER $DB_PASS
+    db_stop
+  
+  ;;
+
+  abort-upgrade|abort-remove|abort-deconfigure)
+  ;;
+
+  *)
+    echo "postinst called with unknown argument \`$1'" >&2
+    exit 1
+    
+  ;;
+esac
+
+
+# dh_installdeb will replace this with shell code automatically
+# generated by other debhelper scripts.
+
+#DEBHELPER#
+
+exit 0

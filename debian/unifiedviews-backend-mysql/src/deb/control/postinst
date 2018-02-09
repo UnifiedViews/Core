@@ -1,0 +1,219 @@
+#!/bin/sh
+# postinst script for #PACKAGE#
+#
+# see: dh_installdeb(1)
+
+set -e
+
+# summary of how this script can be called:
+#        * <postinst> `configure' <most-recently-configured-version>
+#        * <old-postinst> `abort-upgrade' <new version>
+#        * <conflictor's-postinst> `abort-remove' `in-favour' <package>
+#          <new-version>
+#        * <postinst> `abort-remove'
+#        * <deconfigured's-postinst> `abort-deconfigure' `in-favour'
+#          <failed-install-package> <version> `removing'
+#          <conflicting-package> <version>
+# for details, see http://www.debian.org/doc/debian-policy/ or
+# the debian-policy package
+
+. /usr/share/debconf/confmodule
+
+db_creadentials(){
+    echo " >>> db_creadentials"
+    db_get backend/mysql_root
+    ROOT_PW=$RET
+
+    db_get backend/mysql_db_user
+    DBA_USER=$RET
+
+    db_get backend/mysql_db_password
+    DBA_PASS=$RET
+    echo " <<< db_creadentials"
+}
+
+set_java() {
+ echo " >>> set_java"
+
+ JAVA_VERSION=`java -version 2>&1 | grep "java version" | awk '{print $3}' | tr -d \" | awk '{split($0, array, ".")} END{print array[2]}'`
+ echo -n "check java version"
+ if [ ! $JAVA_VERSION -eq 7 ]; then
+     JAVA_NAME=`update-java-alternatives  -l | grep 7 | cut -d' ' -f1`
+     if [ -n $JAVA_NAME ] ; then
+         /usr/sbin/update-java-alternatives --jre-headless --set $JAVA_NAME
+     echo " - Java version is set to 1.7"
+     else
+        echo " ERROR: java 7 is not installed"
+     fi
+
+ else
+    echo  " - ok"
+ fi
+ echo " <<< set_java"
+}
+
+
+db_up() {
+ echo " >>> db_up"
+
+  #Check if mysql is started
+  service mysql status > /dev/null || service mysql start >/dev/null 2>&1
+
+  echo -n "INFO: Waiting for mysql to be up..."
+
+  CPT=0
+  TIMEOUT=60
+  while [ 1 ]
+  do
+    echo -n "Checking whether db is running:"
+    mysql --password=$ROOT_PW -e ' SELECT "isRunning" '>/dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo -n "DB is running"
+        break
+    fi
+
+    echo -n "DB is NOT running, retrying"
+    echo -n "."
+    sleep 1
+    CPT=$((${CPT}+1))
+    if [ ${CPT} -eq ${TIMEOUT} ]
+    then
+      echo -n "Timeout reached."
+      echo -e "\nERROR: Connection to Mysql has not been established before timeout. Exiting"
+      exit 1
+    fi
+  done
+
+  echo " Done"
+  echo " <<< db_up"
+}
+
+
+db_configure() {
+    echo " >>> db_configure"
+    DB_NAME=unifiedviews
+    # if database unifiedviews is not exist
+    if ! mysql -u $DBA_USER --password=$DBA_PASS -e 'use '$DB_NAME''; then
+    
+        echo -n "INFO: Creating MySQL database (which does not exists)..."
+    
+        echo "create database if not exists $DB_NAME;" | mysql --password=$ROOT_PW
+        echo "created database: $DB_NAME"
+        # create a user if not exists
+        echo "create user '${DBA_USER}'@localhost identified by '${DBA_PASS}';" | mysql --password=$ROOT_PW || true
+        echo "created user: $DBA_USER"
+        echo "grant all privileges on unifiedviews.* to uv@localhost;" | mysql --password=$ROOT_PW
+        cd /usr/share/unifiedviews/mysql
+        #mysql -u $DBA_USER --password=$DBA_PASS $DB_NAME < \
+        #/usr/share/unifiedviews/mysql/schema.sql
+        #mysql -u $DBA_USER --password=$DBA_PASS $DB_NAME < \
+        #/usr/share/unifiedviews/mysql/data.sql
+    
+    else    
+    
+        echo -n "INFO: Updating MySQL database (the database exists)..."
+        version=`mysql -u $DBA_USER --password=$DBA_PASS -s -N -e "select value from properties WHERE properties.key='UV.Core.version' " $DB_NAME`
+        if [ "$version" = "001.004.000" ]
+        then
+           # set db schema version
+            mysql -u $DBA_USER --password=$DBA_PASS $DB_NAME < \
+           /usr/share/unifiedviews/mysql/1.5.0-update.sql
+        fi
+        
+        version=`mysql -u $DBA_USER --password=$DBA_PASS -s -N -e "select value from properties WHERE properties.key='UV.Core.version' " $DB_NAME`
+        if [ "$version" = "001.005.000" ]
+        then
+           # set db schema version
+           mysql -u $DBA_USER --password=$DBA_PASS $DB_NAME < \
+           /usr/share/unifiedviews/mysql/1.5.5-update.sql
+        fi    
+        
+        version=`mysql -u $DBA_USER --password=$DBA_PASS -s -N -e "select value from properties WHERE properties.key='UV.Core.version' " $DB_NAME`
+        if [ "$version" = "001.005.005" ]
+        then
+           # set db schema version
+           mysql -u $DBA_USER --password=$DBA_PASS $DB_NAME < \
+           /usr/share/unifiedviews/mysql/1.6.0-update.sql
+        fi    
+        
+        version=`mysql -u $DBA_USER --password=$DBA_PASS -s -N -e "select value from properties WHERE properties.key='UV.Core.version' " $DB_NAME`
+        if [ "$version" = "001.006.000" ]
+        then
+           # set db schema version
+           mysql -u $DBA_USER --password=$DBA_PASS $DB_NAME < \
+           /usr/share/unifiedviews/mysql/2.0.0-update.sql
+        fi        
+
+        version=`mysql -u $DBA_USER --password=$DBA_PASS -s -N -e "select value from properties WHERE properties.key='UV.Core.version' " $DB_NAME`
+        if [ "$version" = "002.000.000" ]
+        then
+           # set db schema version
+           mysql -u $DBA_USER --password=$DBA_PASS $DB_NAME < \
+           /usr/share/unifiedviews/mysql/2.1.0-update.sql
+        fi   
+        
+        if [ "$version" = "002.001.000" ]
+            then
+                    # set db schema version
+            mysql -u $DBA_USER --password=$DBA_PASS $DB_NAME < \
+           /usr/share/unifiedviews/mysql/2.2.0-update.sql
+        fi
+    
+        if [ "$version" = "002.002.000" ]
+            then
+                    # set db schema version
+            mysql -u $DBA_USER --password=$DBA_PASS $DB_NAME < \
+           /usr/share/unifiedviews/mysql/2.3.0-update.sql
+        fi     
+         
+    fi
+    
+    # set permissions for user uv
+    echo "grant all on $DB_NAME.* to '$DBA_USER' identified by '$DBA_PASS';"  | mysql --password=$ROOT_PW || true
+    echo "granted all on $DB_NAME for user: $DBA_USER"
+
+    # update backend config
+    sed --in-place \
+    -e "s/database.sql.hostname = .*/database.sql.hostname = $address_host/" \
+    -e "s/database.sql.port = .*/database.sql.port = 3306/" \
+    -e "s/database.sql.user = .*/database.sql.user = $DBA_USER/" \
+    -e "s/database.sql.password = .*/database.sql.password = $DBA_PASS/" \
+    /etc/unifiedviews/backend-config.properties
+
+    echo " <<< db_configure"
+}
+
+fix_perms() {
+    chown unifiedviews:unifiedviews /etc/unifiedviews/backend-config.properties
+    chown -R unifiedviews:unifiedviews /usr/share/unifiedviews/mysql
+}
+
+case "$1" in
+  configure)
+    db_creadentials
+    fix_perms
+    db_up
+    set_java
+    db_configure
+    db_stop
+
+    
+  ;;
+
+  abort-upgrade|abort-remove|abort-deconfigure)
+  ;;
+
+  *)
+    echo "postinst called with unknown argument \`$1'" >&2
+    exit 1
+    
+  ;;
+esac
+
+
+# dh_installdeb will replace this with shell code automatically
+# generated by other debhelper scripts.
+
+#DEBHELPER#
+
+exit 0

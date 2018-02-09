@@ -1,0 +1,120 @@
+#!/bin/bash
+
+
+# Location of jar files on the system
+JAVA_LIBDIR=/usr/share/java
+
+# Location of arch-specific jar files on the system
+JNI_LIBDIR=/usr/lib/java
+
+# Root of all JVM installations
+JVM_ROOT=/usr/lib/jvm
+
+# You can define a system-wide JVM root here if you're not using the
+# default one.
+#
+# If you have the a base JRE package installed
+# (e.g. java-1.6.0-openjdk):
+#JAVA_HOME=$JVM_ROOT/jre
+#
+# If you have the a devel JDK package installed
+# (e.g. java-1.6.0-openjdk-devel):
+#JAVA_HOME=$JVM_ROOT/java
+
+# Options to pass to the java interpreter
+JAVACMD_OPTS=
+
+
+# Set the java virtual machine
+set_jvm() {
+  # use $JAVA_HOME if defined
+  if [ -n "$JAVA_HOME" ] ; then
+    return
+  fi
+
+  # try to find it from java command
+
+  # try javac first, or we might get the location of the jre instead - djw
+  java=`which javac 2>/dev/null || :`
+
+  # if we don't have the jdk, then maybe we have the jre - djw
+  if [ -z "$java" ] ; then
+    java=`which java 2>/dev/null || :`
+  fi
+
+  if [ -n "$java" ] ; then
+    while [ -h "$java" ] ; do
+      java=`readlink $java 2>/dev/null`
+    done
+    JAVA_HOME="`dirname $java`/.."
+    export JAVA_HOME
+    return
+  fi
+
+  echo "Can't find java virtual machine, aborting."
+  exit 1
+}
+
+
+set_javacmd() {
+  if [ -x "$JAVACMD" ]; then
+    return
+  fi
+  set_jvm
+  # Add all sorts of jvm layouts here
+  if [ -x "$JAVA_HOME/jre/sh/java" ]; then
+    JAVACMD="$JAVA_HOME/jre/sh/java"
+  elif [ -x "$JAVA_HOME/bin/java" ]; then
+    JAVACMD="$JAVA_HOME/bin/java"
+  else
+    JAVACMD=`which java 2>/dev/null`
+  fi
+
+  if [ ! -x "$JAVACMD" ]; then
+    echo "$0: error: Failed to set JAVACMD"
+    return 1
+  fi
+
+  if [ -n "$JAVACMD_OPTS" ]; then
+    JAVACMD="$JAVACMD $JAVACMD_OPTS"
+  fi
+
+ return 0
+}
+
+set_javacmd
+
+# Get the tomcat config (use this for environment specific settings)
+if [ -z "${UNIFIEDVIEWS_MAIN_CFG}" ]; then
+  UNIFIEDVIEWS_MAIN_CFG="/etc/unifiedviews/unifiedviews.conf"
+fi
+
+if [ -r "$UNIFIEDVIEWS_MAIN_CFG" ]; then
+  . $UNIFIEDVIEWS_MAIN_CFG
+fi
+
+# Define the unifiedviews username
+UNIFIEDVIEWS_USER="${UNIFIEDVIEWS_USER:-root}"
+
+# Define the unifiedviews group
+UNIFIEDVIEWS_GROUP="${UNIFIEDVIEWS_GROUP:-`id -gn $UNIFIEDVIEWS_USER`}"
+
+
+if [ "$1" = "start" ]; then
+     nohup ${JAVACMD} $JAVA_OPTS -jar "$UNIFIEDVIEWS_BACKEND" & 
+     pid="$!"
+    if [ ! -z "$UNIFIEDVIEWS_PID" ]; then
+       echo "$pid" > $UNIFIEDVIEWS_PID
+    fi
+    echo $pid > $UNIFIEDVIEWS_PID
+    exit 0
+elif [ "$1" = "stop" ]; then
+	read process_id < ${UNIFIEDVIEWS_PID}
+    # send sigterm 
+    kill -15 ${process_id}
+    exit 0
+    
+else
+  echo "Usage: $0 {start|start-security|stop}"
+  exit 1
+fi

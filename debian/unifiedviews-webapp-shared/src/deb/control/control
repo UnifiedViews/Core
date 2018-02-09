@@ -1,0 +1,11 @@
+Package: unifiedviews-webapp-shared
+Source: unifiedviews-webapp-shared
+Version: [[debian-package-version]]
+Section: java
+Priority: extra
+Architecture: all
+Maintainer: jmc@eea.sk
+Homepage: https://github.com/UnifiedViews/Core
+Depends: openjdk-7-jre-headless, tomcat7
+Conflicts: unifiedviews-webapp-shared (<< 2.0.0)
+Description: The unifiedviews's frontend binaries. 

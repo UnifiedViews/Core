@@ -1,0 +1,9 @@
+Package: unifiedviews-backend-mysql
+Version: [[debian-package-version]]
+Section: java
+Priority: extra
+Architecture: all
+Maintainer: jmc@eea.sk
+Depends: unifiedviews-backend-shared (>> 2.3), unifiedviews-backend-shared (<< 2.4), mysql-server,  debconf (>= 0.5)
+Conflicts: unifiedviews-backend-pgsql
+Description: The mysql database and settings for unifiedviews's backend.

@@ -1,0 +1,219 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>eu.unifiedviews.packages</groupId>
+        <artifactId>unifiedviews-packages</artifactId>
+        <version>3.1.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>eu.unifiedviews.packages</groupId>
+    <artifactId>unifiedviews-webapp-shared</artifactId>
+    <name>unifiedviews-webapp-shared</name>
+    <description />
+
+    <dependencies>
+        <dependency>
+            <groupId>eu.unifiedviews</groupId>
+            <artifactId>frontend</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>eu.unifiedviews</groupId>
+            <artifactId>master</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.3</version>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>eu.unifiedviews</groupId>
+                                    <artifactId>frontend</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>war</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/frontend</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <outputDirectory>${project.build.directory}/master</outputDirectory>
+                                    <groupId>eu.unifiedviews</groupId>
+                                    <artifactId>master</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>war</type>
+                                </artifactItem>
+                            </artifactItems>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <configuration>
+                            <target>
+                                <move file="${project.build.directory}/frontend/WEB-INF/web.xml" tofile="${project.build.directory}/frontend/WEB-INF/web_default.xml" />
+                                <move file="${project.build.directory}/frontend/WEB-INF/web_sso.xml" tofile="${project.build.directory}/frontend/WEB-INF/web.xml" />
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin -->
+            <plugin>
+                <artifactId>jdeb</artifactId>
+                <groupId>org.vafer</groupId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jdeb</goal>
+                        </goals>
+                        <configuration>
+                            <deb>${debian-package-name}</deb>
+                            <dataSet>
+                                <!-- unifiedviews-frontend unziped war-->
+                                <data>
+                                    <src>${project.build.directory}/frontend</src>
+                                    <type>directory</type>
+                                    <mapper>
+                                        <type>perm</type>
+                                        <prefix>/usr/share/unifiedviews/frontend</prefix>                           
+                                    </mapper>
+                                </data>
+                                <!-- unifiedviews-frontend unziped master - rest api-->
+                                <data>
+                                    <src>${project.build.directory}/master</src>
+                                    <type>directory</type>
+                                    <mapper>
+                                        <type>perm</type>
+                                        <prefix>/usr/share/unifiedviews/master</prefix> 
+                                    </mapper>
+                                </data>                                
+                                <!-- unifiedviews-frontend init.d script -->
+                                <data>
+                                    <src>${basedir}/src/deb/etc/init.d/unifiedviews-frontend</src>
+                                    <type>file</type>
+                                    <mapper>
+                                        <type>perm</type>
+                                        <prefix>/etc/init.d</prefix>
+                                    </mapper>
+                                </data>
+                                <!-- unifiedviews-frontend sample configuration and catalina base -->
+                                <data>
+                                    <src>${basedir}/src/deb/etc/unifiedviews/</src>
+                                    <type>directory</type>
+                                    <mapper>
+                                        <type>perm</type>
+                                        <prefix>/etc/unifiedviews</prefix>
+                                    </mapper>
+                                </data>
+                                <data>
+                                    <src>${basedir}/src/deb/etc/logrotate.d</src>
+                                    <type>directory</type>
+                                    <mapper>
+                                        <type>perm</type>
+                                        <prefix>/etc/logrotate.d</prefix>
+                                    </mapper>
+                                </data>                                       
+                                <!-- prepare folders folders cache, log and tmp for unifiedviews -->
+                                <data>
+                                    <type>template</type>
+                                    <paths>
+                                        <path>/var/cache/unifiedviews/</path>
+                                        <path>/var/log/unifiedviews/frontend</path>
+                                        <path>/usr/share/unifiedviews/webapp</path>
+                                        <path>/var/tmp/unifiedviews</path>
+                                        <path>/usr/share/unifiedviews/tomcat</path>
+                                    </paths>
+                                    <mapper>
+                                        <type>perm</type>
+                                    </mapper>
+                                </data>          
+
+                                <!-- unifiedviews-frontend tomcat: create link /usr/share/unifiedviews/tomcat/conf -> for//etc/unifiedviews/tomcat -->
+                                <data>
+                                    <type>link</type>
+                                    <linkName>/usr/share/unifiedviews/tomcat/conf</linkName>
+                                    <linkTarget>/etc/unifiedviews/tomcat</linkTarget>
+                                    <symlink>true</symlink>
+                                    <mapper>
+                                        <type>perm</type>
+                                    </mapper>
+                                </data>
+                                <!-- unifiedviews-frontend tomcat: create link /usr/share/unifiedviews/logs -> for /var/log/unifiedviews/frontend -->
+                                <data>
+                                    <type>link</type>
+                                    <linkName>/usr/share/unifiedviews/tomcat/logs</linkName>
+                                    <linkTarget>/var/log/unifiedviews/frontend</linkTarget>
+                                    <symlink>true</symlink>
+                                    <mapper>
+                                        <type>perm</type>
+                                    </mapper>
+                                </data>
+                                <!-- unifiedviews-frontend tomcat: create link /usr/share/unifiedviews/work ->  /var/cache/unifiedviews/ -->
+                                <data>
+                                    <type>link</type>
+                                    <linkName>/usr/share/unifiedviews/tomcat/work</linkName>
+                                    <linkTarget>/var/cache/unifiedviews/</linkTarget>
+                                    <symlink>true</symlink>
+                                    <mapper>
+                                        <type>perm</type>     
+                                    </mapper>
+                                </data>
+                                <!-- unifiedviews-frontend tomcat: create link /usr/share/unifiedviews/temp ->  var/tmp/unifiedviews -->
+                                <data>
+                                    <type>link</type>
+                                    <linkName>/usr/share/unifiedviews/tomcat/temp</linkName>
+                                    <linkTarget>/var/tmp/unifiedviews</linkTarget>
+                                    <symlink>true</symlink>
+                                    <mapper>
+                                        <type>perm</type>    
+                                    </mapper>
+                                </data>      
+                                <!-- create link web.xml to web_default.xml -->
+                                <!-- data>
+                                    <type>link</type>
+                                    <linkName>/usr/share/unifiedviews/frontend/WEB-INF/web.xml</linkName>
+                                    <linkTarget>/usr/share/unifiedviews/frontend/WEB-INF/web_default.xml</linkTarget>
+                                    <symlink>true</symlink>
+                                    <mapper>
+                                        <type>perm</type>
+                                    </mapper>
+                                </data -->                          
+                            </dataSet>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
+
+
