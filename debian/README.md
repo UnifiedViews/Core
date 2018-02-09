@@ -1,8 +1,6 @@
 Packages
 ========
 
-**Debian packages are not supported in UnifiedViews 3.X**
-
 How to install UnifiedViews from debian packages? See [Installation Guide](https://grips.semantic-web.at/display/UDDOC/Installation+Guide)
 
 How to create .deb packages for Debian:
