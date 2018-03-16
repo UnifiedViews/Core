@@ -11,7 +11,7 @@
 
     <groupId>eu.unifiedviews.packages</groupId>
     <artifactId>unifiedviews-packages</artifactId>
-    <version>3.1.0-SNAPSHOT</version>
+    <version>3.2.0-SNAPSHOT</version>
     <name>unifiedviews-packages</name>
     <packaging>pom</packaging>
     <description />
@@ -30,8 +30,8 @@
     </modules>
 
     <properties>
-        <backend-version>3.1.0</backend-version>
-        <debian-package-version>3.1.0</debian-package-version>
+        <backend-version>3.2.0-SNAPSHOT</backend-version>
+        <debian-package-version>3.2.0</debian-package-version>
         <debian-package-name>${project.build.directory}/${project.artifactId}-${debian-package-version}_all.deb</debian-package-name>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
