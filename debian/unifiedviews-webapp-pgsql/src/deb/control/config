@@ -1,0 +1,9 @@
+#!/bin/sh
+set -e
+. /usr/share/debconf/confmodule
+
+db_input low frontend/pgsql_db_user || true
+db_go
+db_input low frontend/pgsql_db_password || true
+db_go
+

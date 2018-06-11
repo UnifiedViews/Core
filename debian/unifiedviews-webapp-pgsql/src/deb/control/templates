@@ -1,0 +1,9 @@
+Template: frontend/pgsql_db_user
+Type: string
+Default: uv
+Description: Postgresql user for unifiedviews
+
+Template: frontend/pgsql_db_password
+Type: password
+Default: uv
+Description: Postgresql user password

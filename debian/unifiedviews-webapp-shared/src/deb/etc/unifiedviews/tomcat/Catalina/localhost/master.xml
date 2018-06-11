@@ -1,0 +1,8 @@
+<!--
+    Context configuration file for the Unifiedviews RestApi 
+-->
+
+<Context path="/master" docBase="/usr/share/unifiedviews/master"
+   privileged="false" allowLinking="true" crossContext="false">
+ 
+</Context>

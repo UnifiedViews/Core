@@ -1,0 +1,11 @@
+Package: unifiedviews-webapp-mysql
+Source: unifiedviews-webapp-mysql
+Version: [[debian-package-version]]
+Section: java
+Priority: extra
+Architecture: all
+Maintainer: peter.hanecak@eea.sk
+Homepage: https://github.com/UnifiedViews/Core
+Depends: unifiedviews-webapp-shared (>> 3.1), unifiedviews-webapp-shared (<< 3.2), mysql-server,  debconf (>= 0.5)
+Conflicts: unifiedviews-backend-pgsql, unifiedviews-webapp-pgsql
+Description: The mysql database and settings for unifiedviews's frontend.

@@ -1,0 +1,9 @@
+Template: frontend/mysql_db_user
+Type: string
+Default: uv
+Description: MySQL user for unifiedviews
+
+Template: frontend/mysql_db_password
+Type: password
+Default: uv
+Description: MySQL user password

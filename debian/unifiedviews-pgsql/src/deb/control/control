@@ -1,0 +1,8 @@
+Package: unifiedviews-pgsql
+Version: [[debian-package-version]]
+Section: java
+Priority: extra
+Architecture: all
+Maintainer: peter.hanecak@eea.sk
+Depends: unifiedviews-backend-pgsql (>> 3.1), unifiedviews-backend-pgsql (<< 3.2), unifiedviews-backend (>> 3.1), unifiedviews-backend (<< 3.2), unifiedviews-webapp-pgsql (>> 3.1), unifiedviews-webapp-pgsql (<< 3.2), unifiedviews-webapp (>> 3.1),  unifiedviews-webapp (<< 3.2)
+Description: The tool uses data processing pipelines for obtaining, processing, and storing RDF data.

@@ -1,0 +1,310 @@
+#!/bin/bash
+#
+# unifiedviews backend
+# This file was inspirated by tomcat6 init script
+#
+### BEGIN INIT INFO
+# Provides:          unifiedviews-backend
+# Required-Start:    $local_fs $remote_fs $network
+# Required-Stop:     $local_fs $remote_fs $network
+# Should-Start:      $named
+# Should-Stop:       $named
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start unifiedviews-backend at boot time
+# Description:       Enable unifiedviews-backend provided by daemon.
+### END INIT INFO
+
+
+## Source function library.
+#. /etc/rc.d/init.d/functions
+# Source LSB function library.
+if [ -r /lib/lsb/init-functions ]; then
+    . /lib/lsb/init-functions
+else
+    exit 1
+fi
+
+DISTRIB_ID=`lsb_release -i -s 2>/dev/null`
+
+NAME="$(basename $0)"
+unset ISBOOT
+if [ "${NAME:0:1}" = "S" -o "${NAME:0:1}" = "K" ]; then
+    NAME="${NAME:3}"
+    ISBOOT="1"
+fi
+
+# For SELinux we need to use 'runuser' not 'su'
+if [ -x "/sbin/runuser" ]; then
+    SU="/sbin/runuser -s /bin/sh"
+else
+    SU="/bin/su -s /bin/sh"
+fi
+
+# Get the unifiedviews config (use this for environment specific settings)
+UNIFIEDVIEWS_CFG="/etc/unifiedviews/unifiedviews.conf"
+if [ -r "$UNIFIEDVIEWS_CFG" ]; then
+    . $UNIFIEDVIEWS_CFG
+fi
+
+
+# Get instance specific config file
+if [ -r "/etc/sysconfig/${NAME}" ]; then
+    . /etc/sysconfig/${NAME}
+fi
+
+# Define which connector port to use
+CONNECTOR_PORT="${CONNECTOR_PORT:-8080}"
+
+# Path to the unifiedviews launch script
+UNIFIEDVIEWS_SCRIPT="/usr/sbin/run_unifiedviews_backend"
+
+# unifiedviews program name
+UNIFIEDVIEWS_PROG="${NAME}"
+        
+# Define the unifiedviews username
+UNIFIEDVIEWS_USER="${UNIFIEDVIEWS_USER:-unifiedviews}"
+
+# Define the unifiedviews group
+UNIFIEDVIEWS_GROUP="${UNIFIEDVIEWS_GROUP:-`id -gn $UNIFIEDVIEWS_USER`}"
+
+# Define the unifiedviews log file
+UNIFIEDVIEWS_LOG="${UNIFIEDVIEWS_LOG:-/var/log/unifiedviews/backend/${NAME}-initd.log}"
+
+# Define the pid file name
+# If change is needed, use sysconfig instead of here
+export UNIFIEDVIEWS_PID="${UNIFIEDVIEWS_PID:-/var/run/${NAME}.pid}"
+
+find_jdks()
+{
+    for java_version in 9 8 7
+    do
+        for jvmdir in /usr/lib/jvm/java-${java_version}-openjdk-* \
+                      /usr/lib/jvm/jdk-${java_version}-oracle-* \
+                      /usr/lib/jvm/jre-${java_version}-oracle-*
+        do
+            if [ -d "${jvmdir}" -a "${jvmdir}" != "/usr/lib/jvm/java-${java_version}-openjdk-common" ]
+            then
+                JDK_DIRS="${JDK_DIRS} ${jvmdir}"
+            fi
+        done
+    done
+
+    # Add older non multi arch installations
+    JDK_DIRS="${JDK_DIRS} /usr/lib/jvm/java-6-openjdk /usr/lib/jvm/java-6-sun /usr/lib/jvm/java-7-oracle"
+}
+
+# The first existing directory is used for JAVA_HOME (if JAVA_HOME is not
+# defined in UNIFIEDVIEWS_CFG)
+JDK_DIRS=""
+find_jdks
+
+# Look for the right JVM to use
+for jdir in $JDK_DIRS; do
+    if [ -r "$jdir/bin/java" -a -z "${JAVA_HOME}" ]; then
+	JAVA_HOME="$jdir"
+    fi
+done
+export JAVA_HOME
+
+RETVAL="0"
+
+function parseOptions() {
+    options=""
+
+    if [ -r "/etc/sysconfig/${NAME}" ]; then
+        options="$options $(
+                     awk '!/^#/ && !/^$/ { ORS=" "; 
+                                           print "export ", $0, ";" }' \
+                     /etc/sysconfig/${NAME}
+                 )"
+    fi
+    UNIFIEDVIEWS_SCRIPT="$options ${UNIFIEDVIEWS_SCRIPT}"
+}
+
+# rhbz 757632
+function version() {
+	parseOptions
+	$SU - $UNIFIEDVIEWS_USER -c "${UNIFIEDVIEWS_SCRIPT} version" >> ${UNIFIEDVIEWS_LOG} 2>&1 || RETVAL="4"
+}
+
+# See how we were called.
+function start() {
+   echo -n "Starting ${UNIFIEDVIEWS_PROG}: "
+
+   if [ -z "$JAVA_HOME" ]; then
+            log_failure_msg "no JDK found - please set JAVA_HOME"
+            exit 1
+   fi
+
+   if [ "$RETVAL" != "0" ]; then 
+     log_failure_msg
+     return
+   fi
+   
+   if [ -f "/var/lock/${NAME}" ]; then
+        if [ -f "${UNIFIEDVIEWS_PID}" ]; then
+            read kpid < ${UNIFIEDVIEWS_PID}
+#           if checkpid $kpid 2>&1; then
+            if [ -d "/proc/${kpid}" ]; then
+                log_success_msg
+                if [ "$DISTRIB_ID" = "MandrivaLinux" ]; then
+                    echo
+                fi
+                RETVAL="0"
+                return
+            fi
+        fi
+    fi
+    # fix permissions on the log and pid files
+    touch $UNIFIEDVIEWS_PID 2>&1 || RETVAL="4"
+    if [ "$RETVAL" -eq "0" -a "$?" -eq "0" ]; then 
+      chown ${UNIFIEDVIEWS_USER}:${UNIFIEDVIEWS_GROUP} $UNIFIEDVIEWS_PID
+    fi
+    if [ "$?" != "0" ]; then
+	RETVAL="4"
+    fi
+    parseOptions
+    [ "$RETVAL" -eq "0" ] && $SU - $UNIFIEDVIEWS_USER -c "${UNIFIEDVIEWS_SCRIPT} start" >> ${UNIFIEDVIEWS_LOG} 2>&1 || RETVAL="4"
+    if [ "$RETVAL" -eq "0" ]; then 
+        log_success_msg
+        touch /var/lock/${NAME}
+    else
+        log_failure_msg "Error code ${RETVAL}"
+    fi
+    if [ "$DISTRIB_ID" = "MandrivaLinux" ]; then
+        echo
+    fi
+}
+function stop() {
+    echo -n "Stopping ${UNIFIEDVIEWS_PROG}: "
+    if [ -f "/var/lock/${NAME}" ]; then
+      parseOptions
+      if [ "$RETVAL" -eq "0" ]; then
+         touch /var/lock/${NAME} 2>&1 || RETVAL="4"
+		  read kpid < ${UNIFIEDVIEWS_PID}
+         [ "$RETVAL" -eq "0" ] && ${UNIFIEDVIEWS_SCRIPT} stop >> ${UNIFIEDVIEWS_LOG} 2>&1 || RETVAL="4"
+      fi
+      if [ "$RETVAL" -eq "0" ]; then
+         count="0"
+         if [ -f "${UNIFIEDVIEWS_PID}" ]; then
+            read kpid < ${UNIFIEDVIEWS_PID}
+            until [ "$(ps --pid $kpid | grep -c $kpid)" -eq "0" ] || \
+                      [ "$count" -gt "$SHUTDOWN_WAIT" ]; do
+                    if [ "$SHUTDOWN_VERBOSE" = "true" ]; then
+                        echo "waiting for processes $kpid to exit"
+                    fi
+                    sleep 1
+                    let count="${count}+1"
+                done
+                if [ "$count" -gt "$SHUTDOWN_WAIT" ]; then
+                    if [ "$SHUTDOWN_VERBOSE" = "true" ]; then
+                        log_warning_msg "killing processes which did not stop after ${SHUTDOWN_WAIT} seconds"
+                    fi
+                    kill -9 $kpid
+                fi
+                log_success_msg
+            fi
+            rm -f /var/lock/${NAME} ${UNIFIEDVIEWS_PID}
+        else
+            log_failure_msg
+            RETVAL="4"
+        fi
+    else
+        log_success_msg
+        RETVAL="0"
+    fi
+    if [ "$DISTRIB_ID" = "MandrivaLinux" ]; then
+        echo
+    fi
+}
+function status()
+{
+   checkpidfile 
+   if [ "$RETVAL" -eq "0" ]; then
+      log_success_msg "${NAME} (pid ${kpid}) is running..."
+   elif [ "$RETVAL" -eq "1" ]; then
+      log_failure_msg "PID file exists, but process is not running"
+   else 
+      checklockfile
+      if [ "$RETVAL" -eq "2" ]; then
+         log_failure_msg "${NAME} lockfile exists but process is not running"
+      else
+         pid="$(/usr/bin/pgrep -f -d , -u ${UNIFIEDVIEWS_USER} -G ${UNIFIEDVIEWS_GROUP} backend)"
+        if [ -z "$pid" ]; then
+             log_success_msg "${NAME} is stopped"
+             RETVAL="3"
+        else
+             log_success_msg "${NAME} (pid ${kpid}) is running..."
+		echo "run"
+             RETVAL="0"
+         fi
+      fi
+  fi
+}
+
+function checklockfile()
+{
+   if [ -f /var/lock/${NAME} ]; then
+      pid="$(/usr/bin/pgrep -f -d , -u ${UNIFIEDVIEWS_USER} -G ${UNIFIEDVIEWS_GROUP} backend)"
+# The lockfile exists but the process is not running
+      if [ -z "$pid" ]; then
+         RETVAL="2"
+      fi
+   fi
+}
+
+function checkpidfile()
+{
+   if [ -f "${UNIFIEDVIEWS_PID}" ]; then
+      read kpid < ${UNIFIEDVIEWS_PID}
+      if [ -d "/proc/${kpid}" ]; then
+# The pid file exists and the process is running
+          RETVAL="0"
+         return
+      else
+# The pid file exists but the process is not running
+         RETVAL="1"
+         return
+      fi
+   else
+# pid file does not exist and program is not running
+      RETVAL="3"
+      return
+  fi
+}
+
+function usage()
+{
+   echo "Usage: $0 {start|stop|restart|status|version}"
+   RETVAL="2"
+}
+
+# See how we were called.
+RETVAL="0"
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart)
+        stop
+        start
+        ;;
+    status)
+        status
+        ;;
+    version)
+	 	version
+#        ${UNIFIEDVIEWS_SCRIPT} version
+        ;;
+    *)
+      usage
+      ;;
+esac
+
+exit $RETVAL
+
+

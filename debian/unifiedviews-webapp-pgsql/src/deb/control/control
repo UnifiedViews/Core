@@ -1,0 +1,11 @@
+Package: unifiedviews-webapp-pgsql
+Source: unifiedviews-webapp-pgsql
+Version: [[debian-package-version]]
+Section: java
+Priority: extra
+Architecture: all
+Maintainer: peter.hanecak@eea.sk
+Homepage: https://github.com/UnifiedViews/Core
+Depends: unifiedviews-webapp-shared (>> 3.1), unifiedviews-webapp-shared (<< 3.2), postgresql,  debconf (>= 0.5)
+Conflicts: unifiedviews-backend-mysql, unifiedviews-webapp-mysql
+Description: The postgresql database and settings for unifiedviews.
